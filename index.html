@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islam Emad — Systems Engineer</title>
+<title>Islam Emad — Systems Architect</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -17,108 +17,145 @@
 
 
 /* ═══════ ABOUT EVOLUTION ═══════ */
-  .profile-statement {
-    font-size: clamp(18px, 2.5vw, 22px);
-    line-height: 1.6;
-    color: var(--t-0);
-    margin-bottom: 28px;
-    font-weight: 300;
-  }
-  .profile-statement b {
-    color: var(--blue);
-    font-weight: 800;
-    font-family: var(--display);
-    position: relative;
-    display: inline-block;
-  }
-  .profile-statement b::after {
-    content: ''; position: absolute; bottom: 2px; left: 0; width: 100%; height: 4px;
-    background: var(--blue-glow); z-index: -1; transform: skewX(-15deg);
-    @keyframes pulse {
+@keyframes pulse {
   0% { opacity: 0.6; }
   50% { opacity: 1; }
   100% { opacity: 0.6; }
 }
+
+.profile-statement {
+  font-size: clamp(18px, 2.5vw, 22px);
+  line-height: 1.6;
+  color: var(--t-0);
+  margin-bottom: 28px;
+  font-weight: 300;
+}
+
+.profile-statement b {
+  color: var(--blue);
+  font-weight: 800;
+  font-family: var(--display);
+  position: relative;
+  display: inline-block;
+}
+
 .profile-statement b::after {
+  content: ''; position: absolute; bottom: 2px; left: 0; width: 100%; height: 4px;
+  background: var(--blue-glow); z-index: -1; transform: skewX(-15deg);
   animation: pulse 2s infinite ease-in-out;
 }
+
+.bio-snippet {
+  font-size: 15px;
+  color: var(--t-2);
+  border-left: 3px solid var(--blue);
+  padding: 15px 25px;
+  margin-bottom: 35px;
+  background: linear-gradient(90deg, var(--blue-dim), transparent);
+  border-radius: 0 12px 12px 0;
+}
+
+.photo-frame {
+  position: relative;
+  padding: 12px;
+  border: 1px dashed var(--rim-2);
+  border-radius: 24px;
+  transition: border-color 0.4s;
+}
+.photo-frame:hover { border-color: var(--blue); }
+
+.photo-container {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  background: var(--ink-2);
+}
+.photo-container img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(100%) brightness(0.8);
+  transition: all 0.6s var(--ease-out-expo);
+}
+.photo-frame:hover img {
+  filter: grayscale(0%) brightness(1);
+  transform: scale(1.05);
+}
+
+.photo-container::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(99,179,237,0.1) 50%, transparent 50%);
+  background-size: 100% 4px; pointer-events: none; opacity: 0.3;
+}
+
+.goal-bento {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  margin-top: 40px;
+}
+.goal-item {
+  background: var(--ink-2);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--rim-1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.goal-item:hover {
+  background: var(--ink-3);
+  border-color: var(--blue-glow);
+  transform: translateY(-5px);
+}
+.goal-item::before {
+  content: '◈'; position: absolute; top: 10px; right: 10px;
+  font-size: 10px; color: var(--blue); opacity: 0.4;
+}
+.goal-item span {
+  font-family: var(--mono); font-size: 10px; color: var(--blue);
+  letter-spacing: 0.1em; display: block; margin-bottom: 8px;
+}
+.goal-item p { font-size: 13px; color: var(--t-1); font-weight: 500; margin: 0; line-height: 1.4; }
+
+  
+  
+  
+  
+  /* ═══════ MOBILE OPTIMIZATION ═══════ */
+@media (max-width: 860px) {
+  .about-grid {
+    grid-template-columns: 1fr !important; /* خليها عمود واحد للموبايل */
+    gap: 40px !important;
+  }
+  
+  .profile-statement {
+    font-size: 18px !important; /* تصغير الخط شوية للموبايل */
+    text-align: center;
   }
 
   .bio-snippet {
-    font-size: 15px;
-    color: var(--t-2);
-    border-left: 3px solid var(--blue);
-    padding: 15px 25px;
-    margin-bottom: 35px;
-    background: linear-gradient(90deg, var(--blue-dim), transparent);
-    border-radius: 0 12px 12px 0;
+    padding: 15px;
+    text-align: center;
+    border-left: none;
+    border-top: 3px solid var(--blue); /* خلي الخط فوق بدل الجنب */
+    border-radius: 0 0 12px 12px;
   }
 
   .photo-frame {
-    position: relative;
-    padding: 12px;
-    border: 1px dashed var(--rim-2);
-    border-radius: 24px;
-    transition: border-color 0.4s;
-  }
-  .photo-frame:hover { border-color: var(--blue); }
-
-  .photo-container {
-    position: relative;
-    border-radius: 18px;
-    overflow: hidden;
-    aspect-ratio: 4/5;
-    background: var(--ink-2);
-  }
-  .photo-container img {
-    width: 100%; height: 100%; object-fit: cover;
-    filter: grayscale(100%) brightness(0.8);
-    transition: all 0.6s var(--ease-out-expo);
-  }
-  .photo-frame:hover img {
-    filter: grayscale(0%) brightness(1);
-    transform: scale(1.05);
-  }
-  /* تأثير الـ Scanline فوق الصورة */
-  .photo-container::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(0deg, rgba(99,179,237,0.1) 50%, transparent 50%);
-    background-size: 100% 4px; pointer-events: none; opacity: 0.3;
+    max-width: 300px; /* تحديد عرض الصورة عشان ماتبقاش ضخمة */
+    margin: 0 auto;  /* سنترة الصورة */
   }
 
-  /* Bento Goals مع تأثير الحوم (Hover) */
   .goal-bento {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-    margin-top: 40px;
+    grid-template-columns: 1fr; /* الأهداف تحت بعضها */
   }
-  .goal-item {
-    background: var(--ink-2);
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid var(--rim-1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .goal-item:hover {
-    background: var(--ink-3);
-    border-color: var(--blue-glow);
-    transform: translateY(-5px);
-  }
-  .goal-item::before {
-    content: '◈'; position: absolute; top: 10px; right: 10px;
-    font-size: 10px; color: var(--blue); opacity: 0.4;
-  }
-  .goal-item span {
-    font-family: var(--mono); font-size: 10px; color: var(--blue);
-    letter-spacing: 0.1em; display: block; margin-bottom: 8px;
-  }
-  .goal-item p { font-size: 13px; color: var(--t-1); font-weight: 500; margin: 0; line-height: 1.4; }
-  
-  
-  
+}
+
+
+
+
+
+
   
   
   
@@ -248,9 +285,24 @@ nav.s {
   border-bottom-color:var(--rim-0);
 }
 .nav-wordmark {
-  font-family:var(--mono); font-size:13px; font-weight:400;
-  color:var(--t-0); letter-spacing:.08em;
-  display:flex; align-items:center; gap:10px;
+  font-family: var(--display); 
+  font-size: 12px;           
+  font-weight: 700;          
+  color: var(--t-0);
+  
+  letter-spacing: 0.18em;    
+  text-transform: uppercase;
+  
+  display: flex; 
+  align-items: center; 
+  gap: 12px;
+  
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.nav-wordmark:hover {
+  opacity: 0.7;
 }
 .nav-pulse {
   width:6px; height:6px; border-radius:50%;
@@ -1223,7 +1275,7 @@ footer {
     <div class="eyebrow" data-reveal="up">Professional Presence</div>
     <h2 class="display-lg" data-reveal="up" data-delay="1">Executive <span class="accent-txt">Statement</span></h2>
 
-    <div class="about-grid" style="grid-template-columns: 1.4fr 1fr; align-items: center; gap: clamp(40px, 8vw, 100px);">
+    <div class="about-grid">
       
       <div data-reveal="left" data-delay="1">
         <div class="about-text">
@@ -1239,20 +1291,7 @@ footer {
   As a Systems Architect, I operate on the principle that precision is the hallmark of strength. I don’t just witness the technological evolution; I am here to architect it.
 </p>
 
-          <div class="goal-bento">
-            <div class="goal-item">
-              <span>Primary Goal</span>
-              <p>Architecting autonomous C-UAS systems using Edge AI.</p>
-            </div>
-            <div class="goal-item">
-              <span>Research</span>
-              <p>Advancing Semantic Communications for 6G networks.</p>
-            </div>
-            <div class="goal-item" style="border-color: var(--rim-accent);">
-              <span>Next Milestone</span>
-              <p>Graduating Senior-2 ECE Class of 2026.</p>
-            </div>
-          </div>
+          
         </div>
       </div>
 
@@ -1264,26 +1303,34 @@ footer {
         </div>
 
         <div class="contact-cards" style="margin-top: 32px;">
-          <a class="clink" href="https://github.com/islam-8" target="_blank">
-            <div class="clink-ico">⚙️</div>
-            <div><div class="clink-k">Source</div><div class="clink-v">github.com/islam-8</div></div>
-            <span class="clink-arr">↗</span>
-          </a>
-          <a class="clink" href="https://www.linkedin.com/in/islam-ismail-18a88b381" target="_blank">
-            <div class="clink-ico">💼</div>
-            <div><div class="clink-k">Network</div><div class="clink-v">Islam Ismail</div></div>
-            <span class="clink-arr">↗</span>
-          </a>
-          <div class="clink" style="cursor:default">
-            <div class="clink-ico">📍</div>
-            <div><div class="clink-k">Operation Base</div><div class="clink-v">Mansoura, Egypt</div></div>
-          </div>
-        </div>
-      </div>
+  <a class="clink" href="https://github.com/islam-8" target="_blank">
+    <div class="clink-ico">⚙️</div>
+    <div><div class="clink-k">Source Control</div><div class="clink-v">github.com/islam-8</div></div>
+    <span class="clink-arr">↗</span>
+  </a>
 
-    </div>
-  </div>
-</section>
+  <a class="clink" href="https://www.linkedin.com/in/islam-ismail-18a88b381" target="_blank">
+    <div class="clink-ico">💼</div>
+    <div><div class="clink-k">Professional Network</div><div class="clink-v">Islam Ismail</div></div>
+    <span class="clink-arr">↗</span>
+  </a>
+<a class="clink" href="https://wa.me/201559933466" target="_blank">
+  <div class="clink-ico">💬</div>
+  <div><div class="clink-k">Direct Contact</div><div class="clink-v">Chat on WhatsApp</div></div>
+  <span class="clink-arr">↗</span>
+</a>
+  <a class="clink" href="https://horus.edu.eg/" target="_blank">
+    <div class="clink-ico">🎓</div>
+    <div><div class="clink-k">University</div><div class="clink-v">Horus University (HUE)</div></div>
+    <span class="clink-arr">↗</span>
+  </a>
+
+  <a class="clink" href="https://eng.horus.edu.eg/" target="_blank">
+    <div class="clink-ico">🏛️</div>
+    <div><div class="clink-k">Faculty</div><div class="clink-v">Engineering — ECE Dept.</div></div>
+    <span class="clink-arr">↗</span>
+  </a>
+</div>
 
 <footer>
   <div class="footer-l">Islam Emad — <span>Portfolio 2026</span> — Horus University ECE</div>
