@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Islam Emad — Systems Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM — DEEP SPACE PRECISION
+   Inspired by: SpaceX Starmap / Linear App / 
+   Apple Design Language / CERN UI
+═══════════════════════════════════════════════ */
+:root {
+  /* Core Surfaces — Deep Space, not pure black */
+  --ink:      #080b10;   /* Page background */
+  --ink-1:    #0c1119;   /* Elevated surface */
+  --ink-2:    #101824;   /* Card level */
+  --ink-3:    #141f2c;   /* Input / nested */
+
+  /* Borders — ultra subtle, creates depth */
+  --rim-0:    rgba(255,255,255,.04);
+  --rim-1:    rgba(255,255,255,.07);
+  --rim-2:    rgba(255,255,255,.12);
+  --rim-accent: rgba(99,179,237,.18);
+
+  /* Accent — Electric Blue, calm not neon */
+  --blue:     #63b3ed;   /* Primary accent */
+  --blue-dim: rgba(99,179,237,.08);
+  --blue-glow:rgba(99,179,237,.15);
+  --teal:     #4fd1c5;   /* Secondary accent */
+  --amber:    #f6ad55;   /* Warning / highlight */
+  --rose:     #fc8181;   /* Danger / bottleneck */
+  --sage:     #68d391;   /* Success / nominal */
+
+  /* Text Hierarchy */
+  --t-0: #f0f6fc;   /* Headlines — near white */
+  --t-1: #c9d8e8;   /* Body */
+  --t-2: #7a95b0;   /* Secondary */
+  --t-3: #435568;   /* Muted / labels */
+  --t-4: #2a3a4a;   /* Decorative only */
+
+  /* Typography */
+  --display:'Bricolage Grotesque', sans-serif;
+  --mono:    'DM Mono', monospace;
+  --body:    'Instrument Sans', sans-serif;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(.16,1,.3,1);
+  --ease-in-out: cubic-bezier(.45,.05,.55,.95);
+  --dur-fast: 200ms;
+  --dur-med:  400ms;
+  --dur-slow: 700ms;
+
+  /* Layout */
+  --max: 1160px;
+  --gutter: clamp(20px, 5vw, 60px);
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  background: var(--ink);
+  color: var(--t-1);
+  font-family: var(--body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+/* ─── CUSTOM CURSOR ─── */
+.cur { position:fixed; pointer-events:none; z-index:9999; top:0; left:0; }
+.cur-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:var(--t-0);
+  transform:translate(-50%,-50%);
+  transition:transform var(--dur-fast), opacity var(--dur-fast);
+}
+.cur-ring {
+  width:32px; height:32px; border-radius:50%;
+  border:1px solid rgba(99,179,237,.4);
+  transform:translate(-50%,-50%);
+  transition:width var(--dur-med) var(--ease-out-expo),
+             height var(--dur-med) var(--ease-out-expo),
+             border-color var(--dur-med);
+}
+body.cur-hover .cur-ring {
+  width:52px; height:52px;
+  border-color:rgba(99,179,237,.7);
+  background:rgba(99,179,237,.04);
+}
+body.cur-text .cur-ring {
+  width:2px; height:28px; border-radius:1px;
+  border-color:var(--blue);
+}
+
+/* ─── GRAIN OVERLAY ─── */
+.grain {
+  position:fixed; inset:0; pointer-events:none; z-index:998; opacity:.018;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:300px;
+}
+
+/* ─── AMBIENT ORBS ─── */
+.orb-layer { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.orb {
+  position:absolute; border-radius:50%;
+  filter:blur(80px);
+  animation: orbDrift linear infinite alternate;
+}
+.orb-a { width:600px;height:600px; top:-15%;right:-10%; background:radial-gradient(circle,rgba(99,179,237,.05) 0%,transparent 70%); animation-duration:28s; }
+.orb-b { width:500px;height:500px; bottom:-20%;left:-10%; background:radial-gradient(circle,rgba(79,209,197,.04) 0%,transparent 70%); animation-duration:22s; }
+.orb-c { width:300px;height:300px; top:40%;left:45%; background:radial-gradient(circle,rgba(246,173,85,.025) 0%,transparent 70%); animation-duration:35s; }
+@keyframes orbDrift { from{transform:translate(0,0) scale(1)} to{transform:translate(40px,30px) scale(1.1)} }
+
+/* ─── NAV ─── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  padding:0 var(--gutter);
+  height:64px; display:flex; align-items:center; justify-content:space-between;
+  transition:background var(--dur-med), border-color var(--dur-med);
+  border-bottom:1px solid transparent;
+}
+nav.s {
+  background:rgba(8,11,16,.82);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom-color:var(--rim-0);
+}
+.nav-wordmark {
+  font-family:var(--mono); font-size:13px; font-weight:400;
+  color:var(--t-0); letter-spacing:.08em;
+  display:flex; align-items:center; gap:10px;
+}
+.nav-pulse {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--sage);
+  box-shadow:0 0 0 0 rgba(104,211,145,.5);
+  animation:pulse 2.8s ease infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow:0 0 0 0 rgba(104,211,145,.5) }
+  70%  { box-shadow:0 0 0 9px rgba(104,211,145,0) }
+  100% { box-shadow:0 0 0 0 rgba(104,211,145,0) }
+}
+.nav-menu { display:flex; gap:32px; }
+.nav-menu a {
+  font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+  color:var(--t-3); text-decoration:none; text-transform:uppercase;
+  transition:color var(--dur-fast);
+}
+.nav-menu a:hover { color:var(--t-1); }
+
+/* ─── LAYOUT PRIMITIVES ─── */
+.wrap { max-width:var(--max); margin:0 auto; padding:0 var(--gutter); }
+section { padding:clamp(80px,10vw,130px) 0; position:relative; z-index:1; }
+
+/* ─── TYPOGRAPHY SYSTEM ─── */
+.eyebrow {
+  font-family:var(--mono); font-size:11px; font-weight:400;
+  letter-spacing:.2em; color:var(--t-3); text-transform:uppercase;
+  display:flex; align-items:center; gap:14px; margin-bottom:20px;
+}
+.eyebrow::before { content:''; width:32px; height:1px; background:var(--blue); opacity:.6; flex-shrink:0; }
+.display-xl {
+  font-family:var(--display);
+  font-size:clamp(52px,9vw,108px);
+  font-weight:800; line-height:.96;
+  letter-spacing:-.04em; color:var(--t-0);
+}
+.display-lg {
+  font-family:var(--display);
+  font-size:clamp(36px,5.5vw,64px);
+  font-weight:700; line-height:1.05;
+  letter-spacing:-.03em; color:var(--t-0);
+}
+.display-md {
+  font-family:var(--display);
+  font-size:clamp(24px,3vw,36px);
+  font-weight:600; line-height:1.2;
+  letter-spacing:-.02em; color:var(--t-0);
+}
+.accent-txt { color:var(--blue); }
+.body-lg { font-size:18px; line-height:1.8; color:var(--t-1); }
+.body-md { font-size:16px; line-height:1.85; color:var(--t-2); }
+.caption  { font-family:var(--mono); font-size:11px; color:var(--t-3); letter-spacing:.1em; }
+
+/* ─── GLASS CARD ─── */
+.glass {
+  background:rgba(12,17,25,.6);
+  backdrop-filter:blur(16px) saturate(1.2);
+  -webkit-backdrop-filter:blur(16px) saturate(1.2);
+  border:1px solid var(--rim-1);
+  border-radius:16px;
+}
+.glass-sm {
+  background:rgba(16,24,36,.5);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--rim-0);
+  border-radius:10px;
+}
+
+/* ─── BUTTONS ─── */
+.btn {
+  font-family:var(--mono); font-size:12px; font-weight:400;
+  letter-spacing:.12em; text-transform:uppercase;
+  padding:14px 28px;
+  border-radius:8px;
+  text-decoration:none;
+  display:inline-flex; align-items:center; gap:10px;
+  transition:all var(--dur-med) var(--ease-out-expo);
+  cursor:none;
+}
+.btn-primary {
+  background:var(--blue); color:#000; font-weight:500; border:1px solid var(--blue);
+}
+.btn-primary:hover { background:#88c9f0; transform:translateY(-2px); box-shadow:0 16px 40px rgba(99,179,237,.2); }
+.btn-secondary {
+  background:transparent; color:var(--t-1);
+  border:1px solid var(--rim-2);
+}
+.btn-secondary:hover { border-color:rgba(99,179,237,.4); color:var(--t-0); background:var(--blue-dim); }
+
+/* ─── REVEAL SYSTEM ─── */
+[data-reveal] {
+  opacity:0; transition:opacity var(--dur-slow) var(--ease-out-expo),
+                          transform var(--dur-slow) var(--ease-out-expo);
+}
+[data-reveal="up"]    { transform:translateY(36px); }
+[data-reveal="left"]  { transform:translateX(-28px); }
+[data-reveal="right"] { transform:translateX(28px); }
+[data-reveal="scale"] { transform:scale(.96); }
+[data-reveal].in { opacity:1; transform:none; }
+[data-delay="1"] { transition-delay:.1s }
+[data-delay="2"] { transition-delay:.2s }
+[data-delay="3"] { transition-delay:.3s }
+[data-delay="4"] { transition-delay:.4s }
+[data-delay="5"] { transition-delay:.5s }
+[data-delay="6"] { transition-delay:.6s }
+
+/* ══════════════════════════════════════════════
+   HERO SECTION
+══════════════════════════════════════════════ */
+#hero {
+  min-height:100vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding-top:64px;
+  position:relative; overflow:hidden;
+}
+.hero-grid-bg {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(99,179,237,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,179,237,.025) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse 80% 90% at 50% 40%,black 0%,transparent 80%);
+  pointer-events:none;
+}
+.hero-inner { position:relative; z-index:2; }
+.hero-role-row {
+  display:flex; flex-wrap:wrap; gap:8px;
+  margin-bottom:48px;
+}
+.role-pill {
+  font-family:var(--mono); font-size:11px; font-weight:400;
+  letter-spacing:.1em; padding:6px 14px;
+  border-radius:40px; border:1px solid var(--rim-1);
+  color:var(--t-3); background:rgba(12,17,25,.4);
+  backdrop-filter:blur(8px);
+  transition:all var(--dur-med);
+}
+.role-pill:hover { border-color:var(--rim-accent); color:var(--t-2); }
+.hero-kpi-row {
+  display:flex; gap:0;
+  margin-top:60px; flex-wrap:wrap;
+}
+.kpi-item {
+  padding:24px 36px 24px 0;
+  border-right:1px solid var(--rim-0);
+  margin-right:36px;
+}
+.kpi-item:last-child { border-right:none; }
+.kpi-num {
+  font-family:var(--display); font-size:40px; font-weight:800;
+  color:var(--t-0); line-height:1; letter-spacing:-.03em;
+}
+.kpi-num sup { font-size:18px; color:var(--blue); vertical-align:super; }
+.kpi-lbl { font-family:var(--mono); font-size:10px; letter-spacing:.15em; color:var(--t-3); margin-top:6px; }
+.hero-cta { display:flex; gap:12px; flex-wrap:wrap; margin-top:40px; }
+.hero-scroll-hint {
+  position:absolute; bottom:36px; left:var(--gutter);
+  display:flex; align-items:center; gap:12px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.15em;
+  color:var(--t-4); text-transform:uppercase;
+}
+.scroll-arrow { animation:scrollBounce 2s ease-in-out infinite; }
+@keyframes scrollBounce {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)}
+}
+
+/* ══════════════════════════════════════════════
+   SENTINEL — HERO PROJECT
+══════════════════════════════════════════════ */
+#sentinel {
+  background:linear-gradient(180deg, transparent 0%, rgba(8,12,18,.6) 50%, transparent 100%);
+}
+.sentinel-intro {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px; align-items:start;
+  margin-bottom:80px;
+}
+@media(max-width:860px) { .sentinel-intro { grid-template-columns:1fr; gap:48px; } }
+.sentinel-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.15em;
+  color:var(--sage); background:rgba(104,211,145,.06);
+  border:1px solid rgba(104,211,145,.2);
+  padding:6px 14px; border-radius:40px; margin-bottom:24px;
+}
+.sentinel-badge::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--sage);
+  animation:pulse 2s ease infinite;
+}
+.sentinel-challenge-box {
+  background:linear-gradient(135deg,rgba(246,173,85,.04),rgba(252,129,129,.03));
+  border:1px solid rgba(246,173,85,.12);
+  border-radius:12px; padding:28px;
+  margin:28px 0;
+}
+.challenge-label {
+  font-family:var(--mono); font-size:10px; letter-spacing:.15em;
+  color:var(--amber); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.challenge-label::after { content:''; flex:1; height:1px; background:rgba(246,173,85,.2); }
+.sentinel-solution-box {
+  background:linear-gradient(135deg,rgba(99,179,237,.04),rgba(79,209,197,.03));
+  border:1px solid rgba(99,179,237,.12);
+  border-radius:12px; padding:28px;
+  margin:28px 0;
+}
+.solution-label {
+  font-family:var(--mono); font-size:10px; letter-spacing:.15em;
+  color:var(--blue); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.solution-label::after { content:''; flex:1; height:1px; background:rgba(99,179,237,.2); }
+.spec-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:28px; }
+.spec-item { padding:14px 16px; background:var(--ink-2); border:1px solid var(--rim-0); border-radius:8px; }
+.spec-key { font-family:var(--mono); font-size:10px; letter-spacing:.1em; color:var(--t-3); margin-bottom:5px; }
+.spec-val { font-size:14px; color:var(--t-1); font-weight:500; }
+.tag-cloud { display:flex; flex-wrap:wrap; gap:6px; margin-top:20px; }
+.tag {
+  font-family:var(--mono); font-size:10px; letter-spacing:.08em;
+  padding:4px 10px; border-radius:4px;
+  border:1px solid var(--rim-1); color:var(--t-3);
+  transition:all var(--dur-fast);
+}
+.tag:hover { border-color:var(--rim-accent); color:var(--t-2); }
+.team-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:16px; }
+.team-pill {
+  font-size:12px; padding:5px 14px; border-radius:40px;
+  border:1px solid var(--rim-0); color:var(--t-2);
+  background:var(--ink-2);
+}
+.team-pill.lead { border-color:rgba(99,179,237,.3); color:var(--blue); background:var(--blue-dim); }
+
+/* ── SENTINEL SIMULATOR (SpaceX/Tesla aesthetic) ── */
+.sentinel-sim {
+  background:var(--ink-1);
+  border:1px solid var(--rim-1);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.sim-chrome {
+  background:var(--ink-2);
+  border-bottom:1px solid var(--rim-0);
+  padding:14px 20px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.sim-chrome-left { display:flex; align-items:center; gap:12px; }
+.chrome-btn { width:11px; height:11px; border-radius:50%; }
+.sim-chrome-title {
+  font-family:var(--mono); font-size:10px; font-weight:400;
+  letter-spacing:.15em; color:var(--t-3);
+}
+.sim-sys-time {
+  font-family:var(--mono); font-size:10px; color:var(--t-4); letter-spacing:.08em;
+}
+.sim-tabs-row {
+  display:flex; border-bottom:1px solid var(--rim-0);
+  background:var(--ink-2);
+}
+.sim-tab {
+  font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  padding:11px 18px; color:var(--t-3); cursor:pointer; border:none; background:transparent;
+  border-bottom:1.5px solid transparent; transition:all var(--dur-fast);
+}
+.sim-tab.active { color:var(--blue); border-bottom-color:var(--blue); background:rgba(99,179,237,.03); }
+.sim-tab:hover:not(.active) { color:var(--t-2); background:var(--rim-0); }
+.sim-scenarios-row {
+  display:flex; gap:6px; padding:14px 18px;
+  border-bottom:1px solid var(--rim-0); flex-wrap:wrap;
+  background:var(--ink-1);
+}
+.scen-btn {
+  font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  padding:5px 12px; border-radius:4px;
+  border:1px solid var(--rim-1); color:var(--t-3);
+  background:transparent; cursor:pointer;
+  transition:all var(--dur-fast);
+}
+.scen-btn:hover { color:var(--t-2); border-color:var(--rim-2); }
+.scen-btn.active { border-color:rgba(99,179,237,.4); color:var(--blue); background:var(--blue-dim); }
+.sim-content { padding:18px; }
+
+/* KPI row */
+.sim-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+@media(max-width:480px) { .sim-kpi-row { grid-template-columns:repeat(2,1fr); } }
+.sim-kpi {
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:8px;
+  padding:14px; position:relative; overflow:hidden;
+}
+.sim-kpi::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1.5px;
+  background:var(--kc, rgba(99,179,237,.5));
+}
+.kpi-k { font-family:var(--mono); font-size:9px; letter-spacing:.12em; color:var(--t-3); margin-bottom:6px; }
+.kpi-v {
+  font-family:var(--display); font-size:24px; font-weight:700;
+  color:var(--kc-txt, var(--blue)); line-height:1;
+  transition:color .4s;
+}
+.kpi-u { font-family:var(--mono); font-size:9px; color:var(--t-3); margin-top:4px; }
+
+/* Tab panels */
+.sim-panel { display:none; }
+.sim-panel.active { display:block; }
+
+/* Performance SVG chart */
+.chart-wrap {
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:8px;
+  padding:12px; margin-bottom:14px; overflow:hidden;
+}
+.chart-svg { display:block; width:100%; }
+
+/* Pipeline */
+.pipeline-scroll { overflow-x:auto; padding-bottom:4px; }
+.pipeline-row { display:flex; align-items:center; min-width:max-content; gap:0; }
+.pipe-node {
+  flex-shrink:0; min-width:82px; text-align:center;
+}
+.pipe-box {
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:6px;
+  padding:10px 8px; transition:border-color var(--dur-fast);
+}
+.pipe-box.ok   { border-color:rgba(104,211,145,.25); }
+.pipe-box.warm { border-color:rgba(246,173,85,.3); }
+.pipe-box.hot  { border-color:rgba(252,129,129,.35); }
+.pipe-lbl { font-family:var(--mono); font-size:8px; letter-spacing:.08em; color:var(--t-3); margin-bottom:4px; display:block; }
+.pipe-ms  { font-family:var(--display); font-size:15px; font-weight:700; }
+.pipe-ms.ok   { color:var(--sage); }
+.pipe-ms.warm { color:var(--amber); }
+.pipe-ms.hot  { color:var(--rose); }
+.pipe-ms.skip { color:var(--t-3); }
+.pipe-bar-bg  { height:2px; background:var(--rim-0); border-radius:1px; overflow:hidden; margin-top:6px; }
+.pipe-bar-fill{ height:100%; border-radius:1px; transition:width .5s var(--ease-out-expo); }
+.pipe-arrow { flex-shrink:0; padding:0 6px 16px; color:var(--t-4); font-size:10px; font-family:var(--mono); }
+
+/* Timeline */
+.timeline-wrap {
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:8px;
+  padding:14px; position:relative; overflow:hidden; height:60px;
+}
+.tl-phase {
+  position:absolute; top:14px; height:32px; border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:8px; letter-spacing:.08em;
+  white-space:nowrap; overflow:hidden;
+  transition:opacity .3s;
+}
+
+/* Verdict */
+.sim-verdict {
+  background:linear-gradient(135deg, rgba(99,179,237,.04), rgba(79,209,197,.02));
+  border:1px solid rgba(99,179,237,.15); border-radius:8px;
+  padding:16px; margin-top:14px;
+}
+.verdict-title { font-family:var(--mono); font-size:10px; letter-spacing:.12em; color:var(--blue); margin-bottom:8px; }
+.verdict-body  { font-size:13px; color:var(--t-2); line-height:1.75; }
+.verdict-body b { color:var(--t-1); font-weight:600; }
+.verdict-body em { color:var(--blue); font-style:normal; }
+
+.run-btn {
+  width:100%; margin-top:14px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  padding:11px; border-radius:6px;
+  border:1px solid var(--rim-2); color:var(--t-2);
+  background:transparent; cursor:pointer;
+  transition:all var(--dur-med);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.run-btn:hover:not(:disabled) { border-color:rgba(99,179,237,.4); color:var(--blue); background:var(--blue-dim); }
+.run-btn:disabled { opacity:.35; cursor:not-allowed; }
+
+/* ══════════════════════════════════════════════
+   BENTO GRID — PROJECTS
+══════════════════════════════════════════════ */
+#projects { }
+.bento-grid {
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-auto-rows:minmax(60px,auto);
+  gap:14px;
+  margin-top:52px;
+}
+/* Span rules */
+.b-full    { grid-column:span 12; }
+.b-8       { grid-column:span 8; }
+.b-4       { grid-column:span 4; }
+.b-7       { grid-column:span 7; }
+.b-5       { grid-column:span 5; }
+.b-6       { grid-column:span 6; }
+@media(max-width:960px) {
+  .b-8,.b-7,.b-5,.b-6 { grid-column:span 12; }
+  .b-4 { grid-column:span 6; }
+}
+@media(max-width:600px) {
+  .b-4 { grid-column:span 12; }
+}
+
+.bcard {
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:14px;
+  padding:24px; position:relative; overflow:hidden;
+  transition:border-color var(--dur-med), transform var(--dur-med) var(--ease-out-expo);
+  cursor:none;
+}
+.bcard::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1.5px;
+  background:var(--bc, transparent); opacity:0;
+  transition:opacity var(--dur-med);
+}
+.bcard:hover { border-color:var(--rim-1); transform:translateY(-3px); }
+.bcard:hover::before { opacity:1; }
+.bcard-flag {
+  font-family:var(--mono); font-size:9px; letter-spacing:.12em;
+  padding:4px 9px; border-radius:4px; display:inline-block; margin-bottom:16px;
+}
+.flag-live { background:rgba(104,211,145,.1); color:var(--sage); border:1px solid rgba(104,211,145,.2); }
+.flag-pub  { background:rgba(99,179,237,.1);  color:var(--blue); border:1px solid rgba(99,179,237,.2); }
+.flag-done { background:rgba(122,149,176,.08);color:var(--t-3);  border:1px solid var(--rim-0); }
+.flag-new  { background:rgba(79,209,197,.1);  color:var(--teal); border:1px solid rgba(79,209,197,.2); }
+.bcard-title { font-family:var(--display); font-size:18px; font-weight:700; color:var(--t-0); line-height:1.25; margin-bottom:10px; letter-spacing:-.02em; }
+.bcard-desc { font-size:14px; color:var(--t-2); line-height:1.8; margin-bottom:16px; }
+.bcard-tags { display:flex; flex-wrap:wrap; gap:5px; }
+.btag { font-family:var(--mono); font-size:9px; letter-spacing:.06em; padding:3px 8px; border-radius:3px; background:var(--ink-3); border:1px solid var(--rim-0); color:var(--t-3); }
+
+/* Large accent card */
+.bcard-accent {
+  background:linear-gradient(140deg, rgba(14,24,40,.9) 0%, rgba(10,18,32,.95) 100%);
+  border-color:rgba(99,179,237,.15);
+}
+.bcard-accent::after {
+  content:''; position:absolute; top:-40px; right:-40px;
+  width:200px; height:200px; border-radius:50%;
+  background:radial-gradient(circle,rgba(99,179,237,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* Mini perf bars inside bcard */
+.mini-perf { margin-top:16px; border-top:1px solid var(--rim-0); padding-top:14px; }
+.mp-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.mp-lbl { font-family:var(--mono); font-size:9px; color:var(--t-3); min-width:88px; }
+.mp-track { flex:1; height:2px; background:var(--rim-0); border-radius:1px; overflow:hidden; }
+.mp-fill { height:100%; border-radius:1px; transition:width .9s var(--ease-out-expo); }
+.mp-val { font-family:var(--mono); font-size:9px; color:var(--t-2); min-width:32px; text-align:right; }
+.mp-result { font-family:var(--mono); font-size:10px; color:var(--teal); margin-top:8px; padding:6px 10px; background:rgba(79,209,197,.05); border:1px solid rgba(79,209,197,.12); border-radius:4px; }
+
+/* Show/hide mini sim toggle */
+.sim-toggle-btn {
+  font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  padding:6px 12px; border-radius:4px;
+  border:1px solid var(--rim-1); color:var(--t-3);
+  background:transparent; cursor:pointer; margin-top:12px;
+  transition:all var(--dur-fast);
+}
+.sim-toggle-btn:hover { border-color:var(--rim-accent); color:var(--t-2); }
+.mini-sim-panel { display:none; }
+.mini-sim-panel.open { display:block; }
+
+/* ══════════════════════════════════════════════
+   BENTO SKILLS
+══════════════════════════════════════════════ */
+#skills { background:var(--ink-1); }
+.skills-bento {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px; margin-top:52px;
+}
+@media(max-width:900px) { .skills-bento { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:500px) { .skills-bento { grid-template-columns:1fr; } }
+.sg {
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:14px;
+  padding:22px; position:relative; overflow:hidden;
+}
+.sg::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:1.5px;
+  background:var(--sg-c, var(--blue));
+}
+.sg-head { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.sg-icon { font-size:16px; width:32px; height:32px; border-radius:6px; background:var(--ink-3); display:flex; align-items:center; justify-content:center; }
+.sg-name { font-family:var(--display); font-size:14px; font-weight:600; color:var(--t-0); }
+.sbar-list { display:flex; flex-direction:column; gap:11px; }
+.sbar-item { display:flex; flex-direction:column; gap:5px; }
+.sbar-top { display:flex; justify-content:space-between; align-items:baseline; }
+.sbar-name { font-size:13px; color:var(--t-1); }
+.sbar-lvl  { font-family:var(--mono); font-size:9px; color:var(--t-3); }
+.sbar-bg   { height:1.5px; background:var(--rim-0); border-radius:1px; overflow:hidden; }
+.sbar-fill { height:100%; border-radius:1px; background:var(--sg-c, var(--blue)); width:0; transition:width 1.2s var(--ease-out-expo); }
+
+/* ══════════════════════════════════════════════
+   CERTIFICATIONS
+══════════════════════════════════════════════ */
+#certs { }
+.cert-cats {
+  display:flex; gap:6px; margin:28px 0; flex-wrap:wrap;
+}
+.cert-cat {
+  font-family:var(--mono); font-size:9px; letter-spacing:.12em; text-transform:uppercase;
+  padding:6px 14px; border-radius:6px;
+  border:1px solid var(--rim-0); color:var(--t-3);
+  background:transparent; cursor:pointer;
+  transition:all var(--dur-fast);
+}
+.cert-cat:hover { border-color:var(--rim-1); color:var(--t-2); }
+.cert-cat.active { border-color:rgba(79,209,197,.3); color:var(--teal); background:rgba(79,209,197,.04); }
+.cert-masonry { columns:3 260px; gap:10px; }
+@media(max-width:600px){ .cert-masonry{columns:1;} }
+.cert-card {
+  break-inside:avoid; margin-bottom:10px;
+  background:var(--ink-2); border:1px solid var(--rim-0); border-radius:10px;
+  padding:14px; display:flex; gap:12px;
+  transition:border-color var(--dur-fast);
+  cursor:none;
+}
+.cert-card:hover { border-color:var(--rim-1); }
+.cert-ico {
+  width:32px; height:32px; border-radius:6px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+}
+.cert-body { flex:1; min-width:0; }
+.cert-name { font-size:12px; color:var(--t-1); line-height:1.4; margin-bottom:4px; }
+.cert-issuer { font-family:var(--mono); font-size:9px; color:var(--t-3); margin-bottom:4px; }
+.cert-date {
+  font-family:var(--mono); font-size:9px; color:var(--t-3);
+  background:var(--ink-3); padding:2px 7px; border-radius:3px; display:inline-block;
+}
+
+/* ══════════════════════════════════════════════
+   ABOUT / CONTACT
+══════════════════════════════════════════════ */
+#about { background:var(--ink-1); }
+.about-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:80px; margin-top:56px; }
+@media(max-width:740px){ .about-grid{grid-template-columns:1fr;gap:48px;} }
+.about-text p { font-size:16px; color:var(--t-2); line-height:1.95; margin-bottom:20px; }
+.contact-cards { display:flex; flex-direction:column; gap:9px; }
+.clink {
+  display:flex; align-items:center; gap:14px; text-decoration:none;
+  padding:14px 18px; border-radius:10px;
+  background:var(--ink-2); border:1px solid var(--rim-0);
+  transition:all var(--dur-med) var(--ease-out-expo);
+  cursor:none;
+}
+.clink:hover { border-color:var(--rim-accent); background:var(--blue-dim); transform:translateX(4px); }
+.clink-ico { width:32px;height:32px;border-radius:6px;background:var(--ink-3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0; }
+.clink-k { font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--t-3);margin-bottom:2px; }
+.clink-v { font-size:13px;color:var(--t-1); }
+.clink-arr { margin-left:auto; font-size:12px; color:var(--t-3); transition:transform var(--dur-fast); }
+.clink:hover .clink-arr { transform:translateX(3px); color:var(--blue); }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top:1px solid var(--rim-0); padding:28px var(--gutter);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer-l { font-family:var(--mono); font-size:11px; color:var(--t-3); }
+.footer-l span { color:var(--blue); }
+#clock { font-family:var(--mono); font-size:11px; color:var(--t-4); letter-spacing:.06em; }
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  nav { padding:0 20px; }
+  .nav-menu { display:none; }
+  section { padding:clamp(60px,8vw,90px) 0; }
+  .hero-kpi-row { gap:0; }
+  .kpi-item { padding:16px 20px 16px 0; margin-right:20px; }
+  footer { padding:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cur" id="cur-dot-el"><div class="cur-dot"></div></div>
+<div class="cur" id="cur-ring-el"><div class="cur-ring"></div></div>
+
+<!-- Grain -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- Ambient orbs -->
+<div class="orb-layer" aria-hidden="true">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <div class="nav-wordmark">
+    <div class="nav-pulse"></div>
+    Islam Emad
+  </div>
+  <div class="nav-menu">
+    <a href="#sentinel">Sentinel</a>
+    <a href="#projects">Projects</a>
+    <a href="#skills">Skills</a>
+    <a href="#certs">Certs</a>
+    <a href="#about">About</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-grid-bg" id="hero-grid" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+    <div class="eyebrow" data-reveal="up">Horus University — ECE — Class 2026</div>
+    <h1 class="display-xl" data-reveal="up" data-delay="1">
+      Islam<br><span class="accent-txt">Emad.</span>
+    </h1>
+    <div class="hero-role-row" data-reveal="up" data-delay="2" style="margin-top:20px">
+      <span class="role-pill">Systems Architect</span>
+      <span class="role-pill">AI / Computer Vision</span>
+      <span class="role-pill">Embedded Systems</span>
+      <span class="role-pill">5G / 6G Research</span>
+      <span class="role-pill">Cybersecurity</span>
+    </div>
+    <p class="body-lg" data-reveal="up" data-delay="3" style="max-width:580px;margin-top:16px">
+      Building intelligent systems at the intersection of<br>
+      hardware, AI, and advanced telecommunications.
+    </p>
+    <div class="hero-kpi-row" data-reveal="up" data-delay="4">
+      <div class="kpi-item"><div class="kpi-num">13<sup>+</sup></div><div class="kpi-lbl">Projects Shipped</div></div>
+      <div class="kpi-item"><div class="kpi-num">50<sup>+</sup></div><div class="kpi-lbl">Certifications</div></div>
+      <div class="kpi-item"><div class="kpi-num">98.7<sup>%</sup></div><div class="kpi-lbl">CNN Accuracy</div></div>
+      <div class="kpi-item"><div class="kpi-num">6</div><div class="kpi-lbl">Team Members Led</div></div>
+    </div>
+    <div class="hero-cta" data-reveal="up" data-delay="5">
+      <a href="#sentinel" class="btn btn-primary">View C-UAS Project</a>
+      <a href="#about" class="btn btn-secondary">Get In Touch ↗</a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <span class="scroll-arrow">↓</span>
+  </div>
+</section>
+
+<!-- ═══ SENTINEL ═══ -->
+<section id="sentinel">
+<div class="wrap">
+  <div class="eyebrow" data-reveal="up">Graduation Project — Team Leader</div>
+  <h2 class="display-lg" data-reveal="up" data-delay="1">
+    SENTINEL — <span class="accent-txt">C-UAS Platform</span>
+  </h2>
+
+  <div class="sentinel-intro">
+    <!-- LEFT: Story -->
+    <div>
+      <div class="sentinel-badge" data-reveal="left">Active Project · RPi5 · ARM64</div>
+
+      <div class="sentinel-challenge-box" data-reveal="left" data-delay="1">
+        <div class="challenge-label">The Challenge</div>
+        <p class="body-md">Commercial drones represent a critical security threat — existing C-UAS solutions cost upward of $50,000 and require dedicated hardware. The challenge: build a real-time detection, tracking, and neutralization system on a $100 SBC that performs under 40ms latency.</p>
+      </div>
+
+      <div class="sentinel-solution-box" data-reveal="left" data-delay="2">
+        <div class="solution-label">The Solution</div>
+        <p class="body-md">A multi-layer AI pipeline: MOG2 background subtraction triggers YOLOv8-nano inference every 3rd frame (skip=2), feeding a CSRT tracker and Kalman filter for smooth trajectory prediction. PTZ motorized camera auto-slews to bearing. RTL-SDR monitors RF spectrum in parallel. All running natively on Raspberry Pi 5.</p>
+      </div>
+
+      <div class="spec-grid" data-reveal="left" data-delay="3">
+        <div class="spec-item"><div class="spec-key">Platform</div><div class="spec-val">Raspberry Pi 5 — 8GB LPDDR4X</div></div>
+        <div class="spec-item"><div class="spec-key">Role</div><div class="spec-val">Team Leader · Systems Architect</div></div>
+        <div class="spec-item"><div class="spec-key">Supervisors</div><div class="spec-val">Prof. Dr. Amr Hussein · Assoc. Prof. Dr. Mervat Elseddek · Dr. Rania Al-Abd</div></div>
+        <div class="spec-item"><div class="spec-key">Institution</div><div class="spec-val"><a href="https://horus.edu.eg/" target="_blank" style="color:var(--blue);text-decoration:none">Horus University</a> · <a href="https://eng.horus.edu.eg/" target="_blank" style="color:var(--blue);text-decoration:none">Faculty of Engineering</a></div></div>
+      </div>
+
+      <div class="tag-cloud" data-reveal="left" data-delay="4">
+        <span class="tag">YOLOv8-nano</span><span class="tag">OpenCV / CSRT</span><span class="tag">Kalman Filter</span>
+        <span class="tag">Python</span><span class="tag">RTL-SDR</span><span class="tag">Flask + SocketIO</span>
+        <span class="tag">PTZ Motor GPIO</span><span class="tag">MOG2</span><span class="tag">Telegram Bot API</span>
+        <span class="tag">MJPEG Stream</span><span class="tag">GNU Radio</span>
+      </div>
+
+      
+    </div>
+
+    <!-- RIGHT: Simulator -->
+    <div data-reveal="right" data-delay="2">
+      <div class="sentinel-sim">
+        <div class="sim-chrome">
+          <div class="sim-chrome-left">
+            <div class="chrome-btn" style="background:#fc5f57"></div>
+            <div class="chrome-btn" style="background:#fdbc2c"></div>
+            <div class="chrome-btn" style="background:#34c84a"></div>
+          </div>
+          <div class="sim-chrome-title">SENTINEL // SYSTEM DIAGNOSTICS // RPi5</div>
+          <div class="sim-sys-time" id="sim-clock-disp">—</div>
+        </div>
+        <div class="sim-tabs-row">
+          <button class="sim-tab active" data-tab="perf" onclick="switchTab(this,'perf')">Performance</button>
+          <button class="sim-tab" data-tab="pipeline" onclick="switchTab(this,'pipeline')">Pipeline</button>
+          <button class="sim-tab" data-tab="timeline" onclick="switchTab(this,'timeline')">Timeline</button>
+        </div>
+        <div class="sim-scenarios-row">
+          <button class="scen-btn active" onclick="setScen('idle',this)">Idle</button>
+          <button class="scen-btn" onclick="setScen('detect',this)">Detect</button>
+          <button class="scen-btn" onclick="setScen('track',this)">Track</button>
+          <button class="scen-btn" onclick="setScen('multi',this)">Multi-Target</button>
+          <button class="scen-btn" onclick="setScen('stress',this)">Stress</button>
+        </div>
+        <div class="sim-content">
+          <div class="sim-kpi-row">
+            <div class="sim-kpi" style="--kc:rgba(104,211,145,.6);--kc-txt:var(--sage)"><div class="kpi-k">FPS</div><div class="kpi-v" id="kv-fps">—</div><div class="kpi-u">frames/sec</div></div>
+            <div class="sim-kpi" style="--kc:rgba(99,179,237,.6);--kc-txt:var(--blue)"><div class="kpi-k">CPU</div><div class="kpi-v" id="kv-cpu">—</div><div class="kpi-u">% avg</div></div>
+            <div class="sim-kpi" style="--kc:rgba(246,173,85,.6);--kc-txt:var(--amber)"><div class="kpi-k">Latency</div><div class="kpi-v" id="kv-lat">—</div><div class="kpi-u">ms e2e</div></div>
+            <div class="sim-kpi" style="--kc:rgba(252,129,129,.5);--kc-txt:var(--rose)"><div class="kpi-k">RAM</div><div class="kpi-v" id="kv-ram">—</div><div class="kpi-u">MB used</div></div>
+          </div>
+
+          <!-- PERF TAB -->
+          <div class="sim-panel active" id="panel-perf">
+            <div class="chart-wrap">
+              <svg class="chart-svg" id="perf-svg" viewBox="0 0 400 110" preserveAspectRatio="none" style="height:110px"></svg>
+            </div>
+          </div>
+
+          <!-- PIPELINE TAB -->
+          <div class="sim-panel" id="panel-pipeline">
+            <div class="pipeline-scroll">
+              <div class="pipeline-row" id="pipeline-row"></div>
+            </div>
+          </div>
+
+          <!-- TIMELINE TAB -->
+          <div class="sim-panel" id="panel-timeline">
+            <div class="timeline-wrap" id="timeline-wrap">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" class="caption">Run simulation to view</div>
+            </div>
+          </div>
+
+          <div class="sim-verdict">
+            <div class="verdict-title" id="vdict-title">◈ Awaiting Simulation</div>
+            <div class="verdict-body" id="vdict-body">Select a scenario and press Run to start.</div>
+          </div>
+          <button class="run-btn" id="run-btn" onclick="runSimulation()">
+            <span id="run-btn-txt">▶ Run Simulation</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PROJECTS BENTO ═══ -->
+<section id="projects">
+<div class="wrap">
+  <div class="eyebrow" data-reveal="up">Portfolio</div>
+  <h2 class="display-lg" data-reveal="up" data-delay="1">Selected <span class="accent-txt">Work</span></h2>
+  <p class="body-md" data-reveal="up" data-delay="2" style="max-width:560px;margin-top:12px">Hardware systems, AI research, cybersecurity tools, and full-stack applications — with embedded performance simulations.</p>
+
+  <div class="bento-grid">
+
+    <!-- SDR Jamming — wide + featured -->
+    <div class="bcard bcard-accent b-8" style="--bc:var(--rose)" data-reveal="up">
+      <span class="bcard-flag flag-pub">Published · HUJE</span>
+      <div class="bcard-title">AI Jamming Detection in 5G Networks</div>
+      <div class="bcard-desc">Converts RF signals to spectrograms → lightweight CNN classifies intelligent jamming attacks in real-time using a sub-$50 RTL-SDR. Submitted to Horus University Journal of Engineering.</div>
+      <div class="bcard-tags"><span class="btag">RTL-SDR</span><span class="btag">CNN</span><span class="btag">PyTorch</span><span class="btag">Spectrogram</span><span class="btag">5G</span></div>
+      <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Performance</button>
+      <div class="mini-sim-panel">
+        <div class="mini-perf">
+          <div class="mp-row"><span class="mp-lbl">RF → Spectrogram</span><div class="mp-track"><div class="mp-fill" style="width:72%;background:var(--blue)"></div></div><span class="mp-val">8ms</span></div>
+          <div class="mp-row"><span class="mp-lbl">CNN Inference</span><div class="mp-track"><div class="mp-fill" style="width:55%;background:var(--amber)"></div></div><span class="mp-val">6ms</span></div>
+          <div class="mp-row"><span class="mp-lbl">Classification</span><div class="mp-track"><div class="mp-fill" style="width:22%;background:var(--sage)"></div></div><span class="mp-val">2ms</span></div>
+          <div class="mp-result">98.7% accuracy · ~17ms total · RTL-SDR &lt;$50</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vuln Scanner -->
+    <div class="bcard b-4" style="--bc:var(--rose)" data-reveal="up" data-delay="1">
+      <span class="bcard-flag flag-new">New</span>
+      <div class="bcard-title">Automated Vulnerability Scanner</div>
+      <div class="bcard-desc">Multi-layer automated security scanning — network discovery, port scanning, CVE matching, severity-ranked reports.</div>
+      <div class="bcard-tags"><span class="btag">Python</span><span class="btag">Nmap</span><span class="btag">CVE</span><span class="btag">Bash</span></div>
+      <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Performance</button>
+      <div class="mini-sim-panel">
+        <div class="mini-perf">
+          <div class="mp-row"><span class="mp-lbl">Host Discovery</span><div class="mp-track"><div class="mp-fill" style="width:60%;background:var(--blue)"></div></div><span class="mp-val">~2s</span></div>
+          <div class="mp-row"><span class="mp-lbl">Port Scan</span><div class="mp-track"><div class="mp-fill" style="width:85%;background:var(--amber)"></div></div><span class="mp-val">~12s</span></div>
+          <div class="mp-row"><span class="mp-lbl">CVE Match</span><div class="mp-track"><div class="mp-fill" style="width:38%;background:var(--sage)"></div></div><span class="mp-val">~3s</span></div>
+          <div class="mp-result">Automated pipeline · Severity-ranked CVE report</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gen-Sentinel -->
+    <div class="bcard b-5" style="--bc:var(--blue)" data-reveal="up" data-delay="2">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Gen-Sentinel: IoMT Zero-Day Framework</div>
+      <div class="bcard-desc">GAN-powered proactive "immunization" — generates synthetic zero-day attack vectors for HL7/BLE IoMT, forcing IDS systems to learn to defend against unseen threats. Significantly enhanced simulated detection rates.</div>
+      <div class="bcard-tags"><span class="btag">GAN</span><span class="btag">IoMT</span><span class="btag">HL7</span><span class="btag">BLE</span><span class="btag">Python</span></div>
+    </div>
+
+    <!-- Beyond Pixels 6G -->
+    <div class="bcard b-7" style="--bc:var(--teal)" data-reveal="up" data-delay="3">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Beyond Pixels: Semantic Comms for 6G</div>
+      <div class="bcard-desc">Semantic communication framework transmitting the high-level "essence" of 3D scenes using Neural Radiance Fields. Enables receivers to re-render entire scenes in real-time for XR/extended reality — bypassing pixel transmission entirely.</div>
+      <div class="bcard-tags"><span class="btag">NeRF</span><span class="btag">GenAI</span><span class="btag">6G</span><span class="btag">XR / AR</span><span class="btag">Semantic Comms</span></div>
+    </div>
+
+    <!-- GO-IT -->
+    <div class="bcard b-4" style="--bc:var(--teal)" data-reveal="up" data-delay="1">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Goal-Oriented Information Theory</div>
+      <div class="bcard-desc">Novel extension of Shannon's theorem defining "Semantic Value" as marginal impact on a multi-agent utility function. A foundational framework for future 6G networks.</div>
+      <div class="bcard-tags"><span class="btag">6G</span><span class="btag">Shannon</span><span class="btag">Multi-Agent</span></div>
+    </div>
+
+    <!-- Smart Home -->
+    <div class="bcard b-4" style="--bc:var(--amber)" data-reveal="up" data-delay="2">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Smart Home Automation</div>
+      <div class="bcard-desc">Bluetooth-controlled smart home on ATmega32 with HC-05. Hardware triggers automated responses across lighting, fans, and security relays.</div>
+      <div class="bcard-tags"><span class="btag">ATmega32</span><span class="btag">HC-05</span><span class="btag">C</span><span class="btag">UART</span></div>
+      <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Performance</button>
+      <div class="mini-sim-panel">
+        <div class="mini-perf">
+          <div class="mp-row"><span class="mp-lbl">BT Command RX</span><div class="mp-track"><div class="mp-fill" style="width:32%;background:var(--blue)"></div></div><span class="mp-val">~5ms</span></div>
+          <div class="mp-row"><span class="mp-lbl">GPIO Response</span><div class="mp-track"><div class="mp-fill" style="width:8%;background:var(--sage)"></div></div><span class="mp-val">&lt;1ms</span></div>
+          <div class="mp-result">Bare-metal C · &lt;6ms total · Zero RTOS overhead</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solar Tracker -->
+    <div class="bcard b-4" style="--bc:var(--amber)" data-reveal="up" data-delay="3">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">LDR-Based Solar Tracker</div>
+      <div class="bcard-desc">Dual-axis electro-mechanical sun tracking with LDR differential sensing, servo control, and SolidWorks mechanical design for maximum solar efficiency.</div>
+      <div class="bcard-tags"><span class="btag">LDR Sensors</span><span class="btag">Servo</span><span class="btag">SolidWorks</span><span class="btag">C</span></div>
+    </div>
+
+    <!-- Java Restaurant -->
+    <div class="bcard b-6" style="--bc:var(--blue)" data-reveal="up" data-delay="1">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Java Restaurant Management System</div>
+      <div class="bcard-desc">Full-fledged backend architecture — RESTful APIs, role-based access control, token-based authentication, comprehensive order management, OOP design with JSON formatting.</div>
+      <div class="bcard-tags"><span class="btag">Java</span><span class="btag">REST API</span><span class="btag">OOP</span><span class="btag">Auth</span><span class="btag">JSON</span></div>
+    </div>
+
+    <!-- Walkie Talkie + Rover in one row -->
+    <div class="bcard b-6" style="--bc:var(--teal)" data-reveal="up" data-delay="2">
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Wireless Walkie-Talkie — DSP Project</div>
+      <div class="bcard-desc">Two-way radio communication device — digital signal processing, modulation/demodulation theory, GNU Radio implementation of full RF communication chain.</div>
+      <div class="bcard-tags"><span class="btag">DSP</span><span class="btag">RF</span><span class="btag">GNU Radio</span><span class="btag">Modulation</span></div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══ SKILLS BENTO ═══ -->
+<section id="skills">
+<div class="wrap">
+  <div class="eyebrow" data-reveal="up">Technical Expertise</div>
+  <h2 class="display-lg" data-reveal="up" data-delay="1">Skills &amp; <span class="accent-txt">Stack</span></h2>
+
+  <div class="skills-bento">
+    <div class="sg" style="--sg-c:var(--blue)" data-reveal="up">
+      <div class="sg-head"><div class="sg-icon">🤖</div><div class="sg-name">AI &amp; ML</div></div>
+      <div class="sbar-list">
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Python / PyTorch / TF</span><span class="sbar-lvl">Advanced</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="88"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Computer Vision / YOLO</span><span class="sbar-lvl">Advanced</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="86"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Generative AI / GANs</span><span class="sbar-lvl">Proficient</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="78"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Prompt Engineering</span><span class="sbar-lvl">Expert</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="94"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">NeRF / Semantic Comms</span><span class="sbar-lvl">Research</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="62"></div></div></div>
+      </div>
+    </div>
+
+    <div class="sg" style="--sg-c:var(--amber)" data-reveal="up" data-delay="1">
+      <div class="sg-head"><div class="sg-icon">⚡</div><div class="sg-name">Embedded / Hardware</div></div>
+      <div class="sbar-list">
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">C / C++ (Advanced)</span><span class="sbar-lvl">Expert</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="92"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">STM32 / AVR / ATmega</span><span class="sbar-lvl">Advanced</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="85"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">RTOS / Bare-Metal</span><span class="sbar-lvl">Proficient</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="72"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">CAN / UART / SPI / I2C</span><span class="sbar-lvl">Advanced</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="84"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">SolidWorks / Proteus</span><span class="sbar-lvl">Intermediate</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="64"></div></div></div>
+      </div>
+    </div>
+
+    <div class="sg" style="--sg-c:var(--teal)" data-reveal="up" data-delay="2">
+      <div class="sg-head"><div class="sg-icon">☁️</div><div class="sg-name">Cloud / DevOps / Net</div></div>
+      <div class="sbar-list">
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">AWS (Networking)</span><span class="sbar-lvl">Proficient</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="72"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Docker / K8s / CI/CD</span><span class="sbar-lvl">Intermediate</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="65"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Ansible / Nephio</span><span class="sbar-lvl">Intermediate</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="62"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Linux CLI / Zorin OS</span><span class="sbar-lvl">Advanced</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="82"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">5G / 6G / RTL-SDR</span><span class="sbar-lvl">Research</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="76"></div></div></div>
+      </div>
+    </div>
+
+    <div class="sg" style="--sg-c:var(--rose)" data-reveal="up" data-delay="3">
+      <div class="sg-head"><div class="sg-icon">🔐</div><div class="sg-name">Security</div></div>
+      <div class="sbar-list">
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Network Security / CVE</span><span class="sbar-lvl">Proficient</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="74"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">Vulnerability Scanning</span><span class="sbar-lvl">Proficient</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="70"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">IoMT / Cloud Security</span><span class="sbar-lvl">Research</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="68"></div></div></div>
+        <div class="sbar-item"><div class="sbar-top"><span class="sbar-name">SDR Jamming Detection</span><span class="sbar-lvl">Advanced</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="80"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ CERTIFICATIONS ═══ -->
+<section id="certs">
+<div class="wrap">
+  <div class="eyebrow" data-reveal="up">Credentials</div>
+  <h2 class="display-lg" data-reveal="up" data-delay="1"><span class="accent-txt">50+</span> Certifications</h2>
+  <p class="body-md" data-reveal="up" data-delay="2" style="max-width:500px;margin-top:10px">NVIDIA · AWS · Frontend Masters · ITI · The Open University · Linux Foundation — and more.</p>
+
+  <div class="cert-cats" data-reveal="up" data-delay="3">
+    <button class="cert-cat active" onclick="filterCerts('all',this)">All</button>
+    <button class="cert-cat" onclick="filterCerts('ai',this)">AI / ML</button>
+    <button class="cert-cat" onclick="filterCerts('cloud',this)">Cloud / DevOps</button>
+    <button class="cert-cat" onclick="filterCerts('sw',this)">Software / CS</button>
+    <button class="cert-cat" onclick="filterCerts('eng',this)">Engineering</button>
+    <button class="cert-cat" onclick="filterCerts('biz',this)">Business</button>
+  </div>
+
+  <div class="cert-masonry" id="cert-masonry" data-reveal="up" data-delay="4">
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🧠</div><div class="cert-body"><div class="cert-name">AI for All: From Basics to GenAI Practice</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Sep 2025</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(79,209,197,.1)">⚡</div><div class="cert-body"><div class="cert-name">Building LLM Applications With Prompt Engineering</div><div class="cert-issuer">NVIDIA</div><div class="cert-date">Jan 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🤗</div><div class="cert-body"><div class="cert-name">Open Source AI with Python &amp; Hugging Face</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🤖</div><div class="cert-body"><div class="cert-name">AI Agents Fundamentals, v2</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(252,129,129,.1)">✏️</div><div class="cert-body"><div class="cert-name">Practical Prompt Engineering</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.08)">💡</div><div class="cert-body"><div class="cert-name">Cursor &amp; Claude Code: Professional AI Setup</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📈</div><div class="cert-body"><div class="cert-name">Artificial Intelligence — ML &amp; DL Basic</div><div class="cert-issuer">WE Training &amp; Development</div><div class="cert-date">Aug 2024</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(246,173,85,.1)">💼</div><div class="cert-body"><div class="cert-name">AI for Business Professionals</div><div class="cert-issuer">HP LIFE</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.06)">🎯</div><div class="cert-body"><div class="cert-name">AI for Digital Marketing</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.1)">☁️</div><div class="cert-body"><div class="cert-name">AWS Technical Essentials</div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.08)">🌐</div><div class="cert-body"><div class="cert-name">Exam Prep: AWS Advanced Networking Specialty</div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(252,129,129,.1)">🔒</div><div class="cert-body"><div class="cert-name">Network Security</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🖥️</div><div class="cert-body"><div class="cert-name">Computer Network Fundamentals</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.1)">🐧</div><div class="cert-body"><div class="cert-name">Introduction to Nephio (LFS179)</div><div class="cert-issuer">The Linux Foundation</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.06)">📡</div><div class="cert-body"><div class="cert-name">Cumulus Linux Administration</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.08)">⚙️</div><div class="cert-body"><div class="cert-name">Ansible Essentials for Network Engineers</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Sep 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(252,129,129,.1)">🛡️</div><div class="cert-body"><div class="cert-name">Cloud Security — Deepfence ThreatMapper</div><div class="cert-issuer">Udacity</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🚀</div><div class="cert-body"><div class="cert-name">Enterprise DevOps &amp; Cloud Infrastructure</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📦</div><div class="cert-body"><div class="cert-name">Cloud Infrastructure: Startup to Scale</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🧮</div><div class="cert-body"><div class="cert-name">Complete Intro to Computer Science</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.1)">📐</div><div class="cert-body"><div class="cert-name">The Last Algorithms Course You'll Need</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.08)">🐍</div><div class="cert-body"><div class="cert-name">Practical Guide to Python</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🌐</div><div class="cert-body"><div class="cert-name">Full Stack Fundamentals, v3</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(252,129,129,.08)">🔧</div><div class="cert-body"><div class="cert-name">Backend System Design</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.06)">📝</div><div class="cert-body"><div class="cert-name">Everything You'll Need to Know About Git</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.08)">🐍</div><div class="cert-body"><div class="cert-name">Python Programming Basics</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Sep 2025</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.08)">📱</div><div class="cert-body"><div class="cert-name">Exploring SwiftUI: Declarative Interfaces</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.06)">🖥️</div><div class="cert-body"><div class="cert-name">Complete Intro to Linux &amp; the CLI</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🔌</div><div class="cert-body"><div class="cert-name">Embedded Systems Trainee — 162h Intensive</div><div class="cert-issuer">ITI — Information Technology Institute</div><div class="cert-date">Jul–Sep 2024</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(99,179,237,.08)">📡</div><div class="cert-body"><div class="cert-name">Digital Communications</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📶</div><div class="cert-body"><div class="cert-name">Exploring Communications Technology</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(246,173,85,.06)">🏗️</div><div class="cert-body"><div class="cert-name">Introducing Engineering</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(252,129,129,.08)">⚗️</div><div class="cert-body"><div class="cert-name">CMOS Fabrication Fundamentals</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="biz"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🏢</div><div class="cert-body"><div class="cert-name">Managing a Business</div><div class="cert-issuer">Santa Clara University</div><div class="cert-date">Nov 2025</div></div></div>
+    <div class="cert-card" data-cc="biz"><div class="cert-ico" style="background:rgba(99,179,237,.08)">💡</div><div class="cert-body"><div class="cert-name">Companies Establishment</div><div class="cert-issuer">EEIC — Egypt Entrepreneurship Center</div><div class="cert-date">2025</div></div></div>
+    <div class="cert-card" data-cc="biz"><div class="cert-ico" style="background:rgba(79,209,197,.08)">💰</div><div class="cert-body"><div class="cert-name">Freelancing Basics</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+<div class="wrap">
+  <div class="eyebrow" data-reveal="up">About &amp; Contact</div>
+  <h2 class="display-lg" data-reveal="up" data-delay="1">Islam <span class="accent-txt">Emad</span></h2>
+  <div class="about-grid">
+    <div data-reveal="left" data-delay="1">
+      <div class="about-text">
+        <p>ECE student at Horus University (Faculty of Engineering, Communications &amp; Electronics) — team leader, systems builder, and relentless learner based in Mansoura, Egypt.</p>
+        <p>I operate at the intersection of embedded hardware, AI/computer vision, and telecommunications research. Currently leading a 6-person team building an advanced C-UAS anti-drone platform.</p>
+        <p>I've authored research on AI-based jamming detection achieving 98.7% accuracy with a $50 RTL-SDR, proposed a semantic communication framework for 6G, and built a proactive IoMT zero-day security framework — all while completing 50+ certifications from NVIDIA, AWS, ITI, and the Linux Foundation.</p>
+        <p>I think in systems. Whether it's a Kalman filter predicting a drone trajectory or a GAN generating synthetic attack vectors, the question is always: how do we build something that actually works?</p>
+      </div>
+    </div>
+    <div data-reveal="right" data-delay="2">
+      <div class="contact-cards">
+        <a class="clink" href="https://github.com/islam-8" target="_blank">
+          <div class="clink-ico">⚙️</div>
+          <div><div class="clink-k">GitHub</div><div class="clink-v">github.com/islam-8</div></div>
+          <span class="clink-arr">↗</span>
+        </a>
+        <a class="clink" href="https://www.linkedin.com/in/islam-ismail-18a88b381" target="_blank">
+          <div class="clink-ico">💼</div>
+          <div><div class="clink-k">LinkedIn</div><div class="clink-v">islam-ismail-18a88b381</div></div>
+          <span class="clink-arr">↗</span>
+        </a>
+        
+        <div class="clink" style="cursor:default">
+          <div class="clink-ico">📍</div>
+          <div><div class="clink-k">Location</div><div class="clink-v">Mansoura, Egypt</div></div>
+        </div>
+        <a class="clink" href="https://horus.edu.eg/" target="_blank">
+          <div class="clink-ico">🎓</div>
+          <div><div class="clink-k">University</div><div class="clink-v">Horus University</div></div>
+          <span class="clink-arr">↗</span>
+        </a>
+        <a class="clink" href="https://eng.horus.edu.eg/" target="_blank">
+          <div class="clink-ico">🏛️</div>
+          <div><div class="clink-k">Faculty</div><div class="clink-v">Faculty of Engineering — ECE Dept.</div></div>
+          <span class="clink-arr">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="footer-l">Islam Emad — <span>Portfolio 2026</span> — Horus University ECE</div>
+  <div id="clock"></div>
+</footer>
+
+<script>
+// ═══ CURSOR ═══
+const dotEl  = document.getElementById('cur-dot-el');
+const ringEl = document.getElementById('cur-ring-el');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  dotEl.style.transform=`translate(${mx}px,${my}px)`;
+});
+(function loopRing(){
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  ringEl.style.transform=`translate(${rx}px,${ry}px)`;
+  requestAnimationFrame(loopRing);
+})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cur-hover'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-hover'));
+});
+document.querySelectorAll('p,.body-md,.about-text').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cur-text'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-text'));
+});
+
+// ═══ NAV SCROLL ═══
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('s',window.scrollY>30);
+},{ passive:true });
+
+// ═══ HERO GRID PARALLAX ═══
+document.addEventListener('mousemove',e=>{
+  const cx=e.clientX/window.innerWidth-.5;
+  const cy=e.clientY/window.innerHeight-.5;
+  const g=document.getElementById('hero-grid');
+  if(g) g.style.transform=`translate(${cx*20}px,${cy*14}px)`;
+},{ passive:true });
+
+// ═══ SCROLL REVEAL ═══
+const revIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); revIO.unobserve(e.target); }
+  });
+},{threshold:.08});
+document.querySelectorAll('[data-reveal]').forEach(el=>revIO.observe(el));
+
+// ═══ SKILL BARS ═══
+const sbIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.sbar-fill').forEach(b=>{ b.style.width=b.dataset.w+'%'; });
+      sbIO.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.sg').forEach(g=>sbIO.observe(g));
+
+// ═══ CERT FILTER ═══
+function filterCerts(cat,btn){
+  document.querySelectorAll('.cert-cat').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.cert-card').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.cc===cat)?'flex':'none';
+  });
+}
+
+// ═══ MINI SIM TOGGLE ═══
+function toggleMini(btn){
+  const panel=btn.nextElementSibling;
+  panel.classList.toggle('open');
+  btn.textContent=panel.classList.contains('open')?'▼ Hide':'▶ Performance';
+}
+
+// ═══════════════════════════════════════════════
+// SENTINEL SIMULATION ENGINE
+// ═══════════════════════════════════════════════
+const SIM={
+  idle:{
+    fps:42,cpu:18,lat:24,ram:420,
+    pipeline:[
+      {l:'RTSP DECODE',ms:8,c:'ok'},{l:'MOG2 BG-SUB',ms:4,c:'ok'},
+      {l:'YOLO SKIP',ms:0,c:'skip'},{l:'MOTOR IDLE',ms:2,c:'ok'},
+      {l:'DASH STREAM',ms:9,c:'ok'}
+    ],
+    tl:null,
+    title:'System Idle — Nominal',
+    body:'RPi5 at <b>42 FPS</b> in standby. YOLO skipped by MOG2 (no motion detected). All subsystems online. Threat detection ready in <em>&lt;24ms</em> from first signal.'
+  },
+  detect:{
+    fps:28,cpu:54,lat:36,ram:890,
+    pipeline:[
+      {l:'RTSP DECODE',ms:8,c:'ok'},{l:'MOG2 BG-SUB',ms:5,c:'ok'},
+      {l:'YOLO INFER',ms:14,c:'warm'},{l:'KALMAN FILTER',ms:3,c:'ok'},
+      {l:'MOTOR SLEW',ms:4,c:'ok'},{l:'ALERT FIRE',ms:2,c:'warm'}
+    ],
+    tl:[
+      {t:'MOG2',s:0,w:14,bg:'rgba(99,179,237,.2)',tc:'#63b3ed'},
+      {t:'YOLO',s:14,w:22,bg:'rgba(246,173,85,.22)',tc:'#f6ad55'},
+      {t:'KF',s:36,w:5,bg:'rgba(104,211,145,.18)',tc:'#68d391'},
+      {t:'MOTOR',s:41,w:8,bg:'rgba(252,129,129,.18)',tc:'#fc8181'},
+      {t:'ALERT',s:49,w:3,bg:'rgba(252,129,129,.1)',tc:'#fc8181'}
+    ],
+    title:'Target Detected — 28 FPS',
+    body:'YOLO fires every 3rd frame (skip=2) → FPS drops to <b>28</b>. First detection latency: <em>~36ms</em>. Kalman predicts target position between frames. Motor and Telegram alert activated.'
+  },
+  track:{
+    fps:38,cpu:68,lat:26,ram:1100,
+    pipeline:[
+      {l:'RTSP DECODE',ms:8,c:'ok'},{l:'CSRT TRACK',ms:11,c:'warm'},
+      {l:'YOLO VERIFY',ms:5,c:'ok'},{l:'KALMAN PRED',ms:3,c:'ok'},
+      {l:'MOTOR PID',ms:4,c:'ok'},{l:'OSD STREAM',ms:9,c:'ok'}
+    ],
+    tl:[
+      {t:'CSRT',s:0,w:16,bg:'rgba(104,211,145,.18)',tc:'#68d391'},
+      {t:'KF',s:16,w:5,bg:'rgba(99,179,237,.18)',tc:'#63b3ed'},
+      {t:'TRIANG',s:21,w:3,bg:'rgba(246,173,85,.12)',tc:'#f6ad55'},
+      {t:'MOTOR',s:24,w:6,bg:'rgba(252,129,129,.16)',tc:'#fc8181'},
+      {t:'OSD',s:30,w:9,bg:'rgba(255,255,255,.04)',tc:'#555'}
+    ],
+    title:'Active Tracking — 38 FPS',
+    body:'CSRT primary tracking (11ms). YOLO verification only every 10th frame. Result: <b>38 FPS</b> — faster than detect mode. PTZ follows target via smooth PID loop. Zero jitter.'
+  },
+  multi:{
+    fps:18,cpu:82,lat:55,ram:1450,
+    pipeline:[
+      {l:'RTSP DECODE',ms:8,c:'ok'},{l:'MOG2 BG-SUB',ms:5,c:'ok'},
+      {l:'YOLO INFER',ms:18,c:'hot'},{l:'CSRT ×3',ms:22,c:'hot'},
+      {l:'KALMAN ×3',ms:9,c:'warm'},{l:'MOTOR PRIO',ms:4,c:'ok'}
+    ],
+    tl:[
+      {t:'MOG2',s:0,w:8,bg:'rgba(99,179,237,.18)',tc:'#63b3ed'},
+      {t:'YOLO',s:8,w:25,bg:'rgba(252,129,129,.22)',tc:'#fc8181'},
+      {t:'TRK×3',s:33,w:30,bg:'rgba(246,173,85,.22)',tc:'#f6ad55'},
+      {t:'KF×3',s:63,w:12,bg:'rgba(104,211,145,.14)',tc:'#68d391'},
+      {t:'MOTOR',s:75,w:5,bg:'rgba(255,255,255,.04)',tc:'#444'}
+    ],
+    title:'Multi-Target — 18 FPS ⚠',
+    body:'3 simultaneous targets. CSRT×3 is the bottleneck at <b>22ms</b>. FPS drops to <b>18</b> — still operational. Optimization path: limit to 1 priority tracker + convert YOLO to <em>ONNX/INT8</em> for 2× speedup.'
+  },
+  stress:{
+    fps:11,cpu:96,lat:91,ram:1780,
+    pipeline:[
+      {l:'RTSP DECODE',ms:10,c:'warm'},{l:'MOG2 BG-SUB',ms:8,c:'warm'},
+      {l:'YOLO FULL',ms:22,c:'hot'},{l:'CSRT FULL',ms:28,c:'hot'},
+      {l:'KF + TRI',ms:12,c:'warm'},{l:'ALL MODULES',ms:11,c:'warm'}
+    ],
+    tl:[
+      {t:'YOLO FULL',s:0,w:24,bg:'rgba(252,129,129,.28)',tc:'#fc8181'},
+      {t:'CSRT FULL',s:24,w:30,bg:'rgba(246,173,85,.28)',tc:'#f6ad55'},
+      {t:'KF+TRI',s:54,w:13,bg:'rgba(99,179,237,.18)',tc:'#63b3ed'},
+      {t:'REST',s:67,w:12,bg:'rgba(255,255,255,.03)',tc:'#333'}
+    ],
+    title:'Stress Test — 11 FPS ⛔',
+    body:'YOLO every frame + CSRT full-res = <b>11 FPS</b>. This is <b>not</b> the real operating mode. With frame-skip enabled (skip=2), FPS returns to 28+. <em>The codebase is correctly optimized.</em>'
+  }
+};
+
+let curScen='idle', curTab='perf', simBusy=false;
+
+function setScen(id,btn){
+  curScen=id;
+  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function switchTab(btn,tab){
+  curTab=tab;
+  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.sim-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+function runSimulation(){
+  if(simBusy)return;
+  simBusy=true;
+  const btn=document.getElementById('run-btn');
+  const txt=document.getElementById('run-btn-txt');
+  btn.disabled=true;
+  txt.textContent='⠇ Running…';
+  const d=SIM[curScen];
+  setTimeout(()=>{
+    animVal('kv-fps',d.fps,700);
+    animVal('kv-cpu',d.cpu,750);
+    animVal('kv-lat',d.lat,700);
+    animVal('kv-ram',d.ram,750);
+    renderPerfChart();
+    renderPipeline(d);
+    renderTimeline(d);
+    document.getElementById('vdict-title').textContent='◈ '+d.title;
+    document.getElementById('vdict-body').innerHTML=d.body;
+    btn.disabled=false;
+    txt.textContent='▶ Run Simulation';
+    simBusy=false;
+  },350);
+}
+
+function animVal(id,to,dur){
+  const el=document.getElementById(id);
+  let from=parseFloat(el.textContent)||0;
+  const t0=performance.now();
+  const tick=now=>{
+    const p=Math.min((now-t0)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*ease);
+    if(p<1)requestAnimationFrame(tick); else el.textContent=to;
+  };
+  requestAnimationFrame(tick);
+}
+
+function renderPerfChart(){
+  const svg=document.getElementById('perf-svg');
+  const W=400,H=110,pad=36,maxFPS=50;
+  const scens=['idle','detect','track','multi','stress'];
+  const vals=[42,28,38,18,11];
+  const colors=vals.map(v=>v>35?'#68d391':v>20?'#f6ad55':'#fc8181');
+  const bw=(W-pad*2)/scens.length;
+  let out='';
+  // target line at 120fps (off chart) — draw a reference at 42fps (nominal)
+  const refY=H-(42/maxFPS)*(H-20)-4;
+  out+=`<line x1="${pad}" y1="${refY}" x2="${W-10}" y2="${refY}" stroke="#63b3ed" stroke-width=".5" stroke-dasharray="4,3" opacity=".4"/>`;
+  out+=`<text x="${W-8}" y="${refY-3}" fill="#63b3ed" font-size="7" font-family="DM Mono" opacity=".5">nominal</text>`;
+  vals.forEach((v,i)=>{
+    const bh=(v/maxFPS)*(H-20);
+    const x=pad+i*bw+bw*.15;
+    const y=H-bh-4;
+    const active=scens[i]===curScen;
+    out+=`<rect x="${x}" y="${y}" width="${bw*.7}" height="${bh}" fill="${colors[i]}${active?'33':'1a'}" stroke="${colors[i]}" stroke-width="${active?1.5:.5}" rx="2"/>`;
+    out+=`<text x="${x+bw*.35}" y="${y-4}" fill="${colors[i]}" text-anchor="middle" font-size="9" font-family="DM Mono" font-weight="500">${v}</text>`;
+    out+=`<text x="${x+bw*.35}" y="${H+2}" fill="#435568" text-anchor="middle" font-size="7" font-family="DM Mono">${scens[i].toUpperCase()}</text>`;
+  });
+  svg.innerHTML=out;
+}
+
+function renderPipeline(d){
+  const total=d.pipeline.reduce((a,s)=>a+(s.ms||0),0)||1;
+  const row=document.getElementById('pipeline-row');
+  row.innerHTML=d.pipeline.map((s,i)=>{
+    const pct=Math.round((s.ms/total)*100);
+    const barColor=s.c==='ok'?'var(--sage)':s.c==='warm'?'var(--amber)':s.c==='hot'?'var(--rose)':'var(--t-4)';
+    const arrow=i<d.pipeline.length-1?`<div class="pipe-arrow">→</div>`:'';
+    return `<div class="pipe-node">
+      <div class="pipe-box ${s.c}">
+        <span class="pipe-lbl">${s.l}</span>
+        <span class="pipe-ms ${s.c}">${s.c==='skip'?'SKIP':s.ms+'ms'}</span>
+        <div class="pipe-bar-bg"><div class="pipe-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      </div>
+    </div>${arrow}`;
+  }).join('');
+}
+
+function renderTimeline(d){
+  const wrap=document.getElementById('timeline-wrap');
+  if(!d.tl){
+    wrap.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" class="caption">No active threat in idle mode</div>`;
+    return;
+  }
+  const maxT=Math.max(...d.tl.map(p=>p.s+p.w));
+  wrap.innerHTML=d.tl.map(p=>{
+    const l=(p.s/maxT)*95,w=(p.w/maxT)*95;
+    return `<div class="tl-phase" style="left:${l}%;width:${w}%;background:${p.bg};border:1px solid ${p.tc}33;color:${p.tc};font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em">${p.t}</div>`;
+  }).join('');
+}
+
+// Boot simulation
+setTimeout(()=>runSimulation(),700);
+
+// Clock
+setInterval(()=>{
+  const n=new Date(), p=v=>String(v).padStart(2,'0');
+  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+  const disp=document.getElementById('sim-clock-disp');
+  const clk=document.getElementById('clock');
+  if(disp) disp.textContent=t;
+  if(clk) clk.textContent=n.toUTCString().slice(0,-4)+' UTC';
+},1000);
+</script>
+</body>
+</html>
