@@ -7,6 +7,124 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
+
+
+
+
+
+
+
+
+
+/* ═══════ ABOUT EVOLUTION ═══════ */
+  .profile-statement {
+    font-size: clamp(18px, 2.5vw, 22px);
+    line-height: 1.6;
+    color: var(--t-0);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+  .profile-statement b {
+    color: var(--blue);
+    font-weight: 800;
+    font-family: var(--display);
+    position: relative;
+    display: inline-block;
+  }
+  .profile-statement b::after {
+    content: ''; position: absolute; bottom: 2px; left: 0; width: 100%; height: 4px;
+    background: var(--blue-glow); z-index: -1; transform: skewX(-15deg);
+    @keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+.profile-statement b::after {
+  animation: pulse 2s infinite ease-in-out;
+}
+  }
+
+  .bio-snippet {
+    font-size: 15px;
+    color: var(--t-2);
+    border-left: 3px solid var(--blue);
+    padding: 15px 25px;
+    margin-bottom: 35px;
+    background: linear-gradient(90deg, var(--blue-dim), transparent);
+    border-radius: 0 12px 12px 0;
+  }
+
+  .photo-frame {
+    position: relative;
+    padding: 12px;
+    border: 1px dashed var(--rim-2);
+    border-radius: 24px;
+    transition: border-color 0.4s;
+  }
+  .photo-frame:hover { border-color: var(--blue); }
+
+  .photo-container {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    background: var(--ink-2);
+  }
+  .photo-container img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(100%) brightness(0.8);
+    transition: all 0.6s var(--ease-out-expo);
+  }
+  .photo-frame:hover img {
+    filter: grayscale(0%) brightness(1);
+    transform: scale(1.05);
+  }
+  /* تأثير الـ Scanline فوق الصورة */
+  .photo-container::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(0deg, rgba(99,179,237,0.1) 50%, transparent 50%);
+    background-size: 100% 4px; pointer-events: none; opacity: 0.3;
+  }
+
+  /* Bento Goals مع تأثير الحوم (Hover) */
+  .goal-bento {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 40px;
+  }
+  .goal-item {
+    background: var(--ink-2);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--rim-1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .goal-item:hover {
+    background: var(--ink-3);
+    border-color: var(--blue-glow);
+    transform: translateY(-5px);
+  }
+  .goal-item::before {
+    content: '◈'; position: absolute; top: 10px; right: 10px;
+    font-size: 10px; color: var(--blue); opacity: 0.4;
+  }
+  .goal-item span {
+    font-family: var(--mono); font-size: 10px; color: var(--blue);
+    letter-spacing: 0.1em; display: block; margin-bottom: 8px;
+  }
+  .goal-item p { font-size: 13px; color: var(--t-1); font-weight: 500; margin: 0; line-height: 1.4; }
+  
+  
+  
+  
+  
+  
+  
+  
+  
 /* ═══════════════════════════════════════════════
    DESIGN SYSTEM — DEEP SPACE PRECISION
    Inspired by: SpaceX Starmap / Linear App / 
@@ -1101,49 +1219,70 @@ footer {
 
 <!-- ═══ ABOUT ═══ -->
 <section id="about">
-<div class="wrap">
-  <div class="eyebrow" data-reveal="up">About &amp; Contact</div>
-  <h2 class="display-lg" data-reveal="up" data-delay="1">Islam <span class="accent-txt">Emad</span></h2>
-  <div class="about-grid">
-    <div data-reveal="left" data-delay="1">
-      <div class="about-text">
-        <p>ECE student at Horus University (Faculty of Engineering, Communications &amp; Electronics) — team leader, systems builder, and relentless learner based in Mansoura, Egypt.</p>
-        <p>I operate at the intersection of embedded hardware, AI/computer vision, and telecommunications research. Currently leading a 6-person team building an advanced C-UAS anti-drone platform.</p>
-        <p>I've authored research on AI-based jamming detection achieving 98.7% accuracy with a $50 RTL-SDR, proposed a semantic communication framework for 6G, and built a proactive IoMT zero-day security framework — all while completing 50+ certifications from NVIDIA, AWS, ITI, and the Linux Foundation.</p>
-        <p>I think in systems. Whether it's a Kalman filter predicting a drone trajectory or a GAN generating synthetic attack vectors, the question is always: how do we build something that actually works?</p>
-      </div>
-    </div>
-    <div data-reveal="right" data-delay="2">
-      <div class="contact-cards">
-        <a class="clink" href="https://github.com/islam-8" target="_blank">
-          <div class="clink-ico">⚙️</div>
-          <div><div class="clink-k">GitHub</div><div class="clink-v">github.com/islam-8</div></div>
-          <span class="clink-arr">↗</span>
-        </a>
-        <a class="clink" href="https://www.linkedin.com/in/islam-ismail-18a88b381" target="_blank">
-          <div class="clink-ico">💼</div>
-          <div><div class="clink-k">LinkedIn</div><div class="clink-v">islam-ismail-18a88b381</div></div>
-          <span class="clink-arr">↗</span>
-        </a>
-        
-        <div class="clink" style="cursor:default">
-          <div class="clink-ico">📍</div>
-          <div><div class="clink-k">Location</div><div class="clink-v">Mansoura, Egypt</div></div>
+  <div class="wrap">
+    <div class="eyebrow" data-reveal="up">Professional Presence</div>
+    <h2 class="display-lg" data-reveal="up" data-delay="1">Executive <span class="accent-txt">Statement</span></h2>
+
+    <div class="about-grid" style="grid-template-columns: 1.4fr 1fr; align-items: center; gap: clamp(40px, 8vw, 100px);">
+      
+      <div data-reveal="left" data-delay="1">
+        <div class="about-text">
+          <p class="profile-statement">
+            I am <b>Islam Emad</b>, a Telecommunications Engineer driven by the conviction that technology is the defining language of our era.
+          </p>
+
+          <div class="bio-snippet">
+  I excel in decoding complex challenges and architecting intelligent systems where efficiency meets innovation. Based in Mansoura, Egypt, I lead multidisciplinary teams to bridge the gap between theoretical research and robust engineering.
+</div>
+
+<p class="body-md" style="opacity: 0.8;">
+  As a Systems Architect, I operate on the principle that precision is the hallmark of strength. I don’t just witness the technological evolution; I am here to architect it.
+</p>
+
+          <div class="goal-bento">
+            <div class="goal-item">
+              <span>Primary Goal</span>
+              <p>Architecting autonomous C-UAS systems using Edge AI.</p>
+            </div>
+            <div class="goal-item">
+              <span>Research</span>
+              <p>Advancing Semantic Communications for 6G networks.</p>
+            </div>
+            <div class="goal-item" style="border-color: var(--rim-accent);">
+              <span>Next Milestone</span>
+              <p>Graduating Senior-2 ECE Class of 2026.</p>
+            </div>
+          </div>
         </div>
-        <a class="clink" href="https://horus.edu.eg/" target="_blank">
-          <div class="clink-ico">🎓</div>
-          <div><div class="clink-k">University</div><div class="clink-v">Horus University</div></div>
-          <span class="clink-arr">↗</span>
-        </a>
-        <a class="clink" href="https://eng.horus.edu.eg/" target="_blank">
-          <div class="clink-ico">🏛️</div>
-          <div><div class="clink-k">Faculty</div><div class="clink-v">Faculty of Engineering — ECE Dept.</div></div>
-          <span class="clink-arr">↗</span>
-        </a>
       </div>
+
+      <div data-reveal="right" data-delay="2">
+        <div class="photo-frame">
+          <div class="photo-container">
+            <img src="me.jpg" alt="Islam Emad — Systems Architect">
+          </div>
+        </div>
+
+        <div class="contact-cards" style="margin-top: 32px;">
+          <a class="clink" href="https://github.com/islam-8" target="_blank">
+            <div class="clink-ico">⚙️</div>
+            <div><div class="clink-k">Source</div><div class="clink-v">github.com/islam-8</div></div>
+            <span class="clink-arr">↗</span>
+          </a>
+          <a class="clink" href="https://www.linkedin.com/in/islam-ismail-18a88b381" target="_blank">
+            <div class="clink-ico">💼</div>
+            <div><div class="clink-k">Network</div><div class="clink-v">Islam Ismail</div></div>
+            <span class="clink-arr">↗</span>
+          </a>
+          <div class="clink" style="cursor:default">
+            <div class="clink-ico">📍</div>
+            <div><div class="clink-k">Operation Base</div><div class="clink-v">Mansoura, Egypt</div></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
 </section>
 
 <footer>
