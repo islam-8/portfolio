@@ -412,6 +412,44 @@ section { padding:clamp(80px,10vw,130px) 0; position:relative; z-index:1; }
 [data-delay="6"] { transition-delay:.6s }
 
 /* ══════════════════════════════════════════════
+   HERO HOOK — CINEMATIC OPENING STATEMENT
+══════════════════════════════════════════════ */
+.hero-hook-wrap {
+  position:relative; z-index:2;
+  padding: clamp(100px,13vw,160px) var(--gutter) 0;
+  max-width: var(--max);
+  margin: 0 auto;
+  width:100%;
+}
+.hero-hook-line {
+  font-family: var(--display);
+  font-size: clamp(26px,4.5vw,58px);
+  font-weight: 700;
+  color: var(--t-0);
+  line-height: 1.18;
+  letter-spacing: -.03em;
+  display: block;
+}
+.hero-hook-accent {
+  color: var(--blue);
+}
+.hero-hook-dim {
+  color: var(--t-3);
+}
+.hero-hook-rule {
+  width: 56px; height: 1.5px;
+  background: linear-gradient(90deg,var(--blue),transparent);
+  margin: 24px 0 16px;
+}
+.hero-hook-attr {
+  font-family: var(--mono);
+  font-size: clamp(12px,1.4vw,15px);
+  letter-spacing: .18em;
+  color: var(--t-2);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════
    HERO SECTION
 ══════════════════════════════════════════════ */
 #hero {
@@ -925,7 +963,7 @@ section { padding:clamp(80px,10vw,130px) 0; position:relative; z-index:1; }
 .ab-corner.br{bottom:6px;right:6px;border-width:0 1.5px 1.5px 0;border-radius:0 0 3px 0;}
 .ab-photo {
   border-radius:10px; overflow:hidden;
-  aspect-ratio:4/3; background:var(--ink-3);
+  aspect-ratio:5/7; background:var(--ink-3);
   display:flex; align-items:center; justify-content:center;
 }
 .ab-photo img {
@@ -1034,29 +1072,37 @@ footer {
 <!-- ═══ HERO ═══ -->
 <section id="hero">
   <div class="hero-grid-bg" id="hero-grid" aria-hidden="true"></div>
-  <div class="wrap hero-inner">
-    <div class="eyebrow" data-reveal="up">Horus University — ECE — Class 2026</div>
-    <h1 class="display-xl" data-reveal="up" data-delay="1">
+
+  <!-- HOOK STATEMENT — full width, cinematic -->
+  <div class="hero-hook-wrap" data-reveal="up">
+    <div class="hero-hook-line">I think in systems —</div>
+    <div class="hero-hook-line hero-hook-accent">whether it's a Kalman filter</div>
+    <div class="hero-hook-line">predicting a drone trajectory</div>
+    <div class="hero-hook-line hero-hook-dim">or a GAN generating synthetic</div>
+    <div class="hero-hook-line hero-hook-dim">zero-day attack vectors.</div>
+    <div class="hero-hook-rule" data-reveal="up" data-delay="3"></div>
+    <div class="hero-hook-attr" data-reveal="up" data-delay="4">Precision is the hallmark of strength.</div>
+  </div>
+
+  <div class="wrap hero-inner" style="margin-top:clamp(48px,6vw,80px)">
+    <div class="eyebrow" data-reveal="up" data-delay="2">Horus University — ECE — Class 2026</div>
+    <h1 class="display-xl" data-reveal="up" data-delay="3">
       Islam<br><span class="accent-txt">Emad.</span>
     </h1>
-    <div class="hero-role-row" data-reveal="up" data-delay="2" style="margin-top:20px">
+    <div class="hero-role-row" data-reveal="up" data-delay="4" style="margin-top:20px">
       <span class="role-pill">Systems Architect</span>
       <span class="role-pill">AI / Computer Vision</span>
       <span class="role-pill">Embedded Systems</span>
       <span class="role-pill">5G / 6G Research</span>
       <span class="role-pill">Cybersecurity</span>
     </div>
-    <p class="body-lg" data-reveal="up" data-delay="3" style="max-width:580px;margin-top:16px">
-      Building intelligent systems at the intersection of<br>
-      hardware, AI, and advanced telecommunications.
-    </p>
-    <div class="hero-kpi-row" data-reveal="up" data-delay="4">
+    <div class="hero-kpi-row" data-reveal="up" data-delay="5">
       <div class="kpi-item"><div class="kpi-num">13<sup>+</sup></div><div class="kpi-lbl">Projects Shipped</div></div>
       <div class="kpi-item"><div class="kpi-num">50<sup>+</sup></div><div class="kpi-lbl">Certifications</div></div>
       <div class="kpi-item"><div class="kpi-num">98.7<sup>%</sup></div><div class="kpi-lbl">CNN Accuracy</div></div>
       <div class="kpi-item"><div class="kpi-num">6</div><div class="kpi-lbl">Team Members Led</div></div>
     </div>
-    <div class="hero-cta" data-reveal="up" data-delay="5">
+    <div class="hero-cta" data-reveal="up" data-delay="6">
       <a href="#sentinel" class="btn btn-primary">View C-UAS Project</a>
       <a href="#about" class="btn btn-secondary">Get In Touch ↗</a>
     </div>
@@ -1414,7 +1460,6 @@ footer {
         <div class="ab-row"><span class="ab-key">Focus</span><span class="ab-val">Embedded AI · C-UAS · 6G</span></div>
         <div class="ab-row"><span class="ab-key">Certifications</span><span class="ab-val">50+ Completed</span></div>
         <div class="ab-row"><span class="ab-key">Projects</span><span class="ab-val">13+ Shipped</span></div>
-        <div class="ab-row"><span class="ab-key">Research</span><span class="ab-val">SDR · IoMT · Semantic Comms</span></div>
       </div>
       <div class="ab-quote">
         <p>I think in systems — whether it's a Kalman filter predicting a drone trajectory or a GAN generating synthetic zero-day attack vectors. Precision is the hallmark of strength.</p>
