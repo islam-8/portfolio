@@ -1450,16 +1450,7 @@ function renderTimeline(d){
 // Boot simulation
 setTimeout(()=>runSimulation(),700);
 
-// Clock
-setInterval(()=>{
-  const n=new Date(), p=v=>String(v).padStart(2,'0');
-  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-  const disp=document.getElementById('sim-clock-disp');
-  const clk=document.getElementById('clock');
-  if(disp) disp.textContent=t;
-  if(clk) clk.textContent=n.toUTCString().slice(0,-4)+' UTC';
-},1000);
-</script>
+
 
 // Override switchTab to include radar
 const _origSwitch=switchTab;
@@ -1494,3 +1485,5 @@ function setScen(id,btn){
 </script>
 </body>
 </html>
+
+</script>
