@@ -1296,63 +1296,82 @@ function renderPipeline(d){
   }).join('');
 }
 
-function renderTimeline(d){
-  const wrap=document.getElementById('timeline-wrap');
-  if(!d.tl){
-    wrap.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" class="caption">No active threat in idle mode</div>`;
+<script>
+/**
+ * Renders the AI pipeline processing steps
+ */
+function renderPipeline(d) {
+  const total = d.pipeline.reduce((a, s) => a + (s.ms || 0), 0) || 1;
+  const row = document.getElementById('pipeline-row');
+  row.innerHTML = d.pipeline.map((s, i) => {
+    const pct = Math.round((s.ms / total) * 100);
+    const barColor = s.c === 'ok' ? 'var(--sage)' : s.c === 'warm' ? 'var(--amber)' : s.c === 'hot' ? 'var(--rose)' : 'var(--t-4)';
+    const arrow = i < d.pipeline.length - 1 ? `<div class="pipe-arrow">→</div>` : '';
+    return `<div class="pipe-node">
+      <div class="pipe-box ${s.c}">
+        <span class="pipe-lbl">${s.l}</span>
+        <span class="pipe-ms ${s.c}">${s.c === 'skip' ? 'SKIP' : s.ms + 'ms'}</span>
+        <div class="pipe-bar-bg"><div class="pipe-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      </div>
+    </div>${arrow}`;
+  }).join('');
+}
+
+/**
+ * Renders the threat timeline
+ */
+function renderTimeline(d) {
+  const wrap = document.getElementById('timeline-wrap');
+  if (!d.tl) {
+    wrap.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" class="caption">No active threat in idle mode</div>`;
     return;
   }
-  const maxT=Math.max(...d.tl.map(p=>p.s+p.w));
-  wrap.innerHTML=d.tl.map(p=>{
-    const l=(p.s/maxT)*95,w=(p.w/maxT)*95;
+  const maxT = Math.max(...d.tl.map(p => p.s + p.w));
+  wrap.innerHTML = d.tl.map(p => {
+    const l = (p.s / maxT) * 95, w = (p.w / maxT) * 95;
     return `<div class="tl-phase" style="left:${l}%;width:${w}%;background:${p.bg};border:1px solid ${p.tc}33;color:${p.tc};font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em">${p.t}</div>`;
   }).join('');
 }
 
-// Boot simulation
-setTimeout(()=>runSimulation(),700);
-
-// Clock
-setInterval(()=>{
-  const n=new Date(), p=v=>String(v).padStart(2,'0');
-  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-  const disp=document.getElementById('sim-clock-disp');
-  const clk=document.getElementById('clock');
-  if(disp) disp.textContent=t;
-  if(clk) clk.textContent=n.toUTCString().slice(0,-4)+' UTC';
-},1000);
-</script>
-
-// Override switchTab to include radar
-const _origSwitch=switchTab;
-function switchTab(btn,tab){
-  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
+/**
+ * Navigation between UI panels
+ */
+function switchTab(btn, tab) {
+  document.querySelectorAll('.sim-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  document.querySelectorAll('.sim-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
-  curTab=tab;
+  document.querySelectorAll('.sim-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  curTab = tab;
 }
 
-// ═══ CLOCK ═══
-setInterval(()=>{
-  const n=new Date(),p=v=>String(v).padStart(2,'0');
-  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-  const d=document.getElementById('sim-clock-disp'),c=document.getElementById('clock');
-  if(d)d.textContent=t;
-  if(c)c.textContent=n.toUTCString().slice(0,-4)+' UTC';
-},1000);
-
-// Boot sim + radar
-setTimeout(()=>{runSimulation();startRadar('idle');},700);
-
-// Update radar on scenario change
-const _origSetScen=setScen;
-function setScen(id,btn){
-  curScen=id;
-  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('active'));
+/**
+ * Updates simulation scenario and radar state
+ */
+function setScen(id, btn) {
+  curScen = id;
+  document.querySelectorAll('.scen-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  startRadar(id);
+  if (typeof startRadar === 'function') startRadar(id);
 }
+
+/**
+ * Unified Clock: Updates local and UTC displays every second
+ */
+setInterval(() => {
+  const n = new Date(), p = v => String(v).padStart(2, '0');
+  const t = `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+  const disp = document.getElementById('sim-clock-disp');
+  const clk = document.getElementById('clock');
+  
+  if (disp) disp.textContent = t;
+  if (clk) clk.textContent = n.toUTCString().slice(0, -4) + ' UTC';
+}, 1000);
+
+/**
+ * System Boot: Initiates simulation and radar after delay
+ */
+setTimeout(() => {
+  if (typeof runSimulation === 'function') runSimulation();
+  if (typeof startRadar === 'function') startRadar('idle');
+}, 700);
 </script>
-</body>
-</html>
