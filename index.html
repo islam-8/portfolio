@@ -25,29 +25,29 @@
   --dur: 200ms;
 }
 
-/* DARK (default) */
+/* DARK — Deep Charcoal */
 [data-theme="dark"] {
-  --bg:   #07090e; --bg1: #0b0f18; --bg2: #0f1520; --bg3: #131c2b;
-  --rim0: rgba(255,255,255,.04); --rim1: rgba(255,255,255,.08); --rim2: rgba(255,255,255,.14);
-  --rima: rgba(99,179,237,.22);
-  --acc: #63b3ed; --acc-d: rgba(99,179,237,.09); --acc-g: rgba(99,179,237,.18);
-  --teal: #4fd1c5; --amber: #f6ad55; --rose: #fc8181; --sage: #68d391;
-  --t0: #f0f6fc; --t1: #c9d8e8; --t2: #7a95b0; --t3: #3d5570; --t4: #1e3044;
-  --glass-bg: rgba(15,21,32,.7); --glass-b: rgba(255,255,255,.08);
-  --orb-a: rgba(99,179,237,.055); --orb-b: rgba(79,209,197,.04);
-  --shadow: 0 32px 72px rgba(0,0,0,.45);
+  --bg:   #080a10; --bg1: #0c1020; --bg2: #101828; --bg3: #141e32;
+  --rim0: rgba(255,255,255,.05); --rim1: rgba(255,255,255,.09); --rim2: rgba(255,255,255,.16);
+  --rima: rgba(99,179,237,.24);
+  --acc: #60a5fa; --acc-d: rgba(96,165,250,.08); --acc-g: rgba(96,165,250,.18);
+  --teal: #34d399; --amber: #fbbf24; --rose: #f87171; --sage: #4ade80;
+  --t0: #f1f8ff; --t1: #c8d8f4; --t2: #6880b8; --t3: #334060; --t4: #161e34;
+  --glass-bg: rgba(8,10,16,.82); --glass-b: rgba(255,255,255,.06);
+  --orb-a: rgba(96,165,250,.05); --orb-b: rgba(52,211,153,.035);
+  --shadow: 0 32px 72px rgba(0,0,0,.55);
 }
-/* LIGHT */
+/* LIGHT — Pure White */
 [data-theme="light"] {
-  --bg: #f4f7fb; --bg1: #eef2f8; --bg2: #e7ecf5; --bg3: #dde4f0;
-  --rim0: rgba(0,0,0,.07); --rim1: rgba(0,0,0,.12); --rim2: rgba(0,0,0,.2);
-  --rima: rgba(37,99,235,.22);
-  --acc: #2563eb; --acc-d: rgba(37,99,235,.08); --acc-g: rgba(37,99,235,.15);
+  --bg: #ffffff; --bg1: #f8faff; --bg2: #f0f4fc; --bg3: #e8eef8;
+  --rim0: rgba(0,0,0,.06); --rim1: rgba(0,0,0,.1); --rim2: rgba(0,0,0,.18);
+  --rima: rgba(37,99,235,.2);
+  --acc: #2563eb; --acc-d: rgba(37,99,235,.07); --acc-g: rgba(37,99,235,.14);
   --teal: #0d9488; --amber: #d97706; --rose: #dc2626; --sage: #16a34a;
-  --t0: #0f172a; --t1: #1e293b; --t2: #475569; --t3: #94a3b8; --t4: #cbd5e1;
-  --glass-bg: rgba(255,255,255,.75); --glass-b: rgba(0,0,0,.1);
-  --orb-a: rgba(37,99,235,.06); --orb-b: rgba(13,148,136,.05);
-  --shadow: 0 32px 72px rgba(0,0,0,.12);
+  --t0: #0a0f1e; --t1: #1a2340; --t2: #4a5580; --t3: #8a9ab8; --t4: #dde5f4;
+  --glass-bg: rgba(255,255,255,.88); --glass-b: rgba(0,0,0,.08);
+  --orb-a: rgba(37,99,235,.05); --orb-b: rgba(13,148,136,.04);
+  --shadow: 0 32px 72px rgba(0,0,0,.1);
 }
 /* MILITARY CAMO */
 [data-theme="camo"] {
@@ -540,9 +540,7 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
   <div class="hero-left">
     <div class="eyebrow" data-r="u">Horus University — ECE — Mansoura, Egypt</div>
 
-    <div class="hero-name" data-r="u" data-d="1">
-      Islam<br><span class="hl">Emad.</span>
-    </div>
+    <div class="hero-name" data-r="u" data-d="1">Islam<br><span class="hl">Emad.</span></div>
 
     <div class="hero-hook" data-r="u" data-d="2">
       I build systems that <b>work under pressure</b> —<br>
@@ -572,11 +570,11 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
     </div>
   </div>
 
-  <div class="hero-right">
-    <div class="hero-photo-wrap">
+  <div class="hero-right" style="display:flex;align-items:flex-end;justify-content:center;">
+    <div class="hero-photo-wrap" style="height:100%;max-height:100vh;">
       <div class="hpc tl"></div><div class="hpc tr"></div>
       <div class="hpc bl"></div><div class="hpc br"></div>
-      <img src="me.jpg" alt="Islam Emad — Systems Engineer"
+      <img src="me.jpg" alt="Islam Emad"
            onerror="this.style.display='none';document.getElementById('hp').style.display='flex'">
       <div id="hp" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:var(--display);font-size:80px;font-weight:800;color:var(--t4)">IE</div>
       <div class="hero-photo-cap">Islam Emad · Systems Engineer · 2026</div>
@@ -687,6 +685,7 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
       <div style="margin-top:12px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--t3)">
         TEAM: Islam Emad · Refaat Elsayed Refaat · Omar Tarek Elmaghawri · Omar Ahmed Desokey · Mohammed Reda Alasmar · Omar Alaa Zaghloul &nbsp;|&nbsp; SUPERVISOR: Dr. Rania Al-Abd
       </div>
+      <a href="walkie-talkie.html" class="btn btn-s" style="display:inline-flex;text-decoration:none;cursor:none;margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;border-radius:7px;border:1px solid var(--rim2);color:var(--t1);background:transparent;transition:all .25s var(--expo)">View Full Project ↗</a>
     </div>
 
     <!-- Rover -->
@@ -699,6 +698,7 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
       <div style="margin-top:12px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--t3)">
         TEAM: Islam Emad · Abdelaziz Eltohami · Nada Atla · Mariam Issa &nbsp;|&nbsp; SUPERVISOR: Prof. Dr. Hatem Khater (Dean of Faculty)
       </div>
+      <a href="rover.html" class="btn btn-s" style="display:inline-flex;text-decoration:none;cursor:none;margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;border-radius:7px;border:1px solid var(--rim2);color:var(--t1);background:transparent;transition:all .25s var(--expo)">View Full Project ↗</a>
       <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Rover Stats</button>
       <div class="mini-sim-panel">
         <div class="mini-perf">
@@ -861,19 +861,43 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
     <button class="cert-cat" onclick="filterCerts('all',this)">All (50+)</button>
   </div>
 
-  <div class="cert-masonry" data-r="u" data-d="5">
-    <!-- ENGINEERING — shown by default -->
+  <div class="cert-masonry" id="cert-masonry">
+    <!-- ENGINEERING (default visible) -->
     <div class="cert-card featured" data-cc="eng"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🔌</div><div class="cert-body"><div class="cert-name">Embedded Systems Trainee — 162h Intensive<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">ITI — Information Technology Institute</div><div class="cert-date">Jul–Sep 2024</div></div></div>
-    <div class="cert-card featured" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.1)">🐧</div><div class="cert-body"><div class="cert-name">Introduction to Nephio (LFS179)<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">The Linux Foundation</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card featured" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🧠</div><div class="cert-body"><div class="cert-name">Building LLM Applications With Prompt Engineering<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">NVIDIA</div><div class="cert-date">Jan 2026</div></div></div>
-    <div class="cert-card featured" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🌐</div><div class="cert-body"><div class="cert-name">Exam Prep: AWS Advanced Networking Specialty<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(99,179,237,.08)">📡</div><div class="cert-body"><div class="cert-name">CMOS Fabrication Fundamentals</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📻</div><div class="cert-body"><div class="cert-name">Introduction to Communications Engineering</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
+    <!-- AI / ML -->
+    <div class="cert-card featured" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🧠</div><div class="cert-body"><div class="cert-name">Building LLM Applications With Prompt Engineering<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Jan 2026</div></div></div>
     <div class="cert-card featured" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.08)">⚡</div><div class="cert-body"><div class="cert-name">AI for All: From Basics to GenAI Practice<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Sep 2025</div></div></div>
-    
-    
-    
-    
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(79,209,197,.1)">🤗</div><div class="cert-body"><div class="cert-name">Open Source AI with Python &amp; Hugging Face</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🤖</div><div class="cert-body"><div class="cert-name">AI Agents Fundamentals, v2</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(252,129,129,.1)">✏️</div><div class="cert-body"><div class="cert-name">Practical Prompt Engineering</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.08)">💡</div><div class="cert-body"><div class="cert-name">Cursor &amp; Claude Code: Professional AI Setup</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
     <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📈</div><div class="cert-body"><div class="cert-name">Artificial Intelligence — ML &amp; DL Basic</div><div class="cert-issuer">WE Training &amp; Development</div><div class="cert-date">Aug 2024</div></div></div>
-  </div>
+    <!-- CLOUD / DEVOPS -->
+    <div class="cert-card featured" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.1)">🐧</div><div class="cert-body"><div class="cert-name">Introduction to Nephio (LFS179)<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">The Linux Foundation</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card featured" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🌐</div><div class="cert-body"><div class="cert-name">Exam Prep: AWS Advanced Networking Specialty<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.1)">☁️</div><div class="cert-body"><div class="cert-name">AWS Technical Essentials</div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.06)">📡</div><div class="cert-body"><div class="cert-name">Cumulus Linux Administration</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.08)">⚙️</div><div class="cert-body"><div class="cert-name">Ansible Essentials for Network Engineers</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Sep 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(252,129,129,.1)">🛡️</div><div class="cert-body"><div class="cert-name">Cloud Security — Deepfence ThreatMapper</div><div class="cert-issuer">Udacity</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🚀</div><div class="cert-body"><div class="cert-name">Enterprise DevOps &amp; Cloud Infrastructure</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📦</div><div class="cert-body"><div class="cert-name">Cloud Infrastructure: Startup to Scale</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🖥️</div><div class="cert-body"><div class="cert-name">Computer Network Fundamentals</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(252,129,129,.08)">🔒</div><div class="cert-body"><div class="cert-name">Network Security</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
+    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.06)">🔨</div><div class="cert-body"><div class="cert-name">Introducing DevOps for Developers</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <!-- SOFTWARE / CS -->
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🧮</div><div class="cert-body"><div class="cert-name">Complete Intro to Computer Science</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.1)">📐</div><div class="cert-body"><div class="cert-name">The Last Algorithms Course You'll Need</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.08)">🐍</div><div class="cert-body"><div class="cert-name">Practical Guide to Python</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🌐</div><div class="cert-body"><div class="cert-name">Full Stack Fundamentals, v3</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(252,129,129,.08)">🔧</div><div class="cert-body"><div class="cert-name">Backend System Design</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.06)">📝</div><div class="cert-body"><div class="cert-name">Everything You'll Need to Know About Git</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.08)">🐍</div><div class="cert-body"><div class="cert-name">Python Programming Basics</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Sep 2025</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🖥️</div><div class="cert-body"><div class="cert-name">Complete Intro to Linux &amp; the CLI</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.06)">🏗️</div><div class="cert-body"><div class="cert-name">Introduction to Backend Architectures</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
+    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.06)">🟢</div><div class="cert-body"><div class="cert-name">Introduction to Node.js, v3</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
+  </div></div>
 </div>
 </section>
 
@@ -1024,7 +1048,7 @@ function filterCerts(cat,btn){
   });
 }
 // Init certs showing Engineering
-filterCerts('eng',document.querySelector('.cert-cat.active'));
+filterCerts('eng',document.querySelector('.cert-cat'));
 
 // ═══ MINI SIM TOGGLE ═══
 function toggleMini(btn){const p=btn.nextElementSibling;p.classList.toggle('open');btn.textContent=p.classList.contains('open')?'▼ Hide':'▶ Performance';}
@@ -1297,39 +1321,49 @@ function renderPipeline(d){
 }
 
 function renderTimeline(d){
-  const wrap=document.getElementById('timeline-wrap');
-  if(!d.tl){
-    wrap.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" class="caption">No active threat in idle mode</div>`;
-    return;
-  }
-  const maxT=Math.max(...d.tl.map(p=>p.s+p.w));
-  wrap.innerHTML=d.tl.map(p=>{
-    const l=(p.s/maxT)*95,w=(p.w/maxT)*95;
-    return `<div class="tl-phase" style="left:${l}%;width:${w}%;background:${p.bg};border:1px solid ${p.tc}33;color:${p.tc};font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em">${p.t}</div>`;
-  }).join('');
+  const wrap=document.getElementById('timeline-wrap');
+  if(!d.tl){
+    wrap.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" class="caption">No active threat in idle mode</div>`;
+    return;
+  }
+  const maxT=Math.max(...d.tl.map(p=>p.s+p.w));
+  wrap.innerHTML=d.tl.map(p=>{
+    const l=(p.s/maxT)*95,w=(p.w/maxT)*95;
+    return `<div class="tl-phase" style="left:${l}%;width:${w}%;background:${p.bg};border:1px solid ${p.tc}33;color:${p.tc};font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em">${p.t}</div>`;
+  }).join('');
 }
 
 // Boot simulation
 setTimeout(()=>runSimulation(),700);
 
+// Clock
+setInterval(()=>{
+  const n=new Date(), p=v=>String(v).padStart(2,'0');
+  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+  const disp=document.getElementById('sim-clock-disp');
+  const clk=document.getElementById('clock');
+  if(disp) disp.textContent=t;
+  if(clk) clk.textContent=n.toUTCString().slice(0,-4)+' UTC';
+},1000);
+</script>
 
 // Override switchTab to include radar
 const _origSwitch=switchTab;
 function switchTab(btn,tab){
-  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.sim-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
-  curTab=tab;
+  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.sim-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  curTab=tab;
 }
 
 // ═══ CLOCK ═══
 setInterval(()=>{
-  const n=new Date(),p=v=>String(v).padStart(2,'0');
-  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-  const d=document.getElementById('sim-clock-disp'),c=document.getElementById('clock');
-  if(d)d.textContent=t;
-  if(c)c.textContent=n.toUTCString().slice(0,-4)+' UTC';
+  const n=new Date(),p=v=>String(v).padStart(2,'0');
+  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+  const d=document.getElementById('sim-clock-disp'),c=document.getElementById('clock');
+  if(d)d.textContent=t;
+  if(c)c.textContent=n.toUTCString().slice(0,-4)+' UTC';
 },1000);
 
 // Boot sim + radar
@@ -1338,12 +1372,11 @@ setTimeout(()=>{runSimulation();startRadar('idle');},700);
 // Update radar on scenario change
 const _origSetScen=setScen;
 function setScen(id,btn){
-  curScen=id;
-  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  startRadar(id);
+  curScen=id;
+  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  startRadar(id);
 }
 </script>
 </body>
-</html> 
-</script>
+</html>

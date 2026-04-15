@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Walkie-Talkie — Islam Emad</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ease:cubic-bezier(.16,1,.3,1);
+  --f-display:'Bricolage Grotesque',sans-serif;
+  --f-mono:'DM Mono',monospace;
+}
+[data-theme="dark"]{
+  --bg:#07090f;--bg1:#0b0e18;--bg2:#0f1422;--bg3:#141a2c;
+  --r0:rgba(255,255,255,.04);--r1:rgba(255,255,255,.09);--r2:rgba(255,255,255,.16);
+  --acc:#f97316;--acc-d:rgba(249,115,22,.08);--acc-g:rgba(249,115,22,.2);
+  --teal:#22d3ee;--sage:#4ade80;--rose:#f87171;--violet:#a78bfa;
+  --t0:#f8faff;--t1:#c8d4f0;--t2:#7080a8;--t3:#364060;--t4:#1a2240;
+  --glass:rgba(11,14,24,.78);--sh:0 24px 60px rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f2f5fb;--bg1:#eaeff8;--bg2:#e0e8f4;--bg3:#d5dff0;
+  --r0:rgba(0,0,0,.06);--r1:rgba(0,0,0,.1);--r2:rgba(0,0,0,.18);
+  --acc:#ea6000;--acc-d:rgba(234,96,0,.07);--acc-g:rgba(234,96,0,.15);
+  --teal:#0891b2;--sage:#16a34a;--rose:#dc2626;--violet:#7c3aed;
+  --t0:#0f172a;--t1:#1e293b;--t2:#475569;--t3:#94a3b8;--t4:#dde5f4;
+  --glass:rgba(255,255,255,.82);--sh:0 24px 60px rgba(0,0,0,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--f-mono);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none;}
+#cd,#cr{position:fixed;pointer-events:none;z-index:9999;top:0;left:0;}
+#cd div{width:5px;height:5px;border-radius:50%;background:var(--acc);transform:translate(-50%,-50%);}
+#cr div{width:30px;height:30px;border-radius:50%;border:1px solid var(--acc-g);transform:translate(-50%,-50%);transition:width .25s var(--ease),height .25s var(--ease);}
+body.ch #cr div{width:44px;height:44px;border-color:var(--acc);}
+
+/* GRAIN */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:997;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:300px;}
+
+/* NAV */
+nav{position:fixed;inset:0 0 auto;height:54px;padding:0 clamp(20px,4vw,56px);display:flex;align-items:center;justify-content:space-between;background:var(--glass);backdrop-filter:blur(18px);border-bottom:1px solid var(--r0);z-index:500;}
+.nav-back{font-size:11px;letter-spacing:.12em;color:var(--t3);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s;cursor:none;}
+.nav-back:hover{color:var(--acc);}
+.nav-brand{font-size:11px;letter-spacing:.18em;color:var(--acc);display:flex;align-items:center;gap:8px;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:np 2s ease infinite;}
+@keyframes np{0%{box-shadow:0 0 0 0 var(--acc-g)}70%{box-shadow:0 0 0 8px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.nav-theme{font-size:9px;letter-spacing:.1em;padding:4px 10px;border:1px solid var(--r1);background:transparent;color:var(--t3);border-radius:4px;cursor:pointer;transition:all .2s;}
+.nav-theme:hover{border-color:var(--acc);color:var(--acc);}
+
+/* WRAP */
+.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(20px,4vw,56px);}
+section{padding:clamp(60px,8vw,96px) 0;position:relative;z-index:1;}
+.eyebrow{font-size:9px;letter-spacing:.22em;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.eyebrow::before{content:'';width:28px;height:1px;background:var(--acc);opacity:.7;flex-shrink:0;}
+.sec-h{font-family:var(--f-display);font-size:clamp(28px,4.5vw,52px);font-weight:800;color:var(--t0);letter-spacing:-.03em;line-height:1.05;}
+
+/* REVEAL */
+[data-r]{opacity:0;transition:opacity .7s var(--ease),transform .7s var(--ease);}
+[data-r="u"]{transform:translateY(26px);}[data-r="l"]{transform:translateX(-20px);}[data-r="r"]{transform:translateX(20px);}
+[data-r].in{opacity:1;transform:none;}
+[data-d="1"]{transition-delay:.1s}[data-d="2"]{transition-delay:.2s}[data-d="3"]{transition-delay:.3s}[data-d="4"]{transition-delay:.4s}
+
+/* ═══ HERO ═══ */
+#hero{min-height:100vh;padding-top:54px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.hero-bg-grid{position:absolute;inset:0;background-image:linear-gradient(var(--r0) 1px,transparent 1px),linear-gradient(90deg,var(--r0) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 80% at 50% 40%,black,transparent 80%);pointer-events:none;}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.hero-orb-a{width:500px;height:500px;top:-10%;right:-10%;background:radial-gradient(circle,rgba(249,115,22,.06),transparent 70%);}
+.hero-orb-b{width:400px;height:400px;bottom:-15%;left:-5%;background:radial-gradient(circle,rgba(34,211,238,.04),transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.15em;color:var(--acc);background:var(--acc-d);border:1px solid var(--acc-g);padding:6px 16px;border-radius:40px;margin-bottom:22px;}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc);animation:np 2s ease infinite;}
+.hero-name{font-family:var(--f-display);font-size:clamp(44px,8.5vw,100px);font-weight:800;line-height:.9;letter-spacing:-.04em;color:var(--t0);}
+.hero-name .hl{color:var(--acc);}
+.hero-sub{font-size:clamp(12px,1.5vw,15px);color:var(--t2);margin-top:18px;max-width:560px;line-height:1.8;padding-left:16px;border-left:2px solid var(--acc-g);}
+.hero-kpis{display:flex;gap:0;margin-top:32px;flex-wrap:wrap;}
+.hkpi{padding:14px 22px 14px 0;border-right:1px solid var(--r0);margin-right:22px;}
+.hkpi:last-child{border-right:none;}
+.hkpi-n{font-family:var(--f-display);font-size:26px;font-weight:800;color:var(--t0);line-height:1;letter-spacing:-.02em;}
+.hkpi-l{font-size:8px;letter-spacing:.14em;color:var(--t3);margin-top:4px;}
+.hero-btns{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap;}
+.btn{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:11px 22px;border-radius:7px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s var(--ease);cursor:none;border:none;font-family:var(--f-mono);}
+.btn-p{background:var(--acc);color:#000;font-weight:600;}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 14px 36px var(--acc-g);}
+.btn-s{background:transparent;color:var(--t1);border:1px solid var(--r2);}
+.btn-s:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-d);}
+
+/* ═══ EXPLODED DIAGRAM ═══ */
+#diagram{background:var(--bg1);}
+.diagram-wrap{margin-top:48px;background:var(--bg2);border:1px solid var(--r1);border-radius:16px;padding:32px;overflow:hidden;}
+.exploded-svg-wrap{width:100%;overflow-x:auto;}
+.part-label{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;fill:var(--t2);}
+.part-label-key{font-family:var(--f-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;fill:var(--t3);}
+.connector{stroke:var(--r1);stroke-width:1;stroke-dasharray:4 3;fill:none;}
+.comp-outline{stroke-width:1.5;fill:none;}
+.comp-fill{opacity:.12;}
+
+/* COMPONENT LEGEND */
+.parts-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:24px;}
+.part-item{background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:12px 14px;display:flex;gap:11px;align-items:flex-start;cursor:none;transition:border-color .2s;}
+.part-item:hover{border-color:var(--r1);}
+.part-item::before{content:attr(data-num);font-size:9px;letter-spacing:.1em;color:var(--t3);background:var(--bg2);padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.part-name{font-size:12px;color:var(--t1);font-weight:500;margin-bottom:3px;font-family:var(--f-display);}
+.part-desc{font-size:10px;color:var(--t3);line-height:1.5;}
+
+/* ═══ DSP PIPELINE SIMULATION ═══ */
+#dsp-sim{background:var(--bg);}
+.dsp-layout{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px;}
+@media(max-width:840px){.dsp-layout{grid-template-columns:1fr;}}
+
+/* WAVEFORM CANVAS */
+.waveform-panel{background:var(--bg2);border:1px solid var(--r1);border-radius:14px;overflow:hidden;}
+.wf-header{background:var(--bg3);border-bottom:1px solid var(--r0);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.wf-title{font-size:9px;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;}
+.wf-badge{font-size:8px;letter-spacing:.1em;padding:2px 8px;border-radius:3px;}
+.wf-body{padding:12px;}
+.wf-canvas-wrap{background:#0a0c14;border-radius:6px;overflow:hidden;position:relative;}
+canvas{display:block;width:100%;}
+.wf-controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+.wf-btn{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:4px;border:1px solid var(--r1);color:var(--t3);background:transparent;cursor:pointer;transition:all .2s;font-family:var(--f-mono);}
+.wf-btn.active,.wf-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-d);}
+.wf-info{font-size:9px;letter-spacing:.08em;color:var(--t3);margin-left:auto;}
+
+/* DSP PIPELINE STEPS */
+.pipeline-panel{background:var(--bg2);border:1px solid var(--r1);border-radius:14px;overflow:hidden;}
+.pp-header{background:var(--bg3);border-bottom:1px solid var(--r0);padding:10px 16px;}
+.pp-title{font-size:9px;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;}
+.pp-body{padding:16px;display:flex;flex-direction:column;gap:8px;}
+.pp-step{background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:13px;position:relative;overflow:hidden;cursor:none;transition:border-color .2s;}
+.pp-step::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2.5px;background:var(--sc,var(--acc));}
+.pp-step:hover{border-color:var(--r1);}
+.pp-step-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.pp-step-name{font-size:11px;color:var(--t1);font-weight:500;font-family:var(--f-display);}
+.pp-step-time{font-size:9px;letter-spacing:.1em;color:var(--t3);}
+.pp-step-desc{font-size:10px;color:var(--t2);line-height:1.6;}
+.pp-step-bar-bg{height:2px;background:var(--r0);border-radius:1px;overflow:hidden;margin-top:8px;}
+.pp-step-bar{height:100%;border-radius:1px;background:var(--sc,var(--acc));width:0;transition:width 1.2s var(--ease);}
+.pp-step-formula{font-size:9px;letter-spacing:.04em;color:var(--t3);margin-top:5px;padding:4px 8px;background:var(--bg2);border-radius:3px;}
+
+/* ═══ PROTOCOL DIAGRAM ═══ */
+#protocol{background:var(--bg1);}
+.protocol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px;}
+@media(max-width:700px){.protocol-grid{grid-template-columns:1fr;}}
+.proto-card{background:var(--bg2);border:1px solid var(--r1);border-radius:12px;padding:20px;position:relative;overflow:hidden;}
+.proto-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--pc,var(--acc));}
+.proto-icon{font-size:24px;margin-bottom:10px;}
+.proto-title{font-family:var(--f-display);font-size:15px;font-weight:700;color:var(--t0);margin-bottom:8px;}
+.proto-body{font-size:12px;color:var(--t2);line-height:1.7;}
+.proto-spec{display:flex;flex-direction:column;gap:5px;margin-top:10px;}
+.ps-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--r0);font-size:10px;}
+.ps-row:last-child{border-bottom:none;}
+.ps-k{color:var(--t3);letter-spacing:.08em;}
+.ps-v{color:var(--t1);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--r0);padding:22px clamp(20px,4vw,56px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.fl{font-size:10px;color:var(--t3);}
+.fl span{color:var(--acc);}
+@media(max-width:600px){nav{padding:0 18px;}section{padding:clamp(50px,7vw,76px) 0;}}
+</style>
+</head>
+<body>
+<div id="cd"><div></div></div>
+<div id="cr"><div></div></div>
+<div class="grain"></div>
+
+<nav>
+  <a class="nav-back" href="index.html">← Portfolio</a>
+  <div class="nav-brand"><div class="nav-dot"></div>WALKIE-TALKIE DSP</div>
+  <button class="nav-theme" onclick="toggleTheme()">☀ / ◑</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-orb hero-orb-a"></div>
+  <div class="hero-orb hero-orb-b"></div>
+  <div class="wrap">
+    <div class="hero-badge" data-r="u">DSP · Wireless · ESP32 · Real-Time Audio</div>
+    <h1 class="hero-name" data-r="u" data-d="1">Digital<br><span class="hl">Walkie-Talkie</span></h1>
+    <p class="hero-sub" data-r="u" data-d="2">
+      Full-duplex real-time voice communication between two ESP32 nodes over <strong>ESP-NOW</strong> — no router, no infrastructure. I2S digital microphone → frame segmentation → <strong>Spectral Subtraction + NLMS DSP chain</strong> → I2S amplifier output.
+    </p>
+    <div class="hero-kpis" data-r="u" data-d="3">
+      <div class="hkpi"><div class="hkpi-n">~4ms</div><div class="hkpi-l">TX Latency</div></div>
+      <div class="hkpi"><div class="hkpi-n">8kHz</div><div class="hkpi-l">Sample Rate</div></div>
+      <div class="hkpi"><div class="hkpi-n">~12dB</div><div class="hkpi-l">SNR Gain</div></div>
+      <div class="hkpi"><div class="hkpi-n">~200m</div><div class="hkpi-l">Range</div></div>
+    </div>
+    <div style="margin-top:20px;font-size:9px;letter-spacing:.1em;color:var(--t3)" data-r="u" data-d="4">
+      TEAM: Islam Emad Ismail · Refaat Elsayed Refaat · Omar Tarek Elmaghawri · Omar Ahmed Desokey · Mohammed Reda Alasmar · Omar Alaa Zaghloul
+      &nbsp;|&nbsp; SUPERVISOR: Dr. Rania Al-Abd
+    </div>
+    <div class="hero-btns" data-r="u" data-d="4">
+      <a href="#dsp-sim" class="btn btn-p">▶ DSP Simulation</a>
+      <a href="#diagram" class="btn btn-s">Hardware Diagram</a>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLODED DIAGRAM -->
+<section id="diagram">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Hardware Overview</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Component <span style="color:var(--acc)">Diagram</span></h2>
+  <p style="font-size:13px;color:var(--t2);margin-top:8px;max-width:520px;line-height:1.8" data-r="u" data-d="2">Both devices share the same hardware layout. The transmitter path goes through the microphone; the receiver path routes to the amplifier and speaker.</p>
+
+  <div class="diagram-wrap" data-r="u" data-d="3">
+    <div class="exploded-svg-wrap">
+      <svg viewBox="0 0 900 380" width="100%" style="min-width:600px">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="rgba(249,115,22,.5)"/>
+          </marker>
+        </defs>
+
+        <!-- TRANSMITTER SIDE (left) -->
+        <text x="110" y="24" font-family="DM Mono" font-size="10" letter-spacing="3" fill="rgba(249,115,22,.7)" text-anchor="middle">TRANSMITTER</text>
+
+        <!-- Mic -->
+        <rect x="28" y="48" width="72" height="50" rx="6" stroke="rgba(34,211,238,.6)" stroke-width="1.5" fill="rgba(34,211,238,.06)"/>
+        <text x="64" y="70" font-family="DM Mono" font-size="8" letter-spacing="1" fill="rgba(34,211,238,.8)" text-anchor="middle">I2S MIC</text>
+        <text x="64" y="82" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.6)" text-anchor="middle">INMP441</text>
+        <text x="64" y="94" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.6)" text-anchor="middle">Digital PDM</text>
+        <!-- mic symbol -->
+        <circle cx="64" cy="67" r="7" stroke="rgba(34,211,238,.4)" stroke-width="1" fill="none"/>
+        <line x1="64" y1="74" x2="64" y2="78" stroke="rgba(34,211,238,.4)" stroke-width="1"/>
+        <line x1="60" y1="78" x2="68" y2="78" stroke="rgba(34,211,238,.4)" stroke-width="1"/>
+
+        <!-- Arrow Mic → ESP32 -->
+        <path d="M100 73 L148 73" stroke="rgba(249,115,22,.4)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="124" y="68" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">I2S</text>
+
+        <!-- ESP32 TX -->
+        <rect x="150" y="38" width="100" height="100" rx="8" stroke="rgba(249,115,22,.7)" stroke-width="1.5" fill="rgba(249,115,22,.06)"/>
+        <text x="200" y="60" font-family="DM Mono" font-size="9" letter-spacing="1" fill="rgba(249,115,22,.9)" text-anchor="middle">ESP32</text>
+        <text x="200" y="72" font-family="DM Mono" font-size="7" fill="rgba(180,140,80,.6)" text-anchor="middle">TX NODE</text>
+        <!-- CPU core -->
+        <rect x="170" y="78" width="18" height="18" rx="2" stroke="rgba(249,115,22,.3)" stroke-width="1" fill="rgba(249,115,22,.04)"/>
+        <text x="179" y="90" font-family="DM Mono" font-size="6" fill="rgba(249,115,22,.5)" text-anchor="middle">CPU</text>
+        <rect x="196" y="78" width="18" height="18" rx="2" stroke="rgba(249,115,22,.3)" stroke-width="1" fill="rgba(249,115,22,.04)"/>
+        <text x="205" y="90" font-family="DM Mono" font-size="6" fill="rgba(249,115,22,.5)" text-anchor="middle">WiFi</text>
+        <text x="200" y="126" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Frame segmentation</text>
+        <text x="200" y="136" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">ESP-NOW TX</text>
+
+        <!-- Arrow ESP32 → Antenna TX -->
+        <path d="M250 88 L298 88" stroke="rgba(249,115,22,.4)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="274" y="82" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">2.4GHz</text>
+
+        <!-- Antenna TX -->
+        <rect x="300" y="60" width="52" height="56" rx="5" stroke="rgba(167,139,250,.6)" stroke-width="1.5" fill="rgba(167,139,250,.06)"/>
+        <text x="326" y="82" font-family="DM Mono" font-size="8" fill="rgba(167,139,250,.8)" text-anchor="middle">ANT</text>
+        <text x="326" y="95" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">External</text>
+        <!-- antenna icon -->
+        <line x1="326" y1="70" x2="326" y2="62" stroke="rgba(167,139,250,.5)" stroke-width="1.5"/>
+        <line x1="316" y1="68" x2="326" y2="62" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+        <line x1="336" y1="68" x2="326" y2="62" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+        <line x1="320" y1="66" x2="326" y2="62" stroke="rgba(167,139,250,.3)" stroke-width="1"/>
+        <line x1="332" y1="66" x2="326" y2="62" stroke="rgba(167,139,250,.3)" stroke-width="1"/>
+
+        <!-- WIRELESS CHANNEL -->
+        <rect x="368" y="30" width="160" height="200" rx="4" stroke="rgba(255,255,255,.04)" stroke-width="1" fill="rgba(255,255,255,.01)" stroke-dasharray="3 3"/>
+        <text x="448" y="48" font-family="DM Mono" font-size="9" letter-spacing="3" fill="rgba(100,140,180,.3)" text-anchor="middle">WIRELESS</text>
+        <text x="448" y="60" font-family="DM Mono" font-size="9" letter-spacing="3" fill="rgba(100,140,180,.3)" text-anchor="middle">CHANNEL</text>
+        <!-- RF waves animation lines -->
+        <path d="M390 130 Q420 110 450 130 Q480 150 510 130" stroke="rgba(167,139,250,.2)" stroke-width="1.5" fill="none"/>
+        <path d="M385 145 Q420 120 450 145 Q480 170 515 145" stroke="rgba(167,139,250,.15)" stroke-width="1" fill="none"/>
+        <path d="M380 160 Q420 130 450 160 Q480 190 520 160" stroke="rgba(167,139,250,.1)" stroke-width="1" fill="none"/>
+        <text x="448" y="200" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.4)" text-anchor="middle">ESP-NOW Protocol</text>
+        <text x="448" y="212" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.4)" text-anchor="middle">802.11 2.4GHz · No AP</text>
+
+        <!-- RECEIVER SIDE (right) -->
+        <text x="788" y="24" font-family="DM Mono" font-size="10" letter-spacing="3" fill="rgba(74,222,128,.7)" text-anchor="middle">RECEIVER</text>
+
+        <!-- Antenna RX -->
+        <rect x="540" y="60" width="52" height="56" rx="5" stroke="rgba(167,139,250,.6)" stroke-width="1.5" fill="rgba(167,139,250,.06)"/>
+        <text x="566" y="82" font-family="DM Mono" font-size="8" fill="rgba(167,139,250,.8)" text-anchor="middle">ANT</text>
+        <text x="566" y="95" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">External</text>
+        <line x1="566" y1="70" x2="566" y2="62" stroke="rgba(167,139,250,.5)" stroke-width="1.5"/>
+        <line x1="556" y1="68" x2="566" y2="62" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+        <line x1="576" y1="68" x2="566" y2="62" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+
+        <!-- Arrow Ant → ESP32 RX -->
+        <path d="M592 88 L638 88" stroke="rgba(74,222,128,.4)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="615" y="82" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">2.4GHz</text>
+
+        <!-- ESP32 RX -->
+        <rect x="640" y="38" width="100" height="100" rx="8" stroke="rgba(74,222,128,.7)" stroke-width="1.5" fill="rgba(74,222,128,.06)"/>
+        <text x="690" y="60" font-family="DM Mono" font-size="9" letter-spacing="1" fill="rgba(74,222,128,.9)" text-anchor="middle">ESP32</text>
+        <text x="690" y="72" font-family="DM Mono" font-size="7" fill="rgba(100,180,100,.6)" text-anchor="middle">RX NODE</text>
+        <rect x="660" y="78" width="18" height="18" rx="2" stroke="rgba(74,222,128,.3)" stroke-width="1" fill="rgba(74,222,128,.04)"/>
+        <text x="669" y="90" font-family="DM Mono" font-size="6" fill="rgba(74,222,128,.5)" text-anchor="middle">DSP</text>
+        <rect x="686" y="78" width="18" height="18" rx="2" stroke="rgba(74,222,128,.3)" stroke-width="1" fill="rgba(74,222,128,.04)"/>
+        <text x="695" y="90" font-family="DM Mono" font-size="6" fill="rgba(74,222,128,.5)" text-anchor="middle">WiFi</text>
+        <text x="690" y="124" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Spec.Sub + NLMS</text>
+        <text x="690" y="136" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Audio reconstruct</text>
+
+        <!-- Arrow ESP32 → Amp -->
+        <path d="M740 88 L788 88" stroke="rgba(74,222,128,.4)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="764" y="82" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">I2S</text>
+
+        <!-- Amplifier -->
+        <rect x="790" y="52" width="68" height="52" rx="5" stroke="rgba(249,115,22,.5)" stroke-width="1.5" fill="rgba(249,115,22,.04)"/>
+        <text x="824" y="74" font-family="DM Mono" font-size="8" fill="rgba(249,115,22,.8)" text-anchor="middle">AMP</text>
+        <text x="824" y="85" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">MAX98357</text>
+        <text x="824" y="97" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">I2S Class D</text>
+
+        <!-- Arrow Amp → Speaker -->
+        <path d="M824 104 L824 148" stroke="rgba(74,222,128,.4)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+        <!-- Speaker -->
+        <rect x="790" y="150" width="68" height="48" rx="5" stroke="rgba(34,211,238,.5)" stroke-width="1.5" fill="rgba(34,211,238,.05)"/>
+        <text x="824" y="170" font-family="DM Mono" font-size="8" fill="rgba(34,211,238,.8)" text-anchor="middle">SPEAKER</text>
+        <text x="824" y="182" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">4Ω 3W</text>
+        <circle cx="824" cy="168" r="8" stroke="rgba(34,211,238,.3)" stroke-width="1" fill="none"/>
+        <circle cx="824" cy="168" r="4" stroke="rgba(34,211,238,.2)" stroke-width="1" fill="rgba(34,211,238,.05)"/>
+
+        <!-- SIGNAL FLOW LABEL ROW -->
+        <text x="64" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">① Capture</text>
+        <text x="200" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">② Sample+Frame</text>
+        <text x="326" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">③ Transmit</text>
+        <text x="448" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">④ Wireless Hop</text>
+        <text x="566" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">⑤ Receive</text>
+        <text x="690" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">⑥ DSP Denoise</text>
+        <text x="824" y="230" font-family="DM Mono" font-size="8" fill="rgba(100,140,180,.5)" text-anchor="middle">⑦ Output</text>
+
+        <!-- DSP DETAIL BOX -->
+        <rect x="60" y="260" width="780" height="100" rx="8" stroke="rgba(255,255,255,.06)" stroke-width="1" fill="rgba(255,255,255,.02)"/>
+        <text x="80" y="282" font-family="DM Mono" font-size="9" letter-spacing="2" fill="rgba(100,140,180,.5)">DSP CHAIN (RX NODE):</text>
+        <!-- Steps -->
+        <rect x="80" y="290" width="110" height="32" rx="4" stroke="rgba(34,211,238,.4)" stroke-width="1" fill="rgba(34,211,238,.05)"/>
+        <text x="135" y="305" font-family="DM Mono" font-size="8" fill="rgba(34,211,238,.8)" text-anchor="middle">① Frame RX</text>
+        <text x="135" y="316" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">ESP-NOW</text>
+        <path d="M190 306 L218 306" stroke="rgba(249,115,22,.4)" stroke-width="1" marker-end="url(#arr)"/>
+        <rect x="220" y="290" width="130" height="32" rx="4" stroke="rgba(249,115,22,.4)" stroke-width="1" fill="rgba(249,115,22,.05)"/>
+        <text x="285" y="305" font-family="DM Mono" font-size="8" fill="rgba(249,115,22,.8)" text-anchor="middle">② Spectral Sub</text>
+        <text x="285" y="316" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Stationary noise</text>
+        <path d="M350 306 L378 306" stroke="rgba(249,115,22,.4)" stroke-width="1" marker-end="url(#arr)"/>
+        <rect x="380" y="290" width="120" height="32" rx="4" stroke="rgba(167,139,250,.4)" stroke-width="1" fill="rgba(167,139,250,.05)"/>
+        <text x="440" y="305" font-family="DM Mono" font-size="8" fill="rgba(167,139,250,.8)" text-anchor="middle">③ NLMS Filter</text>
+        <text x="440" y="316" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Adaptive noise</text>
+        <path d="M500 306 L528 306" stroke="rgba(249,115,22,.4)" stroke-width="1" marker-end="url(#arr)"/>
+        <rect x="530" y="290" width="120" height="32" rx="4" stroke="rgba(74,222,128,.4)" stroke-width="1" fill="rgba(74,222,128,.05)"/>
+        <text x="590" y="305" font-family="DM Mono" font-size="8" fill="rgba(74,222,128,.8)" text-anchor="middle">④ DAC / I2S</text>
+        <text x="590" y="316" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Reconstruct</text>
+        <path d="M650 306 L678 306" stroke="rgba(249,115,22,.4)" stroke-width="1" marker-end="url(#arr)"/>
+        <rect x="680" y="290" width="110" height="32" rx="4" stroke="rgba(34,211,238,.4)" stroke-width="1" fill="rgba(34,211,238,.05)"/>
+        <text x="735" y="305" font-family="DM Mono" font-size="8" fill="rgba(34,211,238,.8)" text-anchor="middle">⑤ Speaker</text>
+        <text x="735" y="316" font-family="DM Mono" font-size="7" fill="rgba(100,140,180,.5)" text-anchor="middle">Clean audio out</text>
+      </svg>
+    </div>
+
+    <!-- Parts legend -->
+    <div class="parts-legend">
+      <div class="part-item" data-num="①"><div><div class="part-name">ESP32 (×2)</div><div class="part-desc">Dual-core Xtensa LX6 · 240MHz · Built-in 2.4GHz WiFi chipset</div></div></div>
+      <div class="part-item" data-num="②"><div><div class="part-name">I2S Microphone (INMP441)</div><div class="part-desc">Digital MEMS microphone · I2S PDM output · 24-bit · SNR 61dB</div></div></div>
+      <div class="part-item" data-num="③"><div><div class="part-name">MAX98357A Amplifier</div><div class="part-desc">I2S input Class-D amp · 3.2W output · Single supply · No external components</div></div></div>
+      <div class="part-item" data-num="④"><div><div class="part-name">External Antenna (×2)</div><div class="part-desc">2.4GHz directional antenna · SMA connector · ~4dBi gain · Extends range to ~200m</div></div></div>
+      <div class="part-item" data-num="⑤"><div><div class="part-name">4Ω 3W Speaker</div><div class="part-desc">Full-range speaker driver matched to MAX98357A output</div></div></div>
+      <div class="part-item" data-num="⑥"><div><div class="part-name">DSP Software (ESP32)</div><div class="part-desc">Spectral Subtraction + NLMS adaptive filter running bare-metal on core 1</div></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- DSP SIMULATION -->
+<section id="dsp-sim">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Interactive Simulation</div>
+  <h2 class="sec-h" data-r="u" data-d="1">DSP <span style="color:var(--acc)">Pipeline</span></h2>
+  <p style="font-size:13px;color:var(--t2);margin-top:8px;max-width:520px;line-height:1.8" data-r="u" data-d="2">Visualize how Spectral Subtraction and NLMS filtering clean the noisy audio signal in real time.</p>
+
+  <div class="dsp-layout" data-r="u" data-d="3">
+    <!-- Waveform panel -->
+    <div class="waveform-panel">
+      <div class="wf-header">
+        <span class="wf-title">Audio Waveform Monitor</span>
+        <span class="wf-badge" id="wf-badge" style="background:rgba(249,115,22,.1);color:var(--acc);border:1px solid var(--acc-g)">LIVE</span>
+      </div>
+      <div class="wf-body">
+        <div class="wf-canvas-wrap">
+          <canvas id="wf-canvas" width="560" height="140" style="height:140px"></canvas>
+        </div>
+        <div class="wf-controls">
+          <button class="wf-btn active" id="btn-raw" onclick="setWfMode('raw',this)">Raw Signal</button>
+          <button class="wf-btn" id="btn-noisy" onclick="setWfMode('noisy',this)">+ Noise</button>
+          <button class="wf-btn" id="btn-spec" onclick="setWfMode('spec',this)">After Spec.Sub</button>
+          <button class="wf-btn" id="btn-nlms" onclick="setWfMode('nlms',this)">After NLMS</button>
+          <span class="wf-info" id="wf-snr">SNR: —</span>
+        </div>
+        <div style="margin-top:10px">
+          <div id="spectrum-wrap" style="background:#0a0c14;border-radius:6px;overflow:hidden">
+            <canvas id="spec-canvas" width="560" height="80" style="height:80px;display:block;width:100%"></canvas>
+          </div>
+          <div style="font-size:9px;letter-spacing:.1em;color:var(--t3);margin-top:6px;text-align:center">FREQUENCY SPECTRUM (0–4kHz)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline panel -->
+    <div class="pipeline-panel">
+      <div class="pp-header"><div class="pp-title">Processing Chain — Latency Breakdown</div></div>
+      <div class="pp-body">
+        <div class="pp-step" style="--sc:var(--teal)">
+          <div class="pp-step-header">
+            <span class="pp-step-name">① I2S Capture &amp; Sampling</span>
+            <span class="pp-step-time">~0.125ms / frame</span>
+          </div>
+          <div class="pp-step-desc">I2S DMA reads 16 samples from INMP441 at 8kHz. PDM to PCM decimation. 16-bit fixed-point buffer.</div>
+          <div class="pp-step-formula">fs = 8000 Hz · frame = 16 samples · t_frame = 2ms</div>
+          <div class="pp-step-bar-bg"><div class="pp-step-bar" data-w="20" style="background:var(--teal)"></div></div>
+        </div>
+        <div class="pp-step" style="--sc:var(--acc)">
+          <div class="pp-step-header">
+            <span class="pp-step-name">② ESP-NOW Transmission</span>
+            <span class="pp-step-time">~4ms</span>
+          </div>
+          <div class="pp-step-desc">Frame packed as raw byte payload. ESP-NOW sends directly to MAC address — no AP, no DHCP, no IP overhead. One-way latency ≈ 4ms at 10m.</div>
+          <div class="pp-step-formula">Protocol: IEEE 802.11 · Payload: 250 bytes max · Mode: Station</div>
+          <div class="pp-step-bar-bg"><div class="pp-step-bar" data-w="40" style="background:var(--acc)"></div></div>
+        </div>
+        <div class="pp-step" style="--sc:rgba(249,115,22,.9)">
+          <div class="pp-step-header">
+            <span class="pp-step-name">③ Spectral Subtraction</span>
+            <span class="pp-step-time">~6ms</span>
+          </div>
+          <div class="pp-step-desc">FFT → estimate noise PSD in silence frames → subtract noise magnitude from signal magnitude → IFFT reconstruct. Removes stationary background noise (fan, HVAC).</div>
+          <div class="pp-step-formula">|Ŝ(ω)| = |X(ω)| − α·|N̂(ω)| · ĉlamp to 0</div>
+          <div class="pp-step-bar-bg"><div class="pp-step-bar" data-w="60" style="background:rgba(249,115,22,.8)"></div></div>
+        </div>
+        <div class="pp-step" style="--sc:var(--violet)">
+          <div class="pp-step-header">
+            <span class="pp-step-name">④ NLMS Adaptive Filter</span>
+            <span class="pp-step-time">~3ms</span>
+          </div>
+          <div class="pp-step-desc">Normalized Least Mean Squares adapts filter coefficients frame-by-frame to cancel dynamic noise (wind, movement). Converges in ~50ms after startup.</div>
+          <div class="pp-step-formula">w(n+1) = w(n) + μ·e(n)·x(n) / (||x(n)||² + ε)</div>
+          <div class="pp-step-bar-bg"><div class="pp-step-bar" data-w="30" style="background:var(--violet)"></div></div>
+        </div>
+        <div class="pp-step" style="--sc:var(--sage)">
+          <div class="pp-step-header">
+            <span class="pp-step-name">⑤ DAC / I2S Output</span>
+            <span class="pp-step-time">~2ms</span>
+          </div>
+          <div class="pp-step-desc">Cleaned PCM samples streamed to MAX98357A via I2S. Class-D amplification to 4Ω speaker. Total pipeline: ~15ms end-to-end.</div>
+          <div class="pp-step-formula">Total: 4ms (TX) + 9ms (DSP) + 2ms (DAC) = ~15ms</div>
+          <div class="pp-step-bar-bg"><div class="pp-step-bar" data-w="18" style="background:var(--sage)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- PROTOCOL + SPECS -->
+<section id="protocol">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Technical Specifications</div>
+  <h2 class="sec-h" data-r="u" data-d="1">System <span style="color:var(--acc)">Specs</span></h2>
+  <div class="protocol-grid" data-r="u" data-d="2">
+    <div class="proto-card" style="--pc:var(--acc)">
+      <div class="proto-icon">📡</div>
+      <div class="proto-title">ESP-NOW Protocol</div>
+      <div class="proto-body">Peer-to-peer 802.11 protocol bypassing full WiFi stack. Sub-10ms latency without router.</div>
+      <div class="proto-spec">
+        <div class="ps-row"><span class="ps-k">Frequency</span><span class="ps-v">2.4GHz IEEE 802.11</span></div>
+        <div class="ps-row"><span class="ps-k">Max Payload</span><span class="ps-v">250 bytes/frame</span></div>
+        <div class="ps-row"><span class="ps-k">Latency</span><span class="ps-v">~4ms @ 10m</span></div>
+        <div class="ps-row"><span class="ps-k">Range (w/ ant)</span><span class="ps-v">~200m LOS</span></div>
+        <div class="ps-row"><span class="ps-k">Auth</span><span class="ps-v">MAC pairing</span></div>
+      </div>
+    </div>
+    <div class="proto-card" style="--pc:var(--violet)">
+      <div class="proto-icon">🔊</div>
+      <div class="proto-title">Audio Chain</div>
+      <div class="proto-body">Digital audio path — no analog conversion until final output stage. Maximum SNR preservation.</div>
+      <div class="proto-spec">
+        <div class="ps-row"><span class="ps-k">Sample Rate</span><span class="ps-v">8kHz (voice)</span></div>
+        <div class="ps-row"><span class="ps-k">Bit Depth</span><span class="ps-v">16-bit PCM</span></div>
+        <div class="ps-row"><span class="ps-k">Frame Size</span><span class="ps-v">16 samples</span></div>
+        <div class="ps-row"><span class="ps-k">Interface</span><span class="ps-v">I2S (full duplex)</span></div>
+        <div class="ps-row"><span class="ps-k">SNR gain</span><span class="ps-v">~12dB (DSP)</span></div>
+      </div>
+    </div>
+    <div class="proto-card" style="--pc:var(--sage)">
+      <div class="proto-icon">⚡</div>
+      <div class="proto-title">Hardware</div>
+      <div class="proto-body">Compact portable design. Low power consumption. Battery operable for field deployment.</div>
+      <div class="proto-spec">
+        <div class="ps-row"><span class="ps-k">MCU</span><span class="ps-v">ESP32 (×2 nodes)</span></div>
+        <div class="ps-row"><span class="ps-k">Microphone</span><span class="ps-v">INMP441 I2S MEMS</span></div>
+        <div class="ps-row"><span class="ps-k">Amplifier</span><span class="ps-v">MAX98357A I2S</span></div>
+        <div class="ps-row"><span class="ps-k">Speaker</span><span class="ps-v">4Ω 3W full-range</span></div>
+        <div class="ps-row"><span class="ps-k">Power</span><span class="ps-v">3.3V / 5V USB</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="fl">Digital Walkie-Talkie — <span>Islam Emad</span> · DSP Project · Horus University ECE</div>
+  <a href="index.html" style="font-size:10px;color:var(--t3);text-decoration:none;cursor:none;">← Portfolio</a>
+</footer>
+
+<script>
+// CURSOR
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.transform=`translate(${mx}px,${my}px)`;});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));});
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('wt-theme',t);}
+const st=localStorage.getItem('wt-theme');if(st)document.documentElement.setAttribute('data-theme',st);
+const ro=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.08});
+document.querySelectorAll('[data-r]').forEach(el=>ro.observe(el));
+// Animate bars on scroll
+const barIO=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.pp-step-bar').forEach(b=>{b.style.width=b.dataset.w+'%';});barIO.unobserve(e.target);}});},{threshold:.3});
+document.querySelectorAll('.pipeline-panel').forEach(p=>barIO.observe(p));
+
+// ══════════════════════════
+// WAVEFORM VISUALIZATION
+// ══════════════════════════
+let wfMode='raw';
+let wfAnimId=null;
+let t=0;
+
+function setWfMode(mode,btn){
+  wfMode=mode;
+  document.querySelectorAll('.wf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const snrMap={raw:'SNR: 28dB (clean)',noisy:'SNR: 6dB (noisy)',spec:'SNR: 18dB (+12dB)',nlms:'SNR: 26dB (+20dB)'};
+  document.getElementById('wf-snr').textContent=snrMap[mode]||'SNR: —';
+}
+
+function drawWaveform(){
+  const canvas=document.getElementById('wf-canvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio||560;
+  canvas.height=140*window.devicePixelRatio||140;
+  ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+  const W=canvas.offsetWidth||560,H=140;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0a0c14';ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  for(let i=0;i<W;i+=40){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
+  for(let j=0;j<H;j+=28){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
+  // Center line
+  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+  // Wave
+  const colors={raw:'rgba(34,211,238,.9)',noisy:'rgba(248,113,113,.9)',spec:'rgba(249,115,22,.9)',nlms:'rgba(74,222,128,.9)'};
+  const color=colors[wfMode]||colors.raw;
+  ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=1.5;
+  const samples=W;
+  for(let i=0;i<=samples;i++){
+    const x=i;
+    const phase=i/samples*Math.PI*2*8+t;
+    let y=Math.sin(phase)*0.6+Math.sin(phase*1.7)*0.25+Math.sin(phase*3.1)*0.1;
+    if(wfMode==='noisy'){
+      y+=Math.sin(phase*12)*0.3+(Math.random()-.5)*0.4;
+    } else if(wfMode==='spec'){
+      y+=Math.sin(phase*12)*0.08+(Math.random()-.5)*0.1;
+    } else if(wfMode==='nlms'){
+      y+=(Math.random()-.5)*0.04;
+    }
+    y=y*H*0.38+H/2;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // Glow
+  ctx.strokeStyle=color.replace('.9','.2');ctx.lineWidth=4;ctx.stroke();
+}
+
+function drawSpectrum(){
+  const canvas=document.getElementById('spec-canvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio||560;
+  canvas.height=80*window.devicePixelRatio||80;
+  ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+  const W=canvas.offsetWidth||560,H=80;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0a0c14';ctx.fillRect(0,0,W,H);
+  const bars=64;const bw=W/bars-1;
+  const noiseProfiles={
+    raw:(i)=>Math.pow(Math.sin(i/bars*Math.PI),1.5)*(0.7+Math.sin(i*0.8+t*0.3)*0.2)+0.03,
+    noisy:(i)=>Math.pow(Math.sin(i/bars*Math.PI),1.5)*0.6+0.25+Math.sin(i*0.5)*0.1,
+    spec:(i)=>Math.pow(Math.sin(i/bars*Math.PI),1.5)*(0.65+Math.sin(i*0.8+t*0.3)*0.15)+0.04,
+    nlms:(i)=>Math.pow(Math.sin(i/bars*Math.PI),1.5)*(0.68+Math.sin(i*0.8+t*0.3)*0.18)+0.02,
+  };
+  const fn=noiseProfiles[wfMode]||noiseProfiles.raw;
+  const colors={raw:'rgba(34,211,238',noisy:'rgba(248,113,113',spec:'rgba(249,115,22',nlms:'rgba(74,222,128'};
+  const c=colors[wfMode]||colors.raw;
+  for(let i=0;i<bars;i++){
+    const h=fn(i)*H;
+    const grad=ctx.createLinearGradient(0,H-h,0,H);
+    grad.addColorStop(0,c+',.9)');grad.addColorStop(1,c+',.2)');
+    ctx.fillStyle=grad;
+    ctx.fillRect(i*(bw+1),H-h,bw,h);
+  }
+}
+
+function wfLoop(){
+  t+=0.04;
+  drawWaveform();
+  drawSpectrum();
+  wfAnimId=requestAnimationFrame(wfLoop);
+}
+wfLoop();
+document.getElementById('wf-snr').textContent='SNR: 28dB (clean)';
+</script>
+</body>
+</html>
