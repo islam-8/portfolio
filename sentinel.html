@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SENTINEL — Advanced C-UAS Detection, Tracking & Neutralization System built on Raspberry Pi 5. Real-time YOLOv8 drone detection under 40ms latency.">
+<title>Advanced System for Drone Detection, Tracking, and Neutralization — Islam Emad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ease:cubic-bezier(.16,1,.3,1);
+  --display:'Bricolage Grotesque',sans-serif;
+  --mono:'DM Mono',monospace;
+  --body:'Instrument Sans',sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#07090e;--bg1:#0b0f18;--bg2:#0f1520;--bg3:#131c2b;
+  --rim0:rgba(255,255,255,.04);--rim1:rgba(255,255,255,.08);--rim2:rgba(255,255,255,.14);
+  --rima:rgba(99,179,237,.22);
+  --acc:#63b3ed;--acc-d:rgba(99,179,237,.09);--acc-g:rgba(99,179,237,.18);
+  --teal:#4fd1c5;--amber:#f6ad55;--rose:#fc8181;--sage:#68d391;--purple:#b794f4;
+  --t0:#f0f6fc;--t1:#c9d8e8;--t2:#7a95b0;--t3:#3d5570;--t4:#1e3044;
+  --glass:rgba(15,21,32,.75);--shadow:0 32px 80px rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f0f4fb;--bg1:#e8eef8;--bg2:#dfe7f5;--bg3:#d5dcee;
+  --rim0:rgba(0,0,0,.06);--rim1:rgba(0,0,0,.11);--rim2:rgba(0,0,0,.18);
+  --rima:rgba(37,99,235,.2);
+  --acc:#2563eb;--acc-d:rgba(37,99,235,.08);--acc-g:rgba(37,99,235,.15);
+  --teal:#0d9488;--amber:#d97706;--rose:#dc2626;--sage:#16a34a;--purple:#7c3aed;
+  --t0:#0f172a;--t1:#1e293b;--t2:#475569;--t3:#94a3b8;--t4:#cbd5e1;
+  --glass:rgba(255,255,255,.8);--shadow:0 32px 80px rgba(0,0,0,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none;}
+#cd,#cr{position:fixed;pointer-events:none;z-index:9999;top:0;left:0;}
+#cd div{width:5px;height:5px;border-radius:50%;background:var(--t0);transform:translate(-50%,-50%);}
+#cr div{width:32px;height:32px;border-radius:50%;border:1px solid rgba(99,179,237,.35);transform:translate(-50%,-50%);transition:width .25s var(--ease),height .25s var(--ease);}
+body.ch #cr div{width:48px;height:48px;border-color:var(--acc);}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:998;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:300px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:56px;padding:0 clamp(20px,4vw,60px);display:flex;align-items:center;justify-content:space-between;background:var(--glass);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim0);}
+.nav-back{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--t3);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s;cursor:none;}
+.nav-back:hover{color:var(--acc);}
+.nav-id{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.nav-pulse{width:6px;height:6px;border-radius:50%;background:var(--rose);animation:pulse 1.5s ease infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(252,129,129,.5)}70%{box-shadow:0 0 0 8px rgba(252,129,129,0)}100%{box-shadow:0 0 0 0 rgba(252,129,129,0)}}
+.nav-theme{font-family:var(--mono);font-size:10px;padding:5px 12px;border:1px solid var(--rim1);background:transparent;color:var(--t3);border-radius:4px;cursor:pointer;transition:all .2s;}
+.nav-theme:hover{border-color:var(--acc);color:var(--acc);}
+
+/* LAYOUT */
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,60px);}
+section{padding:clamp(64px,8vw,100px) 0;position:relative;z-index:1;}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--acc);opacity:.6;flex-shrink:0;}
+.sec-h{font-family:var(--display);font-size:clamp(28px,4.5vw,52px);font-weight:800;color:var(--t0);letter-spacing:-.03em;line-height:1.05;}
+.body-md{font-size:15px;color:var(--t2);line-height:1.85;}
+
+/* REVEAL */
+[data-r]{opacity:0;transition:opacity .7s var(--ease),transform .7s var(--ease);}
+[data-r="u"]{transform:translateY(28px);}[data-r="l"]{transform:translateX(-22px);}[data-r="r"]{transform:translateX(22px);}
+[data-r].in{opacity:1;transform:none;}
+[data-d="1"]{transition-delay:.1s}[data-d="2"]{transition-delay:.2s}[data-d="3"]{transition-delay:.3s}[data-d="4"]{transition-delay:.4s}
+
+/* ═══ HERO ═══ */
+#s-hero{
+  min-height:100vh;padding-top:56px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(252,129,129,.04),transparent 70%);
+}
+.s-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(252,129,129,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(252,129,129,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 40%,black,transparent 80%);pointer-events:none;}
+.s-hero-inner{position:relative;z-index:2;}
+.s-hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--rose);background:rgba(252,129,129,.06);border:1px solid rgba(252,129,129,.2);padding:6px 16px;border-radius:40px;margin-bottom:20px;}
+.s-hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--rose);animation:pulse 1.5s ease infinite;}
+.s-hero-name{font-family:var(--display);font-size:clamp(56px,10vw,120px);font-weight:800;line-height:.9;letter-spacing:-.04em;color:var(--t0);}
+.s-hero-name .sub{display:block;font-size:clamp(18px,2.5vw,28px);font-weight:300;letter-spacing:.02em;color:var(--t2);margin-top:12px;}
+.s-hero-tagline{font-size:clamp(15px,1.8vw,20px);color:var(--t2);max-width:600px;line-height:1.7;margin-top:20px;border-left:2px solid rgba(252,129,129,.3);padding-left:18px;}
+.s-hero-metrics{display:flex;gap:0;margin-top:36px;flex-wrap:wrap;}
+.s-metric{padding:16px 24px 16px 0;border-right:1px solid var(--rim0);margin-right:24px;}
+.s-metric:last-child{border-right:none;}
+.s-metric-n{font-family:var(--display);font-size:30px;font-weight:800;color:var(--t0);line-height:1;letter-spacing:-.03em;}
+.s-metric-n sup{font-size:14px;color:var(--rose);vertical-align:super;}
+.s-metric-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--t3);margin-top:4px;}
+.s-hero-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:12px 24px;border-radius:7px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s var(--ease);cursor:none;}
+.btn-primary{background:var(--rose);color:#000;border:1px solid var(--rose);font-weight:500;}
+.btn-primary:hover{background:#fda0a0;transform:translateY(-2px);box-shadow:0 16px 40px rgba(252,129,129,.25);}
+.btn-outline{background:transparent;color:var(--t1);border:1px solid var(--rim2);}
+.btn-outline:hover{border-color:rgba(252,129,129,.4);color:var(--t0);background:rgba(252,129,129,.06);}
+
+/* ═══ LIVE SIMULATION — MAIN FEATURE ═══ */
+#s-sim{background:var(--bg1);}
+.sim-layout{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:48px;}
+@media(max-width:900px){.sim-layout{grid-template-columns:1fr;}}
+
+/* DRONE VISUAL CANVAS */
+.drone-view{
+  background:var(--bg2);border:1px solid var(--rim1);border-radius:16px;
+  overflow:hidden;position:relative;
+}
+.drone-view-header{
+  background:var(--bg3);border-bottom:1px solid var(--rim0);
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
+}
+.dvh-title{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--t3);}
+.dvh-status{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;color:var(--t2);}
+.dvh-dot{width:6px;height:6px;border-radius:50%;}
+.drone-canvas-wrap{position:relative;background:#000;overflow:hidden;}
+#drone-canvas{display:block;width:100%;image-rendering:pixelated;}
+/* Scanline overlay on drone view */
+.drone-canvas-wrap::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 3px);pointer-events:none;z-index:2;}
+/* Corner HUD brackets */
+.hud-corner{position:absolute;width:24px;height:24px;border-style:solid;z-index:3;pointer-events:none;transition:opacity .3s;}
+.hud-corner.tl{top:8px;left:8px;border-width:2px 0 0 2px;}
+.hud-corner.tr{top:8px;right:8px;border-width:2px 2px 0 0;}
+.hud-corner.bl{bottom:8px;left:8px;border-width:0 0 2px 2px;}
+.hud-corner.br{bottom:8px;right:8px;border-width:0 2px 2px 0;}
+/* HUD overlays */
+.hud-overlay{position:absolute;inset:0;z-index:3;pointer-events:none;}
+.hud-text{font-family:var(--mono);font-size:9px;letter-spacing:.1em;position:absolute;}
+.hud-crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;opacity:.3;}
+.drone-view-footer{padding:10px 16px;border-top:1px solid var(--rim0);display:flex;gap:16px;flex-wrap:wrap;}
+.dvf-item{font-family:var(--mono);font-size:9px;color:var(--t3);}
+.dvf-item span{color:var(--t1);}
+
+/* CONTROL PANEL */
+.control-panel{background:var(--bg2);border:1px solid var(--rim1);border-radius:16px;overflow:hidden;}
+.cp-header{background:var(--bg3);border-bottom:1px solid var(--rim0);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.cp-title{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--t3);}
+.cp-time{font-family:var(--mono);font-size:10px;color:var(--t4);}
+.cp-scenarios{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid var(--rim0);flex-wrap:wrap;}
+.cp-scen{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:5px;border:1px solid var(--rim1);color:var(--t3);background:transparent;cursor:pointer;transition:all .2s;}
+.cp-scen.active{border-color:var(--rose);color:var(--rose);background:rgba(252,129,129,.08);}
+.cp-scen:hover:not(.active){color:var(--t2);border-color:var(--rim2);}
+.cp-body{padding:16px;}
+.cp-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.cp-kpi{background:var(--bg3);border:1px solid var(--rim0);border-radius:7px;padding:12px;position:relative;overflow:hidden;}
+.cp-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--kc,var(--rose));}
+.cp-kpi-k{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--t3);margin-bottom:5px;}
+.cp-kpi-v{font-family:var(--display);font-size:22px;font-weight:700;color:var(--kc-t,var(--rose));line-height:1;transition:color .3s;}
+.cp-kpi-u{font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:3px;}
+
+/* RADAR MINI */
+.radar-mini{background:var(--bg3);border:1px solid var(--rim0);border-radius:8px;padding:12px;margin-bottom:14px;position:relative;}
+.radar-mini-title{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);margin-bottom:8px;}
+#radar-mini-canvas{display:block;width:100%;height:120px;border-radius:4px;}
+.radar-status{display:flex;align-items:center;gap:8px;margin-top:8px;font-family:var(--mono);font-size:9px;color:var(--t2);}
+.rd{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* PIPELINE */
+.pipeline-wrap{background:var(--bg3);border:1px solid var(--rim0);border-radius:8px;padding:12px;margin-bottom:14px;}
+.pipeline-title{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);margin-bottom:10px;}
+.pl-row{display:flex;align-items:center;overflow-x:auto;gap:0;padding-bottom:2px;}
+.pl-node{flex-shrink:0;min-width:72px;text-align:center;}
+.pl-box{background:var(--bg2);border:1px solid var(--rim0);border-radius:4px;padding:7px 5px;transition:border-color .3s,box-shadow .3s;}
+.pl-box.ok{border-color:rgba(104,211,145,.3);}
+.pl-box.warm{border-color:rgba(246,173,85,.35);}
+.pl-box.hot{border-color:rgba(252,129,129,.4);box-shadow:0 0 10px rgba(252,129,129,.15);}
+.pl-lbl{font-family:var(--mono);font-size:7px;letter-spacing:.06em;color:var(--t3);display:block;margin-bottom:3px;}
+.pl-ms{font-family:var(--display);font-size:13px;font-weight:700;}
+.pl-ms.ok{color:var(--sage);}.pl-ms.warm{color:var(--amber);}.pl-ms.hot{color:var(--rose);}.pl-ms.skip{color:var(--t4);}
+.pl-bar-bg{height:2px;background:var(--rim0);border-radius:1px;overflow:hidden;margin-top:4px;}
+.pl-bar-fill{height:100%;border-radius:1px;transition:width .5s var(--ease);}
+.pl-arr{flex-shrink:0;padding:0 4px 12px;color:var(--t4);font-size:9px;font-family:var(--mono);}
+
+/* VERDICT */
+.cp-verdict{background:rgba(252,129,129,.04);border:1px solid rgba(252,129,129,.15);border-radius:7px;padding:12px;margin-bottom:12px;}
+.cpv-title{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--rose);margin-bottom:6px;}
+.cpv-body{font-size:12px;color:var(--t2);line-height:1.7;}
+.cpv-body b{color:var(--t1);font-weight:600;}.cpv-body em{color:var(--rose);font-style:normal;}
+
+.run-btn{width:100%;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px;border-radius:5px;border:1px solid var(--rim2);color:var(--t2);background:transparent;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.run-btn:hover:not(:disabled){border-color:var(--rose);color:var(--rose);background:rgba(252,129,129,.06);}
+.run-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ═══ ARCHITECTURE ═══ */
+#s-arch{background:var(--bg);}
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:48px;}
+@media(max-width:760px){.arch-grid{grid-template-columns:1fr;}}
+.arch-card{background:var(--bg2);border:1px solid var(--rim1);border-radius:12px;padding:24px;position:relative;overflow:hidden;}
+.arch-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--rose));}
+.arch-card-title{font-family:var(--display);font-size:16px;font-weight:700;color:var(--t0);margin-bottom:12px;}
+.arch-card-body{font-size:13px;color:var(--t2);line-height:1.8;}
+.arch-card-body code{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:3px;color:var(--acc);}
+.arch-spec-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.arch-spec{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--rim0);}
+.arch-spec:last-child{border-bottom:none;}
+.arch-spec-k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;}
+.arch-spec-v{font-size:12px;color:var(--t1);font-weight:500;}
+.arch-spec-v a{color:var(--acc);text-decoration:none;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.tag{font-family:var(--mono);font-size:9px;letter-spacing:.07em;padding:4px 10px;border-radius:4px;border:1px solid var(--rim1);color:var(--t3);transition:all .2s;}
+.tag:hover{border-color:rgba(252,129,129,.35);color:var(--t2);}
+
+/* ═══ PHASE 2 ═══ */
+#s-phase2{background:var(--bg1);}
+.phase2-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:36px;}
+.p2-card{background:var(--bg2);border:1px solid var(--rim1);border-radius:10px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s var(--ease);}
+.p2-card:hover{border-color:var(--rim2);transform:translateY(-2px);}
+.p2-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--pc,var(--acc));opacity:.5;}
+.p2-icon{font-size:22px;margin-bottom:10px;}
+.p2-title{font-family:var(--display);font-size:14px;font-weight:700;color:var(--t0);margin-bottom:6px;}
+.p2-body{font-size:12px;color:var(--t2);line-height:1.7;}
+.p2-status{font-family:var(--mono);font-size:8px;letter-spacing:.1em;margin-top:8px;padding:3px 8px;border-radius:3px;display:inline-block;}
+.p2-planned{background:rgba(99,179,237,.08);color:var(--acc);border:1px solid var(--acc-g);}
+.p2-acquired{background:rgba(104,211,145,.08);color:var(--sage);border:1px solid rgba(104,211,145,.2);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--rim0);padding:24px clamp(20px,4vw,60px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-l{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.footer-l span{color:var(--rose);}
+
+@media(max-width:600px){nav{padding:0 20px;}section{padding:clamp(52px,7vw,80px) 0;}footer{padding:20px;}}
+</style>
+</head>
+<body>
+
+<div id="cd"><div></div></div>
+<div id="cr"><div></div></div>
+<div class="grain" aria-hidden="true"></div>
+
+<nav>
+  <a class="nav-back" href="index.html">← Back to Portfolio</a>
+  <div class="nav-id"><div class="nav-pulse"></div>SENTINEL C-UAS — Islam Emad</div>
+  <button class="nav-theme" onclick="toggleTheme()">☀ / ◑</button>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="s-hero">
+  <div class="s-hero-grid"></div>
+  <div class="wrap s-hero-inner">
+    <div class="s-hero-badge" data-r="u">Active Project · Horus University ECE · Team Leader</div>
+    <h1 class="s-hero-name" data-r="u" data-d="1">
+      SENTINEL
+      <span class="sub">Advanced System for Drone Detection, Tracking, and Neutralization</span>
+    </h1>
+    <p class="s-hero-tagline" data-r="u" data-d="2">
+      Real-time counter-drone platform on Raspberry Pi 5 — YOLOv8 AI vision pipeline,
+      RF spectrum monitoring, PTZ motor tracking, and live dashboard under <strong style="color:var(--rose)">40ms latency</strong>.
+    </p>
+    <div class="s-hero-metrics" data-r="u" data-d="3">
+      <div class="s-metric"><div class="s-metric-n">42</div><div class="s-metric-l">FPS Idle</div></div>
+      <div class="s-metric"><div class="s-metric-n">28</div><div class="s-metric-l">FPS Detect</div></div>
+      <div class="s-metric"><div class="s-metric-n">&lt;40</div><div class="s-metric-l">ms Latency</div></div>
+      <div class="s-metric"><div class="s-metric-n">88.8<sup>%</sup></div><div class="s-metric-l">mAP50 AI</div></div>
+      <div class="s-metric"><div class="s-metric-n">1.2<sup>km</sup></div><div class="s-metric-l">Detection Range</div></div>
+    </div>
+    <div class="s-hero-btns" data-r="u" data-d="4">
+      <a href="https://github.com/islam-8" target="_blank" class="btn btn-primary">View Source Code ↗</a>
+      <a href="#s-sim" class="btn btn-outline">Run Live Simulation</a>
+    </div>
+    <div style="margin-top:28px" data-r="u" data-d="5">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--t3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;">TEAM — 6 MEMBERS <span style="flex:1;height:1px;background:rgba(255,255,255,.06)"></span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid rgba(252,129,129,.35);color:var(--rose)">Islam Emad Ismail — Leader</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid var(--rim1);color:var(--t2)">Abdelaziz Eltohami Mohamed</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid var(--rim1);color:var(--t2)">Rafeek Marzouk El-Fauomy</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid var(--rim1);color:var(--t2)">Rawan Mohammed Elbialy</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid var(--rim1);color:var(--t2)">Sagy Shawky Abo El-Naga</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid var(--rim1);color:var(--t2)">Islam Hesham Hamed</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--t3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;">SUPERVISORS <span style="flex:1;height:1px;background:rgba(255,255,255,.06)"></span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid rgba(99,179,237,.3);color:var(--acc)">Prof. Dr. Amr Hussein</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid rgba(99,179,237,.2);color:var(--acc)">Assoc. Prof. Dr. Mervat Elseddek</span>
+        <span style="font-family:var(--mono);font-size:10px;padding:5px 13px;border-radius:40px;border:1px solid rgba(99,179,237,.2);color:var(--acc)">Dr. Rania Al-Abd</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ LIVE SIMULATION ═══ -->
+<section id="s-sim">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Interactive System Simulation</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Live <span style="color:var(--rose)">Visual Simulation</span></h2>
+  <p class="body-md" data-r="u" data-d="2" style="max-width:560px;margin-top:10px">
+    Real drone imagery rendered through the SENTINEL detection pipeline. Select a scenario to see how the system responds in real time.
+  </p>
+
+  <div class="sim-layout" data-r="u" data-d="3">
+
+    <!-- DRONE VISUAL -->
+    <div class="drone-view">
+      <div class="drone-view-header">
+        <span class="dvh-title">HIKVISION DS-2DE4225IW — LIVE FEED</span>
+        <div class="dvh-status">
+          <div class="dvh-dot" id="feed-dot" style="background:var(--sage);animation:pulse 2s ease infinite;"></div>
+          <span id="feed-status">NOMINAL</span>
+        </div>
+      </div>
+      <div class="drone-canvas-wrap">
+        <div class="hud-corner tl" style="border-color:rgba(104,211,145,.6)"></div>
+        <div class="hud-corner tr" style="border-color:rgba(104,211,145,.6)"></div>
+        <div class="hud-corner bl" style="border-color:rgba(104,211,145,.6)"></div>
+        <div class="hud-corner br" style="border-color:rgba(104,211,145,.6)"></div>
+
+        <canvas id="drone-canvas" width="640" height="360" style="height:260px;width:100%;display:block;"></canvas>
+
+        <!-- HUD OVERLAY (HTML elements for crisp text) -->
+        <div class="hud-overlay" id="hud-overlay">
+          <div class="hud-text" style="top:8px;left:56px;color:rgba(104,211,145,.7)" id="hud-tl">SENTINEL SYS v1.0</div>
+          <div class="hud-text" style="top:8px;right:56px;color:rgba(104,211,145,.7)" id="hud-tr"></div>
+          <div class="hud-text" style="bottom:8px;left:56px;color:rgba(104,211,145,.5)" id="hud-bl"></div>
+          <div class="hud-text" style="bottom:8px;right:56px;color:rgba(246,173,85,.7)" id="hud-br"></div>
+        </div>
+      </div>
+      <div class="drone-view-footer">
+        <div class="dvf-item">ZOOM: <span id="dv-zoom">1.0×</span></div>
+        <div class="dvf-item">BEARING: <span id="dv-bearing">000°</span></div>
+        <div class="dvf-item">TARGETS: <span id="dv-targets" style="color:var(--rose)">0</span></div>
+        <div class="dvf-item">MODE: <span id="dv-mode" style="color:var(--sage)">IDLE</span></div>
+        <div class="dvf-item">FPS: <span id="dv-fps">—</span></div>
+      </div>
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+      <div class="cp-header">
+        <span class="cp-title">SYSTEM DIAGNOSTICS // RPi5</span>
+        <span class="cp-time" id="cp-clock">—</span>
+      </div>
+      <div class="cp-scenarios">
+        <button class="cp-scen active" onclick="setSimScen('idle',this)">Idle</button>
+        <button class="cp-scen" onclick="setSimScen('detect',this)">Detect</button>
+        <button class="cp-scen" onclick="setSimScen('track',this)">Track</button>
+        <button class="cp-scen" onclick="setSimScen('multi',this)">Multi-Target</button>
+        <button class="cp-scen" onclick="setSimScen('stress',this)">Stress</button>
+      </div>
+      <div class="cp-body">
+        <div class="cp-kpis">
+          <div class="cp-kpi" style="--kc:rgba(104,211,145,.6);--kc-t:var(--sage)"><div class="cp-kpi-k">FPS</div><div class="cp-kpi-v" id="cp-fps">—</div><div class="cp-kpi-u">frames/sec</div></div>
+          <div class="cp-kpi" style="--kc:rgba(252,129,129,.6);--kc-t:var(--rose)"><div class="cp-kpi-k">Latency</div><div class="cp-kpi-v" id="cp-lat">—</div><div class="cp-kpi-u">ms e2e</div></div>
+          <div class="cp-kpi" style="--kc:rgba(99,179,237,.6);--kc-t:var(--acc)"><div class="cp-kpi-k">CPU</div><div class="cp-kpi-v" id="cp-cpu">—</div><div class="cp-kpi-u">% avg</div></div>
+          <div class="cp-kpi" style="--kc:rgba(246,173,85,.6);--kc-t:var(--amber)"><div class="cp-kpi-k">RAM</div><div class="cp-kpi-v" id="cp-ram">—</div><div class="cp-kpi-u">MB used</div></div>
+        </div>
+
+        <!-- MINI RADAR -->
+        <div class="radar-mini">
+          <div class="radar-mini-title">RADAR SWEEP — DETECTION ZONE</div>
+          <canvas id="radar-mini-canvas" width="400" height="120"></canvas>
+          <div class="radar-status">
+            <div class="rd" id="rd-dot" style="background:var(--sage)"></div>
+            <span id="rd-status">Scanning...</span>
+          </div>
+        </div>
+
+        <!-- PIPELINE -->
+        <div class="pipeline-wrap">
+          <div class="pipeline-title">PROCESSING PIPELINE</div>
+          <div class="pl-row" id="pl-row"></div>
+        </div>
+
+        <div class="cp-verdict">
+          <div class="cpv-title" id="cpv-title">◈ Awaiting Simulation</div>
+          <div class="cpv-body" id="cpv-body">Select a scenario and press Run.</div>
+        </div>
+        <button class="run-btn" id="run-btn" onclick="runFullSim()"><span id="run-btn-txt">▶ Run Simulation</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ ARCHITECTURE ═══ -->
+<section id="s-arch">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">System Architecture</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Hardware &amp; <span style="color:var(--rose)">Software Stack</span></h2>
+
+  <div class="arch-grid">
+    <div class="arch-card" style="--ac:var(--rose)" data-r="l">
+      <div class="arch-card-title">Hardware Platform</div>
+      <div class="arch-spec-list">
+        <div class="arch-spec"><span class="arch-spec-k">SBC</span><span class="arch-spec-v">Raspberry Pi 5 — ARM64 · 8GB LPDDR4X</span></div>
+        <div class="arch-spec"><span class="arch-spec-k">Camera</span><span class="arch-spec-v">Hikvision DS-2DE4225IW-DE(T5) PTZ</span></div>
+        <div class="arch-spec"><span class="arch-spec-k">RF Scanner</span><span class="arch-spec-v">HTOOL-SA 6G Spectrum Analyzer — 2.4GHz / 5.8GHz</span></div>
+        <div class="arch-spec"><span class="arch-spec-k">Motor</span><span class="arch-spec-v">Stepper Motor via GPIO (28BYJ-48)</span></div>
+        <div class="arch-spec"><span class="arch-spec-k">Tripod</span><span class="arch-spec-v">KINGJOY VT-2100L</span></div>
+        <div class="arch-spec"><span class="arch-spec-k">OS</span><span class="arch-spec-v">Raspberry Pi OS 64-bit (Bookworm)</span></div>
+      </div>
+    </div>
+
+    <div class="arch-card" style="--ac:var(--acc)" data-r="r">
+      <div class="arch-card-title">AI Detection Pipeline</div>
+      <div class="arch-card-body">
+        <p>Motion trigger via <code>MOG2</code> background subtraction → <code>YOLOv8-nano</code> inference every 3rd frame (<code>skip=2</code>) → <code>CSRT</code> tracker + <code>Kalman</code> filter for trajectory prediction → PTZ motor slew to bearing angle.</p>
+      </div>
+      <div class="tag-cloud" style="margin-top:14px">
+        <span class="tag">YOLOv8-nano</span><span class="tag">OpenCV CSRT</span><span class="tag">Kalman Filter</span>
+        <span class="tag">MOG2</span><span class="tag">PyTorch</span><span class="tag">Ultralytics</span>
+        <span class="tag">MJPEG Stream</span><span class="tag">GPIO Motor</span>
+      </div>
+    </div>
+
+    <div class="arch-card" style="--ac:var(--teal)" data-r="l">
+      <div class="arch-card-title">Web Dashboard &amp; Alerting</div>
+      <div class="arch-card-body">
+        Flask + Flask-SocketIO live dashboard with real-time MJPEG video stream, detection overlays, system telemetry, and Telegram Bot API alerting with photo snapshots.
+      </div>
+      <div class="tag-cloud">
+        <span class="tag">Flask</span><span class="tag">SocketIO</span><span class="tag">MJPEG</span>
+        <span class="tag">Telegram Bot API</span><span class="tag">HTML/CSS/JS</span>
+      </div>
+    </div>
+
+    <div class="arch-card" style="--ac:var(--amber)" data-r="r">
+      <div class="arch-card-title">RF Spectrum Monitoring</div>
+      <div class="arch-card-body">
+        Parallel RTL-SDR thread continuously scans 2.4GHz and 5.8GHz drone control frequencies. Energy threshold detection triggers alert alongside visual detection for multi-modal confirmation.
+      </div>
+      <div class="tag-cloud">
+        <span class="tag">HTOOL-SA 6G Spectrum Analyzer</span><span class="tag">GNU Radio</span><span class="tag">2.4GHz</span>
+        <span class="tag">5.8GHz</span><span class="tag">Energy Threshold</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PHASE 2 ═══ -->
+<section id="s-phase2">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Roadmap</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Phase II <span style="color:var(--acc)">Upgrades</span></h2>
+  <p class="body-md" data-r="u" data-d="2" style="max-width:500px;margin-top:10px">Hardware already acquired. Software development in progress.</p>
+
+  <div class="phase2-grid" data-r="u" data-d="3">
+    <div class="p2-card" style="--pc:var(--rose)">
+      <div class="p2-icon">📡</div>
+      <div class="p2-title">HTOOL-SA 6G Spectrum</div>
+      <div class="p2-body">Full RF spectrum fusion replacing RTL-SDR — wideband coverage from sub-GHz to 6GHz for comprehensive drone frequency detection.</div>
+      <div class="p2-status p2-acquired">Hardware Acquired</div>
+    </div>
+    <div class="p2-card" style="--pc:var(--acc)">
+      <div class="p2-icon">📐</div>
+      <div class="p2-title">ULA Array — AoA Estimation</div>
+      <div class="p2-body">4-element Uniform Linear Array for 60° Angle-of-Arrival estimation using MUSIC algorithm — precise directional bearing to target.</div>
+      <div class="p2-status p2-planned">In Development</div>
+    </div>
+    <div class="p2-card" style="--pc:var(--amber)">
+      <div class="p2-icon">⚡</div>
+      <div class="p2-title">GaN Directional Jammer</div>
+      <div class="p2-body">Directional GaN-based jamming antenna for neutralization. Pending NTRA regulatory clearance under Law No. 10/2003.</div>
+      <div class="p2-status p2-planned">Pending Clearance</div>
+    </div>
+    <div class="p2-card" style="--pc:var(--teal)">
+      <div class="p2-icon">🔄</div>
+      <div class="p2-title">360° Servo Platform</div>
+      <div class="p2-body">Replace stepper motor with servo for full 360° platform rotation and faster slew rate. Eliminates current 180° limitation.</div>
+      <div class="p2-status p2-planned">Planned</div>
+    </div>
+    <div class="p2-card" style="--pc:var(--purple)">
+      <div class="p2-icon">🧠</div>
+      <div class="p2-title">ONNX/INT8 Quantization</div>
+      <div class="p2-body">Convert YOLOv8 to ONNX INT8 format for 2× inference speedup on RPi5 — targeting 38+ FPS in multi-target scenarios.</div>
+      <div class="p2-status p2-planned">Planned</div>
+    </div>
+    <div class="p2-card" style="--pc:var(--sage)">
+      <div class="p2-icon">🔋</div>
+      <div class="p2-title">4S LiPo Battery Pack</div>
+      <div class="p2-body">Field-deployable power supply — 4S LiPo with voltage regulation for untethered operation in field conditions.</div>
+      <div class="p2-status p2-acquired">Hardware Acquired</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="footer-l">SENTINEL — <span>Islam Emad</span> · Horus University ECE · 2026</div>
+  <a href="index.html" style="font-family:var(--mono);font-size:10px;color:var(--t3);text-decoration:none;cursor:none;">← Back to Portfolio</a>
+</footer>
+
+<script>
+// CURSOR
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.transform=`translate(${mx}px,${my}px)`;});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));});
+
+// THEME
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('ie-theme',t);}
+const st=localStorage.getItem('ie-theme');if(st)document.documentElement.setAttribute('data-theme',st);
+
+// REVEAL
+const ro=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.08});
+document.querySelectorAll('[data-r]').forEach(el=>ro.observe(el));
+
+// ═══════════════════════════════════════════════
+// SIMULATION DATA
+const SIM_DATA={
+  idle:{fps:42,cpu:18,lat:24,ram:420,
+    pipeline:[{l:'RTSP',ms:8,c:'ok'},{l:'MOG2',ms:4,c:'ok'},{l:'YOLO',ms:0,c:'skip'},{l:'MOTOR',ms:2,c:'ok'},{l:'DASH',ms:9,c:'ok'}],
+    title:'System Idle — Nominal',body:'RPi5 at <b>42 FPS</b>. YOLO skipped (no motion). All subsystems online. Ready in <em>&lt;24ms</em> from first signal.',
+    targets:0,mode:'IDLE',modeColor:'var(--sage)'
+  },
+  detect:{fps:28,cpu:54,lat:36,ram:890,
+    pipeline:[{l:'RTSP',ms:8,c:'ok'},{l:'MOG2',ms:5,c:'ok'},{l:'YOLO',ms:14,c:'warm'},{l:'KALMAN',ms:3,c:'ok'},{l:'MOTOR',ms:4,c:'ok'},{l:'ALERT',ms:2,c:'warm'}],
+    title:'Target Detected — 28 FPS',body:'YOLO fires (skip=2) → FPS drops to <b>28</b>. First detection latency: <em>~36ms</em>. Kalman predicts position between frames. Motor &amp; Telegram alert activated.',
+    targets:1,mode:'DETECT',modeColor:'var(--amber)'
+  },
+  track:{fps:38,cpu:68,lat:26,ram:1100,
+    pipeline:[{l:'RTSP',ms:8,c:'ok'},{l:'CSRT',ms:11,c:'warm'},{l:'YOLO',ms:5,c:'ok'},{l:'KALMAN',ms:3,c:'ok'},{l:'PID',ms:4,c:'ok'},{l:'OSD',ms:9,c:'ok'}],
+    title:'Active Tracking — 38 FPS',body:'CSRT tracking (11ms). YOLO verification every 10th frame only. Result: <b>38 FPS</b> — faster than detect mode. PTZ smooth PID loop.',
+    targets:1,mode:'TRACK',modeColor:'var(--acc)'
+  },
+  multi:{fps:18,cpu:82,lat:55,ram:1450,
+    pipeline:[{l:'RTSP',ms:8,c:'ok'},{l:'MOG2',ms:5,c:'ok'},{l:'YOLO×3',ms:18,c:'hot'},{l:'CSRT×3',ms:22,c:'hot'},{l:'KF×3',ms:9,c:'warm'},{l:'PRIO',ms:4,c:'ok'}],
+    title:'Multi-Target — 18 FPS ⚠',body:'3 simultaneous targets. CSRT×3 bottleneck at <b>22ms</b>. FPS drops to <b>18</b>. Fix path: 1 priority tracker + <em>ONNX/INT8</em> for 2× speedup.',
+    targets:3,mode:'MULTI-TGT',modeColor:'var(--amber)'
+  },
+  stress:{fps:11,cpu:96,lat:91,ram:1780,
+    pipeline:[{l:'RTSP',ms:10,c:'warm'},{l:'MOG2',ms:8,c:'warm'},{l:'YOLO',ms:22,c:'hot'},{l:'CSRT',ms:28,c:'hot'},{l:'KF+TRI',ms:12,c:'warm'},{l:'ALL',ms:11,c:'warm'}],
+    title:'Stress Test — 11 FPS ⛔',body:'YOLO every frame + CSRT full-res = <b>11 FPS</b>. NOT the real operating mode. Frame-skip (skip=2) returns to <em>28+ FPS</em> in production.',
+    targets:4,mode:'STRESS',modeColor:'var(--rose)'
+  }
+};
+
+let curScen='idle',simBusy=false;
+let droneAnimId=null,radarAnimId=null;
+let droneTargets=[];
+
+function setSimScen(id,btn){
+  curScen=id;
+  document.querySelectorAll('.cp-scen').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  startDroneView(id);
+  startRadarMini(id);
+}
+
+function animVal(id,to,dur){
+  const el=document.getElementById(id);
+  let from=parseFloat(el.textContent)||0;
+  const t0=performance.now();
+  const tick=now=>{
+    const p=Math.min((now-t0)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*ease);
+    if(p<1)requestAnimationFrame(tick);else el.textContent=to;
+  };
+  requestAnimationFrame(tick);
+}
+
+function renderPipeline(d){
+  const total=d.pipeline.reduce((a,s)=>a+(s.ms||0),0)||1;
+  document.getElementById('pl-row').innerHTML=d.pipeline.map((s,i)=>{
+    const pct=Math.round((s.ms/total)*100);
+    const bc=s.c==='ok'?'var(--sage)':s.c==='warm'?'var(--amber)':s.c==='hot'?'var(--rose)':'var(--t4)';
+    const arr=i<d.pipeline.length-1?`<div class="pl-arr">→</div>`:'';
+    return `<div class="pl-node"><div class="pl-box ${s.c}"><span class="pl-lbl">${s.l}</span><span class="pl-ms ${s.c}">${s.c==='skip'?'SKIP':s.ms+'ms'}</span><div class="pl-bar-bg"><div class="pl-bar-fill" style="width:${pct}%;background:${bc}"></div></div></div></div>${arr}`;
+  }).join('');
+}
+
+function runFullSim(){
+  if(simBusy)return;
+  simBusy=true;
+  const btn=document.getElementById('run-btn');
+  btn.disabled=true;
+  document.getElementById('run-btn-txt').textContent='⠇ Running…';
+  const d=SIM_DATA[curScen];
+  setTimeout(()=>{
+    animVal('cp-fps',d.fps,700);
+    animVal('cp-lat',d.lat,700);
+    animVal('cp-cpu',d.cpu,750);
+    animVal('cp-ram',d.ram,700);
+    renderPipeline(d);
+    document.getElementById('cpv-title').textContent='◈ '+d.title;
+    document.getElementById('cpv-body').innerHTML=d.body;
+    // Update HUD
+    document.getElementById('dv-fps').textContent=d.fps;
+    document.getElementById('dv-targets').textContent=d.targets;
+    document.getElementById('dv-mode').textContent=d.mode;
+    document.getElementById('dv-mode').style.color=d.modeColor;
+    document.getElementById('feed-status').textContent=d.targets>0?`${d.targets} TARGET${d.targets>1?'S':''} ACQUIRED`:'NOMINAL';
+    document.getElementById('feed-dot').style.background=d.targets>0?'var(--rose)':'var(--sage)';
+    btn.disabled=false;
+    document.getElementById('run-btn-txt').textContent='▶ Run Simulation';
+    simBusy=false;
+  },400);
+}
+
+// ══════════════════════════
+// DRONE VISUAL CANVAS ENGINE
+// ══════════════════════════
+function startDroneView(scen){
+  if(droneAnimId)cancelAnimationFrame(droneAnimId);
+  const canvas=document.getElementById('drone-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  
+  // Define scene targets per scenario
+  const scenTargets={
+    idle:[],
+    detect:[{x:.62,y:.38,w:32,h:22,vx:-.4,vy:.1,conf:.87,cls:'DJI-MINI',locked:false}],
+    track:[{x:.58,y:.42,w:36,h:24,vx:-.3,vy:-.15,conf:.94,cls:'DJI-MINI',locked:true}],
+    multi:[
+      {x:.55,y:.35,w:30,h:20,vx:-.5,vy:.2,conf:.89,cls:'DJI-MINI',locked:false},
+      {x:.75,y:.58,w:24,h:16,vx:.3,vy:-.25,conf:.82,cls:'UNKNOWN',locked:false},
+      {x:.3,y:.6,w:28,h:18,vx:.2,vy:.1,conf:.91,cls:'DJI-AIR',locked:true},
+    ],
+    stress:[
+      {x:.5,y:.3,w:34,h:22,vx:-.6,vy:.15,conf:.88,cls:'DJI-MINI',locked:false},
+      {x:.7,y:.55,w:22,h:14,vx:.4,vy:-.3,conf:.79,cls:'UNKNOWN',locked:false},
+      {x:.25,y:.65,w:28,h:18,vx:.3,vy:.1,conf:.92,cls:'DJI-AIR',locked:true},
+      {x:.8,y:.25,w:18,h:12,vx:-.2,vy:.4,conf:.71,cls:'UNKNOWN',locked:false},
+    ]
+  };
+  
+  droneTargets=(scenTargets[scen]||[]).map(t=>({...t}));
+
+  // Sky gradient helper
+  function drawBg(t){
+    // Dynamic sky
+    const skyGrad=ctx.createLinearGradient(0,0,0,H);
+    const tod=Math.sin(t/6000)*.5+.5; // day/night cycle (slow)
+    skyGrad.addColorStop(0,`rgba(${lerp(20,80,tod)},${lerp(25,130,tod)},${lerp(40,180,tod)},1)`);
+    skyGrad.addColorStop(.6,`rgba(${lerp(15,120,tod)},${lerp(20,160,tod)},${lerp(35,200,tod)},1)`);
+    skyGrad.addColorStop(1,`rgba(${lerp(10,60,tod)},${lerp(15,80,tod)},${lerp(20,40,tod)},1)`);
+    ctx.fillStyle=skyGrad;ctx.fillRect(0,0,W,H);
+    // Horizon/ground
+    const gnd=ctx.createLinearGradient(0,H*.65,0,H);
+    gnd.addColorStop(0,`rgba(${lerp(10,30,tod)},${lerp(20,50,tod)},${lerp(10,20,tod)},1)`);
+    gnd.addColorStop(1,`rgba(${lerp(5,15,tod)},${lerp(10,25,tod)},${lerp(5,10,tod)},1)`);
+    ctx.fillStyle=gnd;ctx.fillRect(0,H*.65,W,H*.35);
+    // Horizon line
+    ctx.strokeStyle=`rgba(255,255,255,${tod*.06})`;
+    ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,H*.65);ctx.lineTo(W,H*.65);ctx.stroke();
+    // Clouds
+    if(tod>.3){
+      ctx.fillStyle=`rgba(255,255,255,${tod*.08})`;
+      [[W*.15,H*.2,60,18],[W*.5,H*.12,80,22],[W*.8,H*.18,50,16]].forEach(([cx,cy,cw,ch])=>{
+        ctx.beginPath();ctx.ellipse(cx+Math.sin(t/12000)*20,cy,cw,ch,0,0,Math.PI*2);ctx.fill();
+      });
+    }
+    // Stars (night)
+    if(tod<.5){
+      const op=(1-tod*2)*.6;
+      ctx.fillStyle=`rgba(255,255,255,${op})`;
+      [[50,20],[150,40],[300,15],[450,30],[550,25],[200,10],[400,45]].forEach(([sx,sy])=>{
+        ctx.fillRect(sx,sy,1,1);
+      });
+    }
+  }
+
+  function lerp(a,b,t){return a+(b-a)*Math.max(0,Math.min(1,t));}
+
+  // Noise texture overlay
+  function drawNoise(){
+    const img=ctx.createImageData(W,H);
+    for(let i=0;i<img.data.length;i+=4){
+      const n=(Math.random()-.5)*12;
+      img.data[i]=img.data[i+1]=img.data[i+2]=128+n;img.data[i+3]=6;
+    }
+    ctx.putImageData(img,0,0);
+  }
+
+  // Draw drone (simplified aircraft silhouette)
+  function drawDrone(x,y,w,h,conf,cls,locked,pulse){
+    const cx=x*W,cy=y*H;
+    const bColor=locked?'rgba(252,129,129,.9)':conf>.85?'rgba(246,173,85,.9)':'rgba(99,179,237,.8)';
+    
+    // Draw bounding box
+    ctx.strokeStyle=bColor;ctx.lineWidth=1.5;
+    ctx.strokeRect(cx-w/2,cy-h/2,w,h);
+    
+    // Corner accents
+    const cs=8;const op=.8+pulse*.2;
+    ctx.strokeStyle=bColor;ctx.globalAlpha=op;ctx.lineWidth=2;
+    // TL
+    ctx.beginPath();ctx.moveTo(cx-w/2,cy-h/2+cs);ctx.lineTo(cx-w/2,cy-h/2);ctx.lineTo(cx-w/2+cs,cy-h/2);ctx.stroke();
+    // TR
+    ctx.beginPath();ctx.moveTo(cx+w/2-cs,cy-h/2);ctx.lineTo(cx+w/2,cy-h/2);ctx.lineTo(cx+w/2,cy-h/2+cs);ctx.stroke();
+    // BL
+    ctx.beginPath();ctx.moveTo(cx-w/2,cy+h/2-cs);ctx.lineTo(cx-w/2,cy+h/2);ctx.lineTo(cx-w/2+cs,cy+h/2);ctx.stroke();
+    // BR
+    ctx.beginPath();ctx.moveTo(cx+w/2-cs,cy+h/2);ctx.lineTo(cx+w/2,cy+h/2);ctx.lineTo(cx+w/2,cy+h/2-cs);ctx.stroke();
+    ctx.globalAlpha=1;
+
+    // Drone body (simplified quad shape)
+    ctx.strokeStyle=`rgba(255,255,255,.5)`;ctx.lineWidth=1;
+    // Arms
+    const armLen=Math.min(w,h)*.4;
+    [-1,1].forEach(sx=>[-1,1].forEach(sy=>{
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+sx*armLen*.7,cy+sy*armLen*.5);ctx.stroke();
+      // Rotor circle
+      ctx.beginPath();ctx.arc(cx+sx*armLen*.7,cy+sy*armLen*.5,3,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(255,255,255,.4)`;ctx.stroke();
+    }));
+    // Center body
+    ctx.fillStyle='rgba(255,255,255,.3)';
+    ctx.fillRect(cx-3,cy-3,6,6);
+
+    // Label
+    const confPct=Math.round(conf*100);
+    ctx.font=`500 10px 'DM Mono',monospace`;
+    ctx.fillStyle=bColor;
+    ctx.fillText(`${cls} ${confPct}%`,cx-w/2,cy-h/2-5);
+    
+    // Crosshair if locked
+    if(locked){
+      const r=Math.max(w,h)*.7+pulse*4;
+      ctx.strokeStyle=`rgba(252,129,129,${.4+pulse*.3})`;
+      ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+      ctx.setLineDash([]);
+      // Target reticle
+      const rl=6;
+      ctx.strokeStyle='rgba(252,129,129,.8)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(cx-rl,cy);ctx.lineTo(cx+rl,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,cy-rl);ctx.lineTo(cx,cy+rl);ctx.stroke();
+    }
+  }
+
+  // HUD elements
+  let bearing=0;
+  let t=0;
+  function frame(){
+    t+=16;
+    ctx.clearRect(0,0,W,H);
+    drawBg(t);
+    drawNoise();
+    
+    // PTZ crosshair (center)
+    if(droneTargets.length===0){
+      ctx.strokeStyle='rgba(104,211,145,.2)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.moveTo(W/2-20,H/2);ctx.lineTo(W/2+20,H/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(W/2,H/2-20);ctx.lineTo(W/2,H/2+20);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Move and draw targets
+    const pulse=(Math.sin(t/400)*.5+.5);
+    droneTargets.forEach(tgt=>{
+      tgt.x+=tgt.vx*.001;
+      tgt.y+=tgt.vy*.001;
+      tgt.x=Math.max(.1,Math.min(.9,tgt.x));
+      tgt.y=Math.max(.1,Math.min(.75,tgt.y));
+      if(tgt.y>.68) tgt.vy=-Math.abs(tgt.vy);
+      if(tgt.x>.88||tgt.x<.12) tgt.vx*=-1;
+      drawDrone(tgt.x,tgt.y,tgt.w,tgt.h,tgt.conf,tgt.cls,tgt.locked,pulse);
+    });
+
+    // HUD text updates
+    if(droneTargets.length>0){
+      bearing=(bearing+.2)%360;
+      document.getElementById('dv-bearing').textContent=`${Math.round(bearing).toString().padStart(3,'0')}°`;
+      document.getElementById('hud-tr').textContent=`T+${String(Math.floor(t/1000)).padStart(3,'0')}s`;
+    }
+    document.getElementById('hud-bl').textContent=`RPi5 ARM64 · 64-bit`;
+    document.getElementById('hud-br').textContent=droneTargets.length>0?`⚠ ${droneTargets.length} TGT`:'';
+
+    droneAnimId=requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ══════════════════════════
+// MINI RADAR ENGINE
+// ══════════════════════════
+let radarTargets=[];
+function startRadarMini(scen){
+  if(radarAnimId)cancelAnimationFrame(radarAnimId);
+  const canvas=document.getElementById('radar-mini-canvas');
+  if(!canvas)return;
+  canvas.width=canvas.offsetWidth||400;canvas.height=120;
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const scenT={idle:[],detect:[{x:.62,y:.4,t:'detect'}],track:[{x:.58,y:.45,t:'track'}],multi:[{x:.55,y:.35,t:'detect'},{x:.75,y:.58,t:'detect'},{x:.3,y:.6,t:'track'}],stress:[{x:.5,y:.3,t:'detect'},{x:.7,y:.55,t:'detect'},{x:.25,y:.65,t:'track'},{x:.8,y:.25,t:'detect'}]};
+  radarTargets=(scenT[scen]||[]).map(t=>({...t}));
+  const dot=document.getElementById('rd-dot');
+  const stat=document.getElementById('rd-status');
+  if(radarTargets.length===0){dot.style.background='var(--sage)';stat.textContent='Scanning — no threats detected';}
+  else{dot.style.background='var(--rose)';dot.style.animation='pulse .8s ease infinite';stat.textContent=`${radarTargets.length} target${radarTargets.length>1?'s':''} detected`;}
+  let sweep=0;
+  function rf(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(0,0,0,.95)';ctx.fillRect(0,0,W,H);
+    const cx=W/2,cy=H/2;
+    // Rings
+    [.25,.5,.75,1].forEach(r=>{
+      ctx.strokeStyle='rgba(104,211,145,.08)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,r*Math.min(W,H)*.45,0,Math.PI*2);ctx.stroke();
+    });
+    // Axes
+    ctx.strokeStyle='rgba(104,211,145,.1)';ctx.lineWidth=.5;
+    ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+    // Sweep
+    if(radarTargets.length>0){
+      const g=ctx.createConicalGradient?null:null;
+      ctx.save();ctx.translate(cx,cy);
+      const grad=ctx.createLinearGradient(0,0,Math.cos(sweep)*W*.5,Math.sin(sweep)*H*.5);
+      grad.addColorStop(0,'rgba(104,211,145,.5)');grad.addColorStop(1,'rgba(104,211,145,0)');
+      ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,Math.max(W,H),sweep-.5,sweep);ctx.closePath();
+      ctx.fillStyle=grad;ctx.fill();ctx.restore();
+    }
+    sweep+=.04;
+    // Targets
+    radarTargets.forEach(t=>{
+      t.x+=Math.sin(Date.now()/2400+t.x*10)*.0005;t.y+=Math.cos(Date.now()/2600+t.y*10)*.0004;
+      t.x=Math.max(.1,Math.min(.9,t.x));t.y=Math.max(.1,Math.min(.9,t.y));
+      const tx=t.x*W,ty=t.y*H;
+      const p=(Math.sin(Date.now()/500)*.5+.5);
+      const c=t.t==='track'?'rgba(252,129,129':'rgba(246,173,85';
+      ctx.fillStyle=c+',.9)';ctx.shadowBlur=10;ctx.shadowColor=c+',.8)';
+      ctx.beginPath();ctx.arc(tx,ty,4,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+      ctx.strokeStyle=c+`,${.3-p*.2})`;ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(tx,ty,6+p*6,0,Math.PI*2);ctx.stroke();
+    });
+    radarAnimId=requestAnimationFrame(rf);
+  }
+  rf();
+}
+
+// INIT
+startDroneView('idle');
+startRadarMini('idle');
+setTimeout(()=>runFullSim(),800);
+
+// Clock
+setInterval(()=>{
+  const n=new Date(),p=v=>String(v).padStart(2,'0');
+  document.getElementById('cp-clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+},1000);
+</script>
+</body>
+</html>

@@ -49,29 +49,29 @@
   --orb-a: rgba(37,99,235,.06); --orb-b: rgba(13,148,136,.05);
   --shadow: 0 32px 72px rgba(0,0,0,.12);
 }
-/* CONTRAST */
-[data-theme="contrast"] {
-  --bg: #000; --bg1: #050505; --bg2: #0a0a0a; --bg3: #111;
-  --rim0: rgba(255,255,255,.08); --rim1: rgba(255,255,255,.15); --rim2: rgba(255,255,255,.25);
-  --rima: rgba(0,255,200,.35);
-  --acc: #00ffc8; --acc-d: rgba(0,255,200,.08); --acc-g: rgba(0,255,200,.2);
-  --teal: #00e5ff; --amber: #ffcc00; --rose: #ff4466; --sage: #00ff88;
-  --t0: #ffffff; --t1: #e0e0e0; --t2: #a0a0a0; --t3: #606060; --t4: #303030;
-  --glass-bg: rgba(0,0,0,.8); --glass-b: rgba(0,255,200,.2);
-  --orb-a: rgba(0,255,200,.04); --orb-b: rgba(0,229,255,.03);
-  --shadow: 0 32px 72px rgba(0,0,0,.8);
+/* MILITARY CAMO */
+[data-theme="camo"] {
+  --bg: #0e1109; --bg1: #141a0c; --bg2: #1a2210; --bg3: #1f2a14;
+  --rim0: rgba(140,180,80,.07); --rim1: rgba(140,180,80,.12); --rim2: rgba(140,180,80,.22);
+  --rima: rgba(140,200,60,.28);
+  --acc: #8bc34a; --acc-d: rgba(139,195,74,.08); --acc-g: rgba(139,195,74,.18);
+  --teal: #66bb6a; --amber: #d4aa00; --rose: #e53935; --sage: #aed581;
+  --t0: #ecf2e0; --t1: #c5d5a0; --t2: #8a9e68; --t3: #556040; --t4: #2e3620;
+  --glass-bg: rgba(14,17,9,.78); --glass-b: rgba(140,195,74,.12);
+  --orb-a: rgba(139,195,74,.05); --orb-b: rgba(102,187,106,.04);
+  --shadow: 0 32px 72px rgba(0,0,0,.6);
 }
-/* WARM */
-[data-theme="warm"] {
-  --bg: #0d0a06; --bg1: #131009; --bg2: #19150c; --bg3: #1f1a10;
-  --rim0: rgba(255,220,150,.06); --rim1: rgba(255,220,150,.1); --rim2: rgba(255,220,150,.18);
-  --rima: rgba(251,146,60,.25);
-  --acc: #fb923c; --acc-d: rgba(251,146,60,.08); --acc-g: rgba(251,146,60,.18);
-  --teal: #34d399; --amber: #fbbf24; --rose: #f87171; --sage: #86efac;
-  --t0: #fdf6ec; --t1: #e8d5bb; --t2: #a08060; --t3: #604030; --t4: #302018;
-  --glass-bg: rgba(19,16,9,.72); --glass-b: rgba(255,180,80,.1);
-  --orb-a: rgba(251,146,60,.06); --orb-b: rgba(251,191,36,.04);
-  --shadow: 0 32px 72px rgba(0,0,0,.5);
+/* DEEP SPACE / STAR WARS */
+[data-theme="starwars"] {
+  --bg: #03040a; --bg1: #06080f; --bg2: #090c17; --bg3: #0d1120;
+  --rim0: rgba(180,150,255,.05); --rim1: rgba(180,150,255,.1); --rim2: rgba(180,150,255,.18);
+  --rima: rgba(190,130,255,.3);
+  --acc: #c084fc; --acc-d: rgba(192,132,252,.08); --acc-g: rgba(192,132,252,.18);
+  --teal: #38bdf8; --amber: #fbbf24; --rose: #f43f5e; --sage: #4ade80;
+  --t0: #f0eeff; --t1: #c8c0e8; --t2: #8070b0; --t3: #483870; --t4: #221840;
+  --glass-bg: rgba(3,4,10,.82); --glass-b: rgba(192,132,252,.12);
+  --orb-a: rgba(192,132,252,.06); --orb-b: rgba(56,189,248,.04);
+  --shadow: 0 32px 72px rgba(0,0,0,.8);
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -517,13 +517,13 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
 <div class="theme-sw" role="group" aria-label="Theme selector">
   <button class="t-btn active" onclick="setTheme('dark')" data-t="dark" title="Dark">🌑<span class="t-tip">Dark</span></button>
   <button class="t-btn" onclick="setTheme('light')" data-t="light" title="Light">☀️<span class="t-tip">Light</span></button>
-  <button class="t-btn" onclick="setTheme('contrast')" data-t="contrast" title="High Contrast">⚡<span class="t-tip">Contrast</span></button>
-  <button class="t-btn" onclick="setTheme('warm')" data-t="warm" title="Warm">🔥<span class="t-tip">Warm</span></button>
+  <button class="t-btn" onclick="setTheme('camo')" data-t="camo" title="Military Camo">🪖<span class="t-tip">Military</span></button>
+  <button class="t-btn" onclick="setTheme('starwars')" data-t="starwars" title="Star Wars">⚔️<span class="t-tip">Deep Space</span></button>
 </div>
 
 <!-- NAV -->
 <nav id="nav">
-  <div class="nw"><div class="np"></div>Islam Emad</div>
+  <div class="nw"><div class="np"></div>ISLAM EMAD</div>
   <div class="nm">
     <a href="#sentinel">C-UAS</a>
     <a href="#projects">Projects</a>
@@ -589,111 +589,31 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
 <!-- ═══ SENTINEL ═══ -->
 <section id="sentinel">
 <div class="wrap">
-  <div class="eyebrow" data-r="u">Graduation Project — Team Leader — SENTINEL C-UAS</div>
-  <h2 class="sec-h" data-r="u" data-d="1">Counter-UAV <span style="color:var(--acc)">Detection Platform</span></h2>
-
-  <div class="sentinel-intro">
-    <div>
-      <div class="s-badge" data-r="l">Active · RPi5 · ARM64 · Real-Time AI</div>
-      <div class="s-challenge" data-r="l" data-d="1">
-        <div class="s-cl">The Challenge</div>
-        <p class="body-md">Existing C-UAS platforms cost $50,000+ and require dedicated hardware. Build a real-time drone detection, tracking, and neutralization system on a $100 SBC under 40ms end-to-end latency.</p>
+  <div class="eyebrow" data-r="u">Graduation Project — Team Leader</div>
+  <h2 class="sec-h" data-r="u" data-d="1">SENTINEL <span style="color:var(--acc)">C-UAS Platform</span></h2>
+  <p class="body-md" data-r="u" data-d="2" style="max-width:560px;margin-top:10px">Real-time counter-drone detection, tracking, and neutralization on Raspberry Pi 5. Full interactive visual simulation on the dedicated project page.</p>
+  <div style="margin-top:40px" data-r="u" data-d="3">
+    <div class="bcard bcard-accent" style="--bc:var(--rose);border-color:rgba(252,129,129,.18)">
+      <span class="bcard-flag" style="background:rgba(252,129,129,.1);color:var(--rose);border:1px solid rgba(252,129,129,.25)">Active · RPi5 · ARM64 · AI Vision · RF Monitor</span>
+      <div class="bcard-title" style="font-size:clamp(18px,2.5vw,24px)">Counter-UAV Detection, Tracking &amp; Neutralization</div>
+      <div class="bcard-desc" style="max-width:680px">MOG2 motion trigger → YOLOv8-nano (skip=2) → CSRT tracker + Kalman filter → PTZ motor slew → RTL-SDR RF parallel monitoring. Flask+SocketIO live dashboard. Telegram alerting. 6-person team. Supervisors: Prof. Dr. Amr Hussein · Assoc. Prof. Dr. Mervat Elseddek · Dr. Rania Al-Abd.</div>
+      <div style="display:flex;gap:28px;margin:20px 0;flex-wrap:wrap">
+        <div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--sage);line-height:1;letter-spacing:-.03em">42 <span style="font-size:14px">FPS</span></div><div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--t3);margin-top:4px">IDLE</div></div>
+        <div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--amber);line-height:1;letter-spacing:-.03em">28 <span style="font-size:14px">FPS</span></div><div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--t3);margin-top:4px">DETECT</div></div>
+        <div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--rose);line-height:1;letter-spacing:-.03em">&lt;40 <span style="font-size:14px">ms</span></div><div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--t3);margin-top:4px">LATENCY</div></div>
+        <div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--acc);line-height:1;letter-spacing:-.03em">88.8<span style="font-size:14px">%</span></div><div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--t3);margin-top:4px">mAP50</div></div>
+        <div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--teal);line-height:1;letter-spacing:-.03em">1.2 <span style="font-size:14px">km</span></div><div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--t3);margin-top:4px">RANGE</div></div>
       </div>
-      <div class="s-solution" data-r="l" data-d="2">
-        <div class="s-sl">The Solution</div>
-        <p class="body-md">Multi-layer AI pipeline on Raspberry Pi 5: MOG2 motion trigger → YOLOv8-nano (skip=2) → CSRT tracker + Kalman filter → PTZ motor slew → RTL-SDR RF monitor in parallel. Flask+SocketIO live dashboard. Telegram alerting.</p>
-      </div>
-      <div class="spec-grid" data-r="l" data-d="3">
-        <div class="spec-item"><div class="spec-key">Platform</div><div class="spec-val">Raspberry Pi 5 — 8GB LPDDR4X</div></div>
-        <div class="spec-item"><div class="spec-key">Role</div><div class="spec-val">Team Leader · Systems Architect</div></div>
-        <div class="spec-item"><div class="spec-key">Supervisors</div><div class="spec-val">Prof. Dr. Amr Hussein · Assoc. Prof. Dr. Mervat Elseddek · Dr. Rania Al-Abd</div></div>
-        <div class="spec-item"><div class="spec-key">Institution</div><div class="spec-val"><a href="https://horus.edu.eg/" target="_blank">Horus University</a> · <a href="https://eng.horus.edu.eg/" target="_blank">Faculty of Engineering</a></div></div>
-      </div>
-      <div class="tag-cloud" data-r="l" data-d="4">
-        <span class="tag">YOLOv8-nano</span><span class="tag">OpenCV / CSRT</span><span class="tag">Kalman Filter</span>
-        <span class="tag">Python</span><span class="tag">RTL-SDR</span><span class="tag">Flask + SocketIO</span>
-        <span class="tag">PTZ Motor GPIO</span><span class="tag">MOG2</span><span class="tag">Telegram Bot API</span>
-        <span class="tag">MJPEG Stream</span><span class="tag">GNU Radio</span>
-      </div>
-    </div>
-
-    <!-- ENHANCED SIMULATOR -->
-    <div data-r="r" data-d="2">
-      <div class="sentinel-sim">
-        <div class="sim-chrome">
-          <div class="sim-dots"><div class="sim-dot" style="background:#fc5f57"></div><div class="sim-dot" style="background:#fdbc2c"></div><div class="sim-dot" style="background:#34c84a"></div></div>
-          <div class="sim-title">SENTINEL // LIVE DIAGNOSTICS // RPi5</div>
-          <div class="sim-time" id="sim-clock-disp">—</div>
-        </div>
-        <div class="sim-tabs">
-          <button class="sim-tab active" onclick="switchTab(this,'radar')">Live Radar</button>
-          <button class="sim-tab" onclick="switchTab(this,'perf')">Performance</button>
-          <button class="sim-tab" onclick="switchTab(this,'pipeline')">Pipeline</button>
-          <button class="sim-tab" onclick="switchTab(this,'timeline')">Timeline</button>
-        </div>
-        <div class="sim-scens">
-          <button class="scen-btn active" onclick="setScen('idle',this)">Idle</button>
-          <button class="scen-btn" onclick="setScen('detect',this)">1 Target</button>
-          <button class="scen-btn" onclick="setScen('track',this)">Tracking</button>
-          <button class="scen-btn" onclick="setScen('multi',this)">3 Targets</button>
-          <button class="scen-btn" onclick="setScen('stress',this)">Stress</button>
-        </div>
-        <div class="sim-body">
-          <div class="sim-kpis">
-            <div class="skpi" style="--kc:rgba(104,211,145,.6);--kc-t:var(--sage)"><div class="kpi-k">FPS</div><div class="kpi-v" id="kv-fps">—</div><div class="kpi-u">frames/sec</div></div>
-            <div class="skpi" style="--kc:rgba(99,179,237,.6);--kc-t:var(--acc)"><div class="kpi-k">CPU</div><div class="kpi-v" id="kv-cpu">—</div><div class="kpi-u">% avg</div></div>
-            <div class="skpi" style="--kc:rgba(246,173,85,.6);--kc-t:var(--amber)"><div class="kpi-k">Latency</div><div class="kpi-v" id="kv-lat">—</div><div class="kpi-u">ms e2e</div></div>
-            <div class="skpi" style="--kc:rgba(252,129,129,.5);--kc-t:var(--rose)"><div class="kpi-k">RAM</div><div class="kpi-v" id="kv-ram">—</div><div class="kpi-u">MB used</div></div>
-          </div>
-
-          <!-- RADAR TAB — interactive drone display -->
-          <div class="sim-panel active" id="panel-radar">
-            <div class="radar-screen">
-              <div class="radar-canvas-wrap">
-                <div class="radar-overlay">
-                  <div class="radar-ring"></div>
-                  <div class="radar-ring"></div>
-                  <div class="radar-ring"></div>
-                  <div class="radar-crosshair"></div>
-                  <div class="radar-crosshair-v"></div>
-                </div>
-                <canvas id="radar-canvas" width="400" height="200"></canvas>
-                <div class="radar-label">RADAR VIEW</div>
-                <div class="radar-label-r" id="radar-mode-lbl">IDLE</div>
-              </div>
-              <div class="sim-status-bar">
-                <div class="sim-status-dot" id="sys-dot"></div>
-                <span class="sim-status-txt" id="sys-status">System nominal — no threats detected</span>
-                <span class="target-count" id="target-count"></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- PERF TAB -->
-          <div class="sim-panel" id="panel-perf">
-            <div class="chart-wrap"><svg class="chart-svg" id="perf-svg" viewBox="0 0 400 110" preserveAspectRatio="none" style="height:110px"></svg></div>
-          </div>
-
-          <!-- PIPELINE TAB -->
-          <div class="sim-panel" id="panel-pipeline">
-            <div class="pipeline-scroll"><div class="pipeline-row" id="pipeline-row"></div></div>
-          </div>
-
-          <!-- TIMELINE TAB -->
-          <div class="sim-panel" id="panel-timeline">
-            <div class="tl-wrap" id="timeline-wrap"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--t3)">Run simulation to view</div></div>
-          </div>
-
-          <div class="sim-verdict"><div class="v-title" id="vdict-title">◈ Awaiting Simulation</div><div class="v-body" id="vdict-body">Select a scenario and press Run to begin.</div></div>
-          <button class="run-btn" id="run-btn" onclick="runSimulation()"><span id="run-btn-txt">▶ Run Simulation</span></button>
-        </div>
+      <div class="bcard-tags" style="margin-bottom:22px"><span class="btag">YOLOv8-nano</span><span class="btag">OpenCV CSRT</span><span class="btag">Kalman Filter</span><span class="btag">Python</span><span class="btag">RTL-SDR</span><span class="btag">Flask+SocketIO</span><span class="btag">PTZ GPIO</span><span class="btag">MOG2</span><span class="btag">Telegram Bot</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="sentinel.html" class="btn btn-p" style="display:inline-flex;text-decoration:none;cursor:none">Open Full Project Page ↗</a>
+        <a href="sentinel.html#s-sim" class="btn btn-s" style="display:inline-flex;text-decoration:none;cursor:none">▶ Run Live Simulation</a>
       </div>
     </div>
   </div>
 </div>
 </section>
 
-<!-- ═══ PROJECTS — DOMAIN TRACKS ═══ -->
 <section id="projects">
 <div class="wrap">
   <div class="eyebrow" data-r="u">Portfolio</div>
@@ -701,85 +621,47 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
   <p class="body-md" data-r="u" data-d="2" style="max-width:560px;margin-top:10px">Organized by engineering domain — each project built around a real problem, a concrete solution, and a measurable result.</p>
 
   <div class="tracks-nav" data-r="u" data-d="3">
-    <button class="track-btn active" style="--t-c:#63b3ed" onclick="filterTrack('all',this)">
-      <span class="track-dot" style="background:#63b3ed"></span>All Domains
+    <button class="track-btn active" style="--t-c:var(--acc)" onclick="filterTrack('all',this)">
+      <span class="track-dot" style="background:var(--acc)"></span>All Domains
     </button>
-    <button class="track-btn" style="--t-c:#f6ad55" onclick="filterTrack('edge-ai',this)">
-      <span class="track-dot" style="background:#f6ad55"></span>Edge AI
+    <button class="track-btn" style="--t-c:var(--rose)" onclick="filterTrack('wireless',this)">
+      <span class="track-dot" style="background:var(--rose)"></span>Wireless / DSP
     </button>
-    <button class="track-btn" style="--t-c:#fc8181" onclick="filterTrack('wireless',this)">
-      <span class="track-dot" style="background:#fc8181"></span>Wireless / 5G
-    </button>
-    <button class="track-btn" style="--t-c:#4fd1c5" onclick="filterTrack('embedded',this)">
-      <span class="track-dot" style="background:#4fd1c5"></span>Embedded
+    <button class="track-btn" style="--t-c:var(--teal)" onclick="filterTrack('embedded',this)">
+      <span class="track-dot" style="background:var(--teal)"></span>Embedded
     </button>
     <button class="track-btn" style="--t-c:#b794f4" onclick="filterTrack('security',this)">
       <span class="track-dot" style="background:#b794f4"></span>Cybersecurity
     </button>
-    <button class="track-btn" style="--t-c:#68d391" onclick="filterTrack('software',this)">
-      <span class="track-dot" style="background:#68d391"></span>Software
+    <button class="track-btn" style="--t-c:var(--sage)" onclick="filterTrack('software',this)">
+      <span class="track-dot" style="background:var(--sage)"></span>Software
     </button>
   </div>
 
   <div class="bento-grid" id="proj-grid">
 
-    <!-- SDR Jamming — WIRELESS -->
-    <div class="bcard bcard-accent b-8" style="--bc:var(--rose)" data-track="wireless" data-r="u">
-      <span class="track-badge" style="color:var(--rose);background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.2)">Wireless / 5G</span>
-      <span class="bcard-flag flag-pub">Published · HUJE</span>
-      <div class="bcard-title">AI Jamming Attack Detection — 5G SDR</div>
-      <div class="bcard-desc">Converts RF signals to spectrograms → lightweight CNN classifies intelligent jamming attacks in real-time. A sub-$50 RTL-SDR replaces $10,000+ spectrum analyzers.</div>
-      <div class="psr">
-        <div class="psr-item"><div class="psr-k">Problem</div><div class="psr-v">Real-time jamming detection on cheap hardware</div></div>
-        <div class="psr-item"><div class="psr-k">Solution</div><div class="psr-v">RF → Spectrogram → CNN pipeline on RTL-SDR</div></div>
-        <div class="psr-item"><div class="psr-k">Result</div><div class="psr-v">98.7% accuracy · ~17ms total latency</div></div>
-      </div>
-      <div class="bcard-tags" style="margin-top:12px"><span class="btag">RTL-SDR</span><span class="btag">CNN</span><span class="btag">PyTorch</span><span class="btag">Spectrogram</span><span class="btag">5G</span></div>
-      <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Performance</button>
-      <div class="mini-sim-panel">
-        <div class="mini-perf">
-          <div class="mp-row"><span class="mp-lbl">RF → Spectrogram</span><div class="mp-track"><div class="mp-fill" style="width:72%;background:var(--acc)"></div></div><span class="mp-val">8ms</span></div>
-          <div class="mp-row"><span class="mp-lbl">CNN Inference</span><div class="mp-track"><div class="mp-fill" style="width:55%;background:var(--amber)"></div></div><span class="mp-val">6ms</span></div>
-          <div class="mp-row"><span class="mp-lbl">Classification</span><div class="mp-track"><div class="mp-fill" style="width:22%;background:var(--sage)"></div></div><span class="mp-val">2ms</span></div>
-          <div class="mp-result">98.7% accuracy · 17ms total · RTL-SDR &lt;$50</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vuln Scanner — SECURITY -->
-    <div class="bcard b-4" style="--bc:#b794f4" data-track="security" data-r="u" data-d="1">
+    <!-- Vulnerability Scanner -->
+    <div class="bcard b-7" style="--bc:#b794f4" data-track="security" data-r="u" data-d="1">
       <span class="track-badge" style="color:#b794f4;background:rgba(183,148,244,.08);border:1px solid rgba(183,148,244,.2)">Cybersecurity</span>
       <span class="bcard-flag flag-new">New</span>
       <div class="bcard-title">Automated Vulnerability Scanner</div>
-      <div class="bcard-desc">Network discovery → port scan → CVE matching → severity-ranked report. Fully automated pipeline.</div>
-      <div class="bcard-tags"><span class="btag">Python</span><span class="btag">Nmap</span><span class="btag">CVE</span><span class="btag">Bash</span></div>
-      <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Performance</button>
-      <div class="mini-sim-panel">
-        <div class="mini-perf">
-          <div class="mp-row"><span class="mp-lbl">Host Discovery</span><div class="mp-track"><div class="mp-fill" style="width:60%;background:var(--acc)"></div></div><span class="mp-val">~2s</span></div>
-          <div class="mp-row"><span class="mp-lbl">Port Scan</span><div class="mp-track"><div class="mp-fill" style="width:85%;background:var(--amber)"></div></div><span class="mp-val">~12s</span></div>
-          <div class="mp-row"><span class="mp-lbl">CVE Match</span><div class="mp-track"><div class="mp-fill" style="width:38%;background:var(--sage)"></div></div><span class="mp-val">~3s</span></div>
-          <div class="mp-result">Automated · Severity-ranked CVE report output</div>
-        </div>
+      <div class="bcard-desc">Multi-agent automated security scanning platform — Recon (Nmap/Shodan/subfinder) → Static Analysis (semgrep/bandit/trivy) → Dynamic Testing (OWASP ZAP/ffuf) → Validation (EPSS/CVSS) → Report (PDF/Jira/Telegram). Orchestrated via FastAPI + Redis + PostgreSQL + Docker.</div>
+      <div class="psr" style="margin-top:12px">
+        <div class="psr-item"><div class="psr-k">Problem</div><div class="psr-v">Manual security auditing is slow and misses chained vulnerabilities</div></div>
+        <div class="psr-item"><div class="psr-k">Solution</div><div class="psr-v">5-agent AI pipeline with Gemini backend, full-stack Docker orchestration</div></div>
+        <div class="psr-item"><div class="psr-k">Result</div><div class="psr-v">End-to-end scan → CVSS-ranked PDF + Telegram alert in one command</div></div>
       </div>
+      <div class="bcard-tags" style="margin-top:12px"><span class="btag">Python</span><span class="btag">FastAPI</span><span class="btag">Nmap</span><span class="btag">OWASP ZAP</span><span class="btag">Gemini AI</span><span class="btag">Docker</span><span class="btag">PostgreSQL</span><span class="btag">React</span><span class="btag">Telegram Bot</span></div>
+      <a href="vuln-scanner.html" class="btn btn-s" style="display:inline-flex;text-decoration:none;cursor:none;margin-top:14px">View Project ↗</a>
     </div>
 
-    <!-- Gen-Sentinel — SECURITY -->
-    <div class="bcard b-5" style="--bc:#b794f4" data-track="security" data-r="u" data-d="2">
-      <span class="track-badge" style="color:#b794f4;background:rgba(183,148,244,.08);border:1px solid rgba(183,148,244,.2)">Cybersecurity</span>
-      <span class="bcard-flag flag-done">Completed</span>
-      <div class="bcard-title">Gen-Sentinel: IoMT Zero-Day Security</div>
-      <div class="bcard-desc">GAN-powered proactive "immunization" — generates synthetic zero-day attack vectors to train IDS systems to defend against unseen threats in HL7/BLE IoMT environments.</div>
-      <div class="bcard-tags"><span class="btag">GAN</span><span class="btag">IoMT</span><span class="btag">HL7</span><span class="btag">BLE</span><span class="btag">Python</span></div>
-    </div>
-
-    <!-- Smart Home — EMBEDDED -->
-    <div class="bcard b-4" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="1">
+    <!-- Smart Home -->
+    <div class="bcard b-5" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="2">
       <span class="track-badge" style="color:var(--teal);background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.2)">Embedded</span>
       <span class="bcard-flag flag-done">Completed</span>
       <div class="bcard-title">Smart Home Automation</div>
-      <div class="bcard-desc">Bluetooth-controlled smart home on ATmega32 + HC-05. Hardware triggers automated responses across relays.</div>
-      <div class="bcard-tags"><span class="btag">ATmega32</span><span class="btag">HC-05</span><span class="btag">C</span><span class="btag">UART</span></div>
+      <div class="bcard-desc">Bluetooth-controlled smart home environment on ATmega32 + HC-05. Hardware triggers automated responses across lighting, fans, and security relays with real-time serial feedback.</div>
+      <div class="bcard-tags"><span class="btag">ATmega32</span><span class="btag">HC-05</span><span class="btag">C</span><span class="btag">UART</span><span class="btag">GPIO</span></div>
       <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Performance</button>
       <div class="mini-sim-panel">
         <div class="mini-perf">
@@ -790,79 +672,84 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
       </div>
     </div>
 
-    <!-- Beyond Pixels 6G — WIRELESS -->
-    <div class="bcard b-7" style="--bc:var(--rose)" data-track="wireless" data-r="u" data-d="2">
-      <span class="track-badge" style="color:var(--rose);background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.2)">Wireless / 5G</span>
-      <span class="bcard-flag flag-done">Completed</span>
-      <div class="bcard-title">Beyond Pixels: Semantic Comms for 6G</div>
-      <div class="bcard-desc">Semantic communication framework transmitting the high-level "essence" of 3D scenes using Neural Radiance Fields — enables receivers to re-render entire XR scenes in real-time without transmitting pixels.</div>
-      <div class="psr">
-        <div class="psr-item"><div class="psr-k">Problem</div><div class="psr-v">Bandwidth limits in XR/6G transmission</div></div>
-        <div class="psr-item"><div class="psr-k">Solution</div><div class="psr-v">Transmit semantic essence via NeRF encoding</div></div>
-        <div class="psr-item"><div class="psr-k">Result</div><div class="psr-v">Real-time 3D scene reconstruction at receiver</div></div>
+    <!-- Walkie-Talkie DSP -->
+    <div class="bcard b-7" style="--bc:var(--rose)" data-track="wireless" data-r="u">
+      <span class="track-badge" style="color:var(--rose);background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.2)">Wireless / DSP</span>
+      <span class="bcard-flag flag-done">Completed · DSP Course Project</span>
+      <div class="bcard-title">Digital Walkie-Talkie with Noise Cancellation</div>
+      <div class="bcard-desc">Full-duplex real-time voice communication between two ESP32 nodes over ESP-NOW (peer-to-peer, no router). I2S digital microphone → audio frame segmentation → <strong>Spectral Subtraction</strong> (stationary noise) + <strong>NLMS adaptive filter</strong> (dynamic noise) → I2S amplifier output.</div>
+      <div class="psr" style="margin-top:12px">
+        <div class="psr-item"><div class="psr-k">Protocol</div><div class="psr-v">ESP-NOW · direct P2P · ~4ms TX latency</div></div>
+        <div class="psr-item"><div class="psr-k">DSP Chain</div><div class="psr-v">Spectral Sub + NLMS · ~12dB SNR gain</div></div>
+        <div class="psr-item"><div class="psr-k">Result</div><div class="psr-v">Low-latency clean voice · no infrastructure needed</div></div>
       </div>
-      <div class="bcard-tags" style="margin-top:12px"><span class="btag">NeRF</span><span class="btag">GenAI</span><span class="btag">6G</span><span class="btag">XR</span></div>
+      <div class="bcard-tags" style="margin-top:12px"><span class="btag">ESP32</span><span class="btag">ESP-NOW</span><span class="btag">I2S Mic</span><span class="btag">Spectral Subtraction</span><span class="btag">NLMS Filter</span><span class="btag">DAC</span><span class="btag">DSP</span></div>
+      <div style="margin-top:12px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--t3)">
+        TEAM: Islam Emad · Refaat Elsayed Refaat · Omar Tarek Elmaghawri · Omar Ahmed Desokey · Mohammed Reda Alasmar · Omar Alaa Zaghloul &nbsp;|&nbsp; SUPERVISOR: Dr. Rania Al-Abd
+      </div>
     </div>
 
-    <!-- Solar Tracker — EMBEDDED -->
-    <div class="bcard b-4" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="3">
+    <!-- Rover -->
+    <div class="bcard b-5" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="1">
+      <span class="track-badge" style="color:var(--teal);background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.2)">Embedded / Robotics</span>
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Autonomous Obstacle-Avoiding Rover</div>
+      <div class="bcard-desc">Wheeled robot navigating autonomously via HC-SR04 ultrasonic sensing. Priority-based decision algorithm evaluates front, left, and right distances — stop, reverse, pivot, or proceed. L298N motor driver with PWM speed control.</div>
+      <div class="bcard-tags"><span class="btag">Arduino</span><span class="btag">HC-SR04</span><span class="btag">L298N</span><span class="btag">PWM</span><span class="btag">C++</span><span class="btag">Robotics</span></div>
+      <div style="margin-top:12px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--t3)">
+        TEAM: Islam Emad · Abdelaziz Eltohami · Nada Atla · Mariam Issa &nbsp;|&nbsp; SUPERVISOR: Prof. Dr. Hatem Khater (Dean of Faculty)
+      </div>
+      <button class="sim-toggle-btn" onclick="toggleMini(this)">▶ Rover Stats</button>
+      <div class="mini-sim-panel">
+        <div class="mini-perf">
+          <div class="mp-row"><span class="mp-lbl">Ultrasonic Ping</span><div class="mp-track"><div class="mp-fill" style="width:20%;background:var(--acc)"></div></div><span class="mp-val">~58µs/cm</span></div>
+          <div class="mp-row"><span class="mp-lbl">Decision Loop</span><div class="mp-track"><div class="mp-fill" style="width:15%;background:var(--sage)"></div></div><span class="mp-val">~10ms</span></div>
+          <div class="mp-row"><span class="mp-lbl">Motor Response</span><div class="mp-track"><div class="mp-fill" style="width:10%;background:var(--teal)"></div></div><span class="mp-val">&lt;5ms</span></div>
+          <div class="mp-result">Obstacle threshold: 20cm · Reroute in ~15ms</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solar Tracker -->
+    <div class="bcard b-4" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="2">
       <span class="track-badge" style="color:var(--teal);background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.2)">Embedded</span>
       <span class="bcard-flag flag-done">Completed</span>
       <div class="bcard-title">LDR-Based Solar Tracker</div>
-      <div class="bcard-desc">Dual-axis electro-mechanical sun tracking with LDR differential sensing, servo control, and SolidWorks mechanical design.</div>
+      <div class="bcard-desc">Dual-axis electro-mechanical sun tracking — LDR differential sensing, servo control, SolidWorks mechanical design for maximum solar efficiency.</div>
       <div class="bcard-tags"><span class="btag">LDR</span><span class="btag">Servo Motors</span><span class="btag">SolidWorks</span><span class="btag">C</span></div>
     </div>
 
-    <!-- Java Restaurant — SOFTWARE -->
+    <!-- Java Restaurant -->
     <div class="bcard b-6" style="--bc:var(--sage)" data-track="software" data-r="u" data-d="1">
       <span class="track-badge" style="color:var(--sage);background:rgba(104,211,145,.08);border:1px solid rgba(104,211,145,.2)">Software</span>
       <span class="bcard-flag flag-done">Completed</span>
       <div class="bcard-title">Java Restaurant Management System</div>
-      <div class="bcard-desc">Full backend architecture — RESTful APIs, role-based access control, token-based auth, order management. OOP design with JSON formatting.</div>
+      <div class="bcard-desc">Full backend — RESTful APIs, role-based access control, token-based auth, order management. OOP architecture with JSON formatting.</div>
       <div class="bcard-tags"><span class="btag">Java</span><span class="btag">REST API</span><span class="btag">OOP</span><span class="btag">Auth</span><span class="btag">JSON</span></div>
     </div>
 
-    <!-- Walkie Talkie — WIRELESS -->
-    <div class="bcard b-6" style="--bc:var(--rose)" data-track="wireless" data-r="u" data-d="2">
-      <span class="track-badge" style="color:var(--rose);background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.2)">Wireless / 5G</span>
-      <span class="bcard-flag flag-done">Completed</span>
-      <div class="bcard-title">Wireless Walkie-Talkie — DSP Project</div>
-      <div class="bcard-desc">Two-way radio communication — DSP theory, modulation/demodulation, GNU Radio software-defined implementation of full RF chain.</div>
-      <div class="bcard-tags"><span class="btag">DSP</span><span class="btag">RF</span><span class="btag">GNU Radio</span><span class="btag">Modulation</span></div>
-    </div>
-
-    <!-- GO-IT — WIRELESS -->
-    <div class="bcard b-4" style="--bc:var(--rose)" data-track="wireless" data-r="u" data-d="3">
-      <span class="track-badge" style="color:var(--rose);background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.2)">Wireless / 5G</span>
-      <span class="bcard-flag flag-done">Completed</span>
-      <div class="bcard-title">Goal-Oriented Information Theory</div>
-      <div class="bcard-desc">Novel extension of Shannon's theorem defining "Semantic Value" as marginal impact on a multi-agent utility function — foundational framework for 6G networks.</div>
-      <div class="bcard-tags"><span class="btag">6G</span><span class="btag">Shannon</span><span class="btag">Multi-Agent</span></div>
-    </div>
-
-    <!-- Rover — EMBEDDED -->
-    <div class="bcard b-4" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="2">
-      <span class="track-badge" style="color:var(--teal);background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.2)">Embedded</span>
-      <span class="bcard-flag flag-done">Completed</span>
-      <div class="bcard-title">Autonomous Obstacle-Avoiding Rover</div>
-      <div class="bcard-desc">Arduino-based robot navigating in real-time using ultrasonic sensors and a dynamic decision-making algorithm.</div>
-      <div class="bcard-tags"><span class="btag">Arduino</span><span class="btag">Ultrasonic</span><span class="btag">C++</span><span class="btag">Robotics</span></div>
-    </div>
-
-    <!-- C Clinic — SOFTWARE -->
-    <div class="bcard b-4" style="--bc:var(--sage)" data-track="software" data-r="u" data-d="3">
+    <!-- C Clinic -->
+    <div class="bcard b-6" style="--bc:var(--sage)" data-track="software" data-r="u" data-d="2">
       <span class="track-badge" style="color:var(--sage);background:rgba(104,211,145,.08);border:1px solid rgba(104,211,145,.2)">Software</span>
       <span class="bcard-flag flag-done">Completed</span>
       <div class="bcard-title">C Clinic Management System</div>
-      <div class="bcard-desc">Advanced C management software — custom memory allocation, zero-fault data handling, clean system architecture.</div>
+      <div class="bcard-desc">Advanced C software with custom memory allocation, zero-fault data handling, and clean system architecture. Demonstrates mastery of low-level C programming.</div>
       <div class="bcard-tags"><span class="btag">C Advanced</span><span class="btag">Memory Mgmt</span><span class="btag">Architecture</span></div>
+    </div>
+
+    <!-- Weather Station -->
+    <div class="bcard b-4" style="--bc:var(--teal)" data-track="embedded" data-r="u" data-d="3">
+      <span class="track-badge" style="color:var(--teal);background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.2)">Embedded</span>
+      <span class="bcard-flag flag-done">Completed</span>
+      <div class="bcard-title">Smart Weather Station</div>
+      <div class="bcard-desc">MCU-based real-time environmental monitoring. Temperature, humidity, and pressure sensor fusion with I2C data logging.</div>
+      <div class="bcard-tags"><span class="btag">MCU</span><span class="btag">I2C</span><span class="btag">Sensors</span><span class="btag">Data Log</span></div>
     </div>
 
   </div>
 </div>
 </section>
 
-<!-- ═══ SKILLS — INTERACTIVE DOMAIN BOARD ═══ -->
 <section id="skills">
 <div class="wrap">
   <div class="eyebrow" data-r="u">Technical Expertise</div>
@@ -981,35 +868,10 @@ footer{border-top:1px solid var(--rim0);padding:26px var(--g);display:flex;justi
     <div class="cert-card featured" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🧠</div><div class="cert-body"><div class="cert-name">Building LLM Applications With Prompt Engineering<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">NVIDIA</div><div class="cert-date">Jan 2026</div></div></div>
     <div class="cert-card featured" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🌐</div><div class="cert-body"><div class="cert-name">Exam Prep: AWS Advanced Networking Specialty<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
     <div class="cert-card featured" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.08)">⚡</div><div class="cert-body"><div class="cert-name">AI for All: From Basics to GenAI Practice<span class="cert-featured-tag">Featured</span></div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Sep 2025</div></div></div>
-    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(99,179,237,.08)">📡</div><div class="cert-body"><div class="cert-name">Digital Communications</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📶</div><div class="cert-body"><div class="cert-name">Exploring Communications Technology</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(252,129,129,.08)">⚗️</div><div class="cert-body"><div class="cert-name">CMOS Fabrication Fundamentals</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(79,209,197,.1)">🤗</div><div class="cert-body"><div class="cert-name">Open Source AI with Python &amp; Hugging Face</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
-    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(246,173,85,.1)">🤖</div><div class="cert-body"><div class="cert-name">AI Agents Fundamentals, v2</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(252,129,129,.1)">✏️</div><div class="cert-body"><div class="cert-name">Practical Prompt Engineering</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(99,179,237,.08)">💡</div><div class="cert-body"><div class="cert-name">Cursor &amp; Claude Code: Professional AI Setup</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.1)">☁️</div><div class="cert-body"><div class="cert-name">AWS Technical Essentials</div><div class="cert-issuer">AWS Training &amp; Certification</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(252,129,129,.1)">🔒</div><div class="cert-body"><div class="cert-name">Network Security</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🖥️</div><div class="cert-body"><div class="cert-name">Computer Network Fundamentals</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.06)">📡</div><div class="cert-body"><div class="cert-name">Cumulus Linux Administration</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(246,173,85,.08)">⚙️</div><div class="cert-body"><div class="cert-name">Ansible Essentials for Network Engineers</div><div class="cert-issuer">NVIDIA Academy</div><div class="cert-date">Sep 2025</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(252,129,129,.1)">🛡️</div><div class="cert-body"><div class="cert-name">Cloud Security — Deepfence ThreatMapper</div><div class="cert-issuer">Udacity</div><div class="cert-date">Feb 2026</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🚀</div><div class="cert-body"><div class="cert-name">Enterprise DevOps &amp; Cloud Infrastructure</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📦</div><div class="cert-body"><div class="cert-name">Cloud Infrastructure: Startup to Scale</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.08)">🧮</div><div class="cert-body"><div class="cert-name">Complete Intro to Computer Science</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.1)">📐</div><div class="cert-body"><div class="cert-name">The Last Algorithms Course You'll Need</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.08)">🐍</div><div class="cert-body"><div class="cert-name">Practical Guide to Python</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.1)">🌐</div><div class="cert-body"><div class="cert-name">Full Stack Fundamentals, v3</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(252,129,129,.08)">🔧</div><div class="cert-body"><div class="cert-name">Backend System Design</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.06)">📝</div><div class="cert-body"><div class="cert-name">Everything You'll Need to Know About Git</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.08)">🐍</div><div class="cert-body"><div class="cert-name">Python Programming Basics</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Sep 2025</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.08)">📱</div><div class="cert-body"><div class="cert-name">Exploring SwiftUI: Declarative Interfaces</div><div class="cert-issuer">ITI (Mahara-Tech)</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(79,209,197,.06)">🖥️</div><div class="cert-body"><div class="cert-name">Complete Intro to Linux &amp; the CLI</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Feb 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(246,173,85,.06)">🏗️</div><div class="cert-body"><div class="cert-name">Introduction to Backend Architectures</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Jan 2026</div></div></div>
-    <div class="cert-card" data-cc="sw"><div class="cert-ico" style="background:rgba(99,179,237,.06)">🟢</div><div class="cert-body"><div class="cert-name">Introduction to Node.js, v3</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="cloud"><div class="cert-ico" style="background:rgba(79,209,197,.08)">🔨</div><div class="cert-body"><div class="cert-name">Introducing DevOps for Developers</div><div class="cert-issuer">Frontend Masters</div><div class="cert-date">Mar 2026</div></div></div>
-    <div class="cert-card" data-cc="eng"><div class="cert-ico" style="background:rgba(246,173,85,.06)">🏛️</div><div class="cert-body"><div class="cert-name">Introducing Engineering</div><div class="cert-issuer">The Open University</div><div class="cert-date">Oct 2025</div></div></div>
-    <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(246,173,85,.1)">💼</div><div class="cert-body"><div class="cert-name">AI for Business Professionals</div><div class="cert-issuer">HP LIFE</div><div class="cert-date">Oct 2025</div></div></div>
+    
+    
+    
+    
     <div class="cert-card" data-cc="ai"><div class="cert-ico" style="background:rgba(79,209,197,.08)">📈</div><div class="cert-body"><div class="cert-name">Artificial Intelligence — ML &amp; DL Basic</div><div class="cert-issuer">WE Training &amp; Development</div><div class="cert-date">Aug 2024</div></div></div>
   </div>
 </div>
@@ -1077,7 +939,7 @@ function setTheme(t){
 }
 const saved=localStorage.getItem('ie-theme');
 if(saved)setTheme(saved);
-else{const p=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';setTheme(p);}
+else setTheme('dark');
 
 // ═══ CURSOR ═══
 const cd=document.getElementById('cd'),cr=document.getElementById('cr');
@@ -1450,7 +1312,16 @@ function renderTimeline(d){
 // Boot simulation
 setTimeout(()=>runSimulation(),700);
 
-
+// Clock
+setInterval(()=>{
+  const n=new Date(), p=v=>String(v).padStart(2,'0');
+  const t=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+  const disp=document.getElementById('sim-clock-disp');
+  const clk=document.getElementById('clock');
+  if(disp) disp.textContent=t;
+  if(clk) clk.textContent=n.toUTCString().slice(0,-4)+' UTC';
+},1000);
+</script>
 
 // Override switchTab to include radar
 const _origSwitch=switchTab;
@@ -1485,5 +1356,3 @@ function setScen(id,btn){
 </script>
 </body>
 </html>
-
-</script>

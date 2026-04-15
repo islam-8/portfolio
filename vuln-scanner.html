@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Automated Vulnerability Scanner — Multi-agent AI-powered security scanning platform. Islam Emad.">
+<title>VulnScan — Automated Vulnerability Scanner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--ease:cubic-bezier(.16,1,.3,1);--display:'Bricolage Grotesque',sans-serif;--mono:'DM Mono',monospace;--body:'Instrument Sans',sans-serif;}
+[data-theme="light"]{
+  --bg:#f5f7fa;--bg1:#eef1f8;--bg2:#e6eaf4;--bg3:#dce2f0;
+  --rim0:rgba(0,0,0,.06);--rim1:rgba(0,0,0,.1);--rim2:rgba(0,0,0,.18);
+  --rima:rgba(124,58,237,.2);
+  --acc:#7c3aed;--acc-d:rgba(124,58,237,.07);--acc-g:rgba(124,58,237,.14);
+  --teal:#0891b2;--amber:#d97706;--rose:#dc2626;--sage:#16a34a;--blue:#2563eb;
+  --t0:#0f172a;--t1:#1e293b;--t2:#475569;--t3:#94a3b8;--t4:#cbd5e1;
+  --glass:rgba(255,255,255,.85);--shadow:0 20px 60px rgba(0,0,0,.1);
+}
+[data-theme="dark"]{
+  --bg:#08090f;--bg1:#0d0f1a;--bg2:#111426;--bg3:#151830;
+  --rim0:rgba(255,255,255,.05);--rim1:rgba(255,255,255,.09);--rim2:rgba(255,255,255,.15);
+  --rima:rgba(167,139,250,.25);
+  --acc:#a78bfa;--acc-d:rgba(167,139,250,.08);--acc-g:rgba(167,139,250,.16);
+  --teal:#22d3ee;--amber:#fbbf24;--rose:#f87171;--sage:#4ade80;--blue:#60a5fa;
+  --t0:#f1f5ff;--t1:#c7d0f0;--t2:#7b88c0;--t3:#404868;--t4:#1e2240;
+  --glass:rgba(13,15,26,.8);--shadow:0 20px 60px rgba(0,0,0,.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none;transition:background .4s,color .3s;}
+#cd,#cr{position:fixed;pointer-events:none;z-index:9999;top:0;left:0;}
+#cd div{width:5px;height:5px;border-radius:50%;background:var(--acc);transform:translate(-50%,-50%);}
+#cr div{width:30px;height:30px;border-radius:50%;border:1px solid var(--rima);transform:translate(-50%,-50%);transition:width .25s var(--ease),height .25s var(--ease);}
+body.ch #cr div{width:46px;height:46px;border-color:var(--acc);}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:998;opacity:.012;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:300px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:56px;padding:0 clamp(20px,4vw,60px);display:flex;align-items:center;justify-content:space-between;background:var(--glass);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim0);}
+.nav-back{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--t3);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s;cursor:none;}
+.nav-back:hover{color:var(--acc);}
+.nav-id{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.12em;display:flex;align-items:center;gap:8px;}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--acc);animation:accpulse 2s ease infinite;}
+@keyframes accpulse{0%{box-shadow:0 0 0 0 var(--acc-g)}70%{box-shadow:0 0 0 8px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.nav-theme{font-family:var(--mono);font-size:10px;padding:5px 12px;border:1px solid var(--rim1);background:transparent;color:var(--t3);border-radius:4px;cursor:pointer;transition:all .2s;}
+.nav-theme:hover{border-color:var(--acc);color:var(--acc);}
+
+/* LAYOUT */
+.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(20px,4vw,60px);}
+section{padding:clamp(64px,8vw,100px) 0;position:relative;}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--acc);opacity:.6;flex-shrink:0;}
+.sec-h{font-family:var(--display);font-size:clamp(28px,4.5vw,52px);font-weight:800;color:var(--t0);letter-spacing:-.03em;line-height:1.05;}
+.body-md{font-size:15px;color:var(--t2);line-height:1.85;}
+[data-r]{opacity:0;transition:opacity .7s var(--ease),transform .7s var(--ease);}
+[data-r="u"]{transform:translateY(28px);}[data-r="l"]{transform:translateX(-22px);}[data-r="r"]{transform:translateX(22px);}
+[data-r].in{opacity:1;transform:none;}
+[data-d="1"]{transition-delay:.1s}[data-d="2"]{transition-delay:.2s}[data-d="3"]{transition-delay:.3s}[data-d="4"]{transition-delay:.4s}
+
+/* HERO */
+#vs-hero{min-height:90vh;padding-top:56px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(124,58,237,.03) 0%,transparent 60%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--rim0) 1px,transparent 1px),linear-gradient(90deg,var(--rim0) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 80% 80% at 50% 40%,black,transparent 80%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--acc);background:var(--acc-d);border:1px solid var(--acc-g);padding:6px 16px;border-radius:40px;margin-bottom:20px;}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc);animation:accpulse 2s ease infinite;}
+.hero-name{font-family:var(--display);font-size:clamp(48px,9vw,108px);font-weight:800;line-height:.9;letter-spacing:-.04em;color:var(--t0);}
+.hero-name .hl{color:var(--acc);}
+.hero-sub{font-family:var(--mono);font-size:clamp(13px,1.6vw,16px);color:var(--t2);margin-top:18px;letter-spacing:.05em;border-left:2px solid var(--acc-g);padding-left:16px;max-width:560px;line-height:1.7;}
+.hero-stack{display:flex;flex-wrap:wrap;gap:7px;margin-top:24px;}
+.stack-pill{font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:5px 12px;border-radius:40px;border:1px solid var(--rim1);color:var(--t3);background:var(--glass);backdrop-filter:blur(8px);}
+.hero-metrics{display:flex;gap:0;margin-top:30px;flex-wrap:wrap;}
+.hm{padding:14px 22px 14px 0;border-right:1px solid var(--rim0);margin-right:22px;}
+.hm:last-child{border-right:none;}
+.hm-n{font-family:var(--display);font-size:28px;font-weight:800;color:var(--t0);line-height:1;letter-spacing:-.03em;}
+.hm-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--t3);margin-top:4px;}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:12px 24px;border-radius:7px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s var(--ease);cursor:none;}
+.btn-p{background:var(--acc);color:#fff;border:1px solid var(--acc);font-weight:500;}
+.btn-p:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 16px 40px var(--acc-g);}
+.btn-s{background:transparent;color:var(--t1);border:1px solid var(--rim2);}
+.btn-s:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-d);}
+
+/* ARCHITECTURE PIPELINE */
+#vs-arch{background:var(--bg1);}
+.pipeline-visual{margin-top:48px;}
+.agents-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;position:relative;margin-bottom:24px;}
+@media(max-width:900px){.agents-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.agents-grid{grid-template-columns:1fr 1fr;}}
+.agent-card{background:var(--bg);border:1px solid var(--rim0);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:border-color .2s,transform .25s var(--ease);cursor:none;}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--acc));}
+.agent-card:hover{border-color:var(--rim1);transform:translateY(-3px);}
+.agent-num{font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--t3);margin-bottom:8px;}
+.agent-name{font-family:var(--display);font-size:13px;font-weight:700;color:var(--t0);margin-bottom:6px;}
+.agent-tools{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.atool{font-family:var(--mono);font-size:7px;letter-spacing:.06em;padding:2px 6px;border-radius:3px;background:var(--bg2);border:1px solid var(--rim0);color:var(--t3);}
+.agent-desc{font-size:11px;color:var(--t2);line-height:1.6;}
+/* Arrows between agents */
+.pipeline-arrows{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:center;margin:-12px 0 12px;}
+@media(max-width:900px){.pipeline-arrows{display:none;}}
+.pa{text-align:center;font-family:var(--mono);font-size:10px;color:var(--t3);}
+.pa:first-child{text-align:right;}
+.pa:last-child{text-align:left;}
+
+/* LIVE TERMINAL SIMULATION */
+#vs-sim{background:var(--bg);}
+.sim-window{background:var(--bg2);border:1px solid var(--rim1);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:40px;}
+.sim-header{background:var(--bg3);border-bottom:1px solid var(--rim0);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.sim-dots-row{display:flex;gap:6px;}
+.sim-dot{width:11px;height:11px;border-radius:50%;}
+.sim-title-txt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--t3);}
+.sim-layout{display:grid;grid-template-columns:1fr 1fr;min-height:480px;}
+@media(max-width:760px){.sim-layout{grid-template-columns:1fr;}}
+
+/* Terminal pane */
+.terminal{background:#0d0f14;font-family:var(--mono);font-size:12px;line-height:1.6;padding:18px;overflow-y:auto;max-height:480px;position:relative;}
+.term-line{margin-bottom:3px;white-space:pre-wrap;word-break:break-all;}
+.tc-cmd{color:#7dd3fc;}
+.tc-info{color:#94a3b8;}
+.tc-ok{color:#4ade80;}
+.tc-warn{color:#fbbf24;}
+.tc-crit{color:#f87171;}
+.tc-dim{color:#334155;}
+.tc-acc{color:#a78bfa;}
+.tc-target{color:#38bdf8;}
+.cursor-blink{animation:blink .8s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Results pane */
+.results-pane{border-left:1px solid var(--rim0);padding:18px;overflow-y:auto;max-height:480px;}
+.result-header{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--t3);margin-bottom:14px;text-transform:uppercase;}
+.vuln-list{display:flex;flex-direction:column;gap:8px;}
+.vuln-item{background:var(--bg);border:1px solid var(--rim0);border-radius:8px;padding:12px;position:relative;overflow:hidden;transition:border-color .2s;}
+.vuln-item::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--vc,var(--acc));}
+.vuln-item:hover{border-color:var(--rim1);}
+.vi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.vi-name{font-family:var(--mono);font-size:11px;color:var(--t1);font-weight:500;}
+.vi-score{font-family:var(--mono);font-size:11px;font-weight:700;}
+.vi-desc{font-size:11px;color:var(--t2);line-height:1.5;}
+.vi-meta{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.vi-tag{font-family:var(--mono);font-size:8px;letter-spacing:.06em;padding:2px 7px;border-radius:3px;background:var(--bg2);border:1px solid var(--rim0);color:var(--t3);}
+.severity-badge{font-family:var(--mono);font-size:8px;letter-spacing:.1em;padding:2px 8px;border-radius:3px;font-weight:600;}
+.sev-crit{background:rgba(220,38,38,.12);color:#dc2626;border:1px solid rgba(220,38,38,.25);}
+.sev-high{background:rgba(234,88,12,.12);color:#ea580c;border:1px solid rgba(234,88,12,.25);}
+.sev-med{background:rgba(202,138,4,.12);color:#ca8a04;border:1px solid rgba(202,138,4,.25);}
+.sev-low{background:rgba(22,163,74,.1);color:#16a34a;border:1px solid rgba(22,163,74,.2);}
+
+/* Progress bars */
+.scan-progress{padding:14px 18px;border-top:1px solid var(--rim0);border-bottom:1px solid var(--rim0);background:var(--bg3);}
+.sp-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.sp-row:last-child{margin-bottom:0;}
+.sp-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);min-width:100px;text-transform:uppercase;}
+.sp-track{flex:1;height:3px;background:var(--rim0);border-radius:2px;overflow:hidden;}
+.sp-fill{height:100%;border-radius:2px;transition:width 1s var(--ease);}
+.sp-val{font-family:var(--mono);font-size:9px;color:var(--t2);min-width:36px;text-align:right;}
+
+/* Controls */
+.sim-controls{padding:14px 18px;border-top:1px solid var(--rim0);display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.target-input{font-family:var(--mono);font-size:11px;padding:8px 14px;border:1px solid var(--rim1);border-radius:6px;background:var(--bg3);color:var(--t1);flex:1;min-width:200px;cursor:text;}
+.target-input:focus{outline:none;border-color:var(--acc);}
+.scan-btn{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid var(--acc);background:var(--acc-d);color:var(--acc);cursor:pointer;transition:all .2s;}
+.scan-btn:hover{background:var(--acc);color:#fff;}
+.scan-btn:disabled{opacity:.4;cursor:not-allowed;}
+.scan-presets{display:flex;gap:6px;flex-wrap:wrap;}
+.preset-btn{font-family:var(--mono);font-size:9px;letter-spacing:.08em;padding:5px 10px;border-radius:4px;border:1px solid var(--rim1);color:var(--t3);background:transparent;cursor:pointer;transition:all .2s;}
+.preset-btn:hover{border-color:var(--rim2);color:var(--t2);}
+
+/* STACK SECTION */
+#vs-stack{background:var(--bg1);}
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:36px;}
+.stack-card{background:var(--bg);border:1px solid var(--rim0);border-radius:10px;padding:18px;transition:border-color .2s,transform .2s var(--ease);}
+.stack-card:hover{border-color:var(--rim1);transform:translateY(-2px);}
+.stack-card::before{content:'';display:block;height:2px;background:var(--sc,var(--acc));border-radius:1px;margin-bottom:12px;}
+.sc-title{font-family:var(--display);font-size:14px;font-weight:700;color:var(--t0);margin-bottom:8px;}
+.sc-items{display:flex;flex-wrap:wrap;gap:5px;}
+.sc-tag{font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:3px 8px;border-radius:3px;background:var(--bg2);border:1px solid var(--rim0);color:var(--t2);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--rim0);padding:24px clamp(20px,4vw,60px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-l{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.footer-l span{color:var(--acc);}
+@media(max-width:600px){nav{padding:0 20px;}section{padding:clamp(52px,7vw,80px) 0;}footer{padding:20px;}}
+</style>
+</head>
+<body>
+
+<div id="cd"><div></div></div>
+<div id="cr"><div></div></div>
+<div class="grain" aria-hidden="true"></div>
+
+<nav>
+  <a class="nav-back" href="index.html">← Back to Portfolio</a>
+  <div class="nav-id"><div class="nav-dot"></div>VULNSCAN</div>
+  <button class="nav-theme" onclick="toggleTheme()">☀ / ◑</button>
+</nav>
+
+<!-- HERO -->
+<section id="vs-hero">
+  <div class="hero-grid"></div>
+  <div class="wrap">
+    <div class="hero-badge" data-r="u">Multi-Agent · AI-Powered · Full-Stack</div>
+    <h1 class="hero-name" data-r="u" data-d="1">
+      VULN<span class="hl">SCAN</span>
+    </h1>
+    <div style="font-family:var(--display);font-size:clamp(16px,2.2vw,22px);font-weight:300;color:var(--t2);margin-top:8px;letter-spacing:.01em" data-r="u" data-d="2">
+      Automated Vulnerability Scanner
+    </div>
+    <p class="hero-sub" data-r="u" data-d="3">
+      5-agent AI pipeline — Recon → Static → Dynamic → Validation → Report.
+      Gemini-backed intelligence. Full-stack Docker orchestration.
+      End-to-end scan in &lt;60 seconds.
+    </p>
+    <div class="hero-stack" data-r="u" data-d="3">
+      <span class="stack-pill">Python</span><span class="stack-pill">FastAPI</span>
+      <span class="stack-pill">Gemini AI</span><span class="stack-pill">Nmap</span>
+      <span class="stack-pill">OWASP ZAP</span><span class="stack-pill">Docker</span>
+      <span class="stack-pill">PostgreSQL</span><span class="stack-pill">Redis</span>
+      <span class="stack-pill">React</span><span class="stack-pill">Telegram Bot</span>
+    </div>
+    <div class="hero-metrics" data-r="u" data-d="4">
+      <div class="hm"><div class="hm-n">5</div><div class="hm-l">Agents</div></div>
+      <div class="hm"><div class="hm-n">21</div><div class="hm-l">Python Files</div></div>
+      <div class="hm"><div class="hm-n">&lt;60s</div><div class="hm-l">Full Scan</div></div>
+      <div class="hm"><div class="hm-n">0</div><div class="hm-l">Errors</div></div>
+    </div>
+    <div class="hero-cta" data-r="u" data-d="5">
+      <a href="https://github.com/islam-8" target="_blank" class="btn btn-p">View Source Code ↗</a>
+      <a href="#vs-sim" class="btn btn-s">▶ Live Simulation</a>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="vs-arch">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">System Architecture</div>
+  <h2 class="sec-h" data-r="u" data-d="1">5-Agent <span style="color:var(--acc)">Pipeline</span></h2>
+  <p class="body-md" data-r="u" data-d="2" style="max-width:560px;margin-top:10px">Each agent is a specialized microservice. The orchestrator coordinates the pipeline. Gemini AI backs the intelligence layer.</p>
+
+  <div class="pipeline-visual" data-r="u" data-d="3">
+    <div class="agents-grid">
+      <div class="agent-card" style="--ac:var(--blue)">
+        <div class="agent-num">AGENT 01</div>
+        <div class="agent-name">Recon Agent</div>
+        <div class="agent-desc">Network discovery, port scanning, subdomain enumeration, Shodan queries.</div>
+        <div class="agent-tools"><span class="atool">Nmap</span><span class="atool">nuclei</span><span class="atool">httpx</span><span class="atool">subfinder</span><span class="atool">Shodan</span></div>
+      </div>
+      <div class="agent-card" style="--ac:var(--acc)">
+        <div class="agent-num">AGENT 02</div>
+        <div class="agent-name">Static Agent</div>
+        <div class="agent-desc">Code & config static analysis. Detects misconfigs and known vuln patterns.</div>
+        <div class="agent-tools"><span class="atool">semgrep</span><span class="atool">bandit</span><span class="atool">trivy</span><span class="atool">checkov</span></div>
+      </div>
+      <div class="agent-card" style="--ac:var(--teal)">
+        <div class="agent-num">AGENT 03</div>
+        <div class="agent-name">Dynamic Agent</div>
+        <div class="agent-desc">Active web application testing. Crawling, fuzzing, and injection attempts.</div>
+        <div class="agent-tools"><span class="atool">OWASP ZAP</span><span class="atool">ffuf</span></div>
+      </div>
+      <div class="agent-card" style="--ac:var(--amber)">
+        <div class="agent-num">AGENT 04</div>
+        <div class="agent-name">Validation Agent</div>
+        <div class="agent-desc">EPSS scoring, deduplication, CVSS mapping, compliance framework alignment.</div>
+        <div class="agent-tools"><span class="atool">EPSS</span><span class="atool">CVSS</span><span class="atool">dedup</span><span class="atool">compliance</span></div>
+      </div>
+      <div class="agent-card" style="--ac:var(--sage)">
+        <div class="agent-num">AGENT 05</div>
+        <div class="agent-name">Report Agent</div>
+        <div class="agent-desc">Generates structured PDF reports, creates Jira tickets, sends Telegram alerts.</div>
+        <div class="agent-tools"><span class="atool">PDF</span><span class="atool">Jira</span><span class="atool">Telegram</span></div>
+      </div>
+    </div>
+
+    <!-- Infrastructure row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px" data-r="u" data-d="4">
+      <div style="background:var(--bg);border:1px solid var(--rim0);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);margin-bottom:6px">ENTRY POINT</div>
+        <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--t0)">FastAPI</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">main_v2.py · /docs</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--rim0);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);margin-bottom:6px">COORDINATOR</div>
+        <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--t0)">Orchestrator</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">orchestrator_v2.py</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--rim0);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);margin-bottom:6px">DASHBOARD</div>
+        <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--t0)">React UI</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">App.jsx · :3000</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--rim0);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--t3);margin-bottom:6px">INTERFACE</div>
+        <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--t0)">Telegram Bot</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">telegram_bot.py · /start</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- LIVE SIMULATION -->
+<section id="vs-sim">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Interactive Demo</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Live <span style="color:var(--acc)">Scan Simulation</span></h2>
+  <p class="body-md" data-r="u" data-d="2" style="max-width:500px;margin-top:10px">Enter a target (or use a preset) to simulate a full vulnerability scan pipeline.</p>
+
+  <div class="sim-window" data-r="u" data-d="3">
+    <div class="sim-header">
+      <div class="sim-dots-row">
+        <div class="sim-dot" style="background:#fc5f57"></div>
+        <div class="sim-dot" style="background:#fdbc2c"></div>
+        <div class="sim-dot" style="background:#34c84a"></div>
+      </div>
+      <div class="sim-title-txt">VULNSCAN // LIVE PIPELINE // v2.0</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--t3)" id="vs-clock">—</div>
+    </div>
+
+    <!-- Progress bars -->
+    <div class="scan-progress" id="scan-progress" style="display:none">
+      <div class="sp-row"><span class="sp-lbl">Recon</span><div class="sp-track"><div class="sp-fill" id="sp-recon" style="width:0%;background:var(--blue)"></div></div><span class="sp-val" id="spv-recon">0%</span></div>
+      <div class="sp-row"><span class="sp-lbl">Static</span><div class="sp-track"><div class="sp-fill" id="sp-static" style="width:0%;background:var(--acc)"></div></div><span class="sp-val" id="spv-static">0%</span></div>
+      <div class="sp-row"><span class="sp-lbl">Dynamic</span><div class="sp-track"><div class="sp-fill" id="sp-dynamic" style="width:0%;background:var(--teal)"></div></div><span class="sp-val" id="spv-dynamic">0%</span></div>
+      <div class="sp-row"><span class="sp-lbl">Validation</span><div class="sp-track"><div class="sp-fill" id="sp-valid" style="width:0%;background:var(--amber)"></div></div><span class="sp-val" id="spv-valid">0%</span></div>
+      <div class="sp-row"><span class="sp-lbl">Report</span><div class="sp-track"><div class="sp-fill" id="sp-report" style="width:0%;background:var(--sage)"></div></div><span class="sp-val" id="spv-report">0%</span></div>
+    </div>
+
+    <div class="sim-layout">
+      <!-- Terminal -->
+      <div class="terminal" id="terminal">
+        <div class="term-line tc-dim">VulnScan v2.0 — Multi-Agent AI Security Scanner</div>
+        <div class="term-line tc-dim">Powered by Gemini · FastAPI · Docker</div>
+        <div class="term-line tc-dim">─────────────────────────────────────────</div>
+        <div class="term-line tc-info">Awaiting target... Enter IP/domain and press SCAN</div>
+        <div class="term-line"><span class="cursor-blink">▊</span></div>
+      </div>
+      <!-- Results -->
+      <div class="results-pane">
+        <div class="result-header" id="result-header">Scan Results</div>
+        <div class="vuln-list" id="vuln-list">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--t3);text-align:center;padding:40px 20px">
+            Run a scan to see vulnerability findings here.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="sim-controls">
+      <input class="target-input" id="target-input" type="text" placeholder="192.168.1.1 or example.com" value="">
+      <button class="scan-btn" id="scan-btn" onclick="runScan()">▶ Scan Target</button>
+      <div class="scan-presets">
+        <button class="preset-btn" onclick="setPreset('192.168.1.100')">Web Server</button>
+        <button class="preset-btn" onclick="setPreset('10.0.0.50')">IoT Device</button>
+        <button class="preset-btn" onclick="setPreset('172.16.0.10')">API Gateway</button>
+        <button class="preset-btn" onclick="setPreset('10.10.0.200')">Database</button>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- STACK -->
+<section id="vs-stack">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Technology Stack</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Full <span style="color:var(--acc)">Stack</span></h2>
+  <div class="stack-grid" data-r="u" data-d="2">
+    <div class="stack-card" style="--sc:var(--blue)">
+      <div class="sc-title">Backend</div>
+      <div class="sc-items"><span class="sc-tag">Python</span><span class="sc-tag">FastAPI</span><span class="sc-tag">Redis</span><span class="sc-tag">PostgreSQL</span><span class="sc-tag">Docker</span><span class="sc-tag">Grafana</span></div>
+    </div>
+    <div class="stack-card" style="--sc:var(--acc)">
+      <div class="sc-title">AI Intelligence</div>
+      <div class="sc-items"><span class="sc-tag">Google Gemini</span><span class="sc-tag">LLM Prompt Engineering</span><span class="sc-tag">EPSS Scoring</span></div>
+    </div>
+    <div class="stack-card" style="--sc:var(--rose)">
+      <div class="sc-title">Security Tools</div>
+      <div class="sc-items"><span class="sc-tag">Nmap</span><span class="sc-tag">nuclei</span><span class="sc-tag">OWASP ZAP</span><span class="sc-tag">ffuf</span><span class="sc-tag">semgrep</span><span class="sc-tag">bandit</span><span class="sc-tag">trivy</span><span class="sc-tag">Shodan</span></div>
+    </div>
+    <div class="stack-card" style="--sc:var(--sage)">
+      <div class="sc-title">Frontend & Output</div>
+      <div class="sc-items"><span class="sc-tag">React</span><span class="sc-tag">App.jsx</span><span class="sc-tag">PDF Reports</span><span class="sc-tag">Jira</span><span class="sc-tag">Telegram Bot</span></div>
+    </div>
+  </div>
+
+  <!-- Quick Start -->
+  <div style="margin-top:32px;background:var(--bg2);border:1px solid var(--rim1);border-radius:12px;padding:24px" data-r="u" data-d="3">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--t3);margin-bottom:14px">QUICK START</div>
+    <pre style="font-family:var(--mono);font-size:12px;color:var(--t1);background:var(--bg3);border:1px solid var(--rim0);border-radius:8px;padding:16px;overflow-x:auto;line-height:1.7"><span style="color:var(--t3)"># 1. Configure environment</span>
+cp .env.template .env
+<span style="color:var(--t3)"># Add: GOOGLE_API_KEY · TELEGRAM_BOT_TOKEN · API_KEY</span>
+
+<span style="color:var(--t3)"># 2. Launch full stack</span>
+docker compose up -d
+
+<span style="color:var(--t3)"># 3. Access</span>
+<span style="color:var(--acc)">Dashboard:</span>  http://localhost:3000
+<span style="color:var(--acc)">API Docs:</span>   http://localhost:8000/docs
+<span style="color:var(--acc)">Telegram:</span>   /start → /scan &lt;target&gt;</pre>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="footer-l">VulnScan — <span>Islam Emad</span> · Automated Security Scanner</div>
+  <a href="index.html" style="font-family:var(--mono);font-size:10px;color:var(--t3);text-decoration:none;cursor:none;">← Portfolio</a>
+</footer>
+
+<script>
+// CURSOR
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.transform=`translate(${mx}px,${my}px)`;});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,input').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));});
+
+// THEME
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('vs-theme',t);}
+const st=localStorage.getItem('vs-theme');if(st)document.documentElement.setAttribute('data-theme',st);
+
+// REVEAL
+const ro=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.08});
+document.querySelectorAll('[data-r]').forEach(el=>ro.observe(el));
+
+// CLOCK
+setInterval(()=>{const n=new Date(),p=v=>String(v).padStart(2,'0');document.getElementById('vs-clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;},1000);
+
+// PRESET
+function setPreset(t){document.getElementById('target-input').value=t;}
+
+// ═══ SCAN SIMULATION ═══
+const VULNS_DB={
+  web:[
+    {name:'SQL Injection (CVE-2023-1234)',sev:'CRITICAL',score:9.8,desc:'Unsanitized input in /api/login endpoint allows authentication bypass via UNION-based injection.',tags:['CWE-89','OWASP A03','auth bypass']},
+    {name:'XSS Reflected (CVE-2023-5678)',sev:'HIGH',score:7.4,desc:'User-controlled parameter reflected in HTML response without encoding in /search?q= endpoint.',tags:['CWE-79','OWASP A03','user data']},
+    {name:'Outdated OpenSSL 1.1.1',sev:'HIGH',score:7.1,desc:'Server running OpenSSL 1.1.1t — vulnerable to multiple CVEs. Upgrade to 3.x required.',tags:['CVE-2023-0286','infra','TLS']},
+    {name:'Directory Listing Enabled',sev:'MEDIUM',score:5.3,desc:'/uploads/ directory listing exposed. Attacker can enumerate all uploaded files.',tags:['CWE-548','config','disclosure']},
+    {name:'Missing HSTS Header',sev:'LOW',score:3.1,desc:'HTTP Strict-Transport-Security header absent — allows downgrade attacks.',tags:['CWE-693','header','TLS']},
+  ],
+  iot:[
+    {name:'Default Credentials (admin:admin)',sev:'CRITICAL',score:9.1,desc:'Device management interface accessible with factory default credentials.',tags:['CWE-1188','auth','default creds']},
+    {name:'Telnet Exposed (Port 23)',sev:'HIGH',score:8.2,desc:'Telnet service running with no authentication on port 23 — plaintext session hijacking possible.',tags:['CWE-319','network','cleartext']},
+    {name:'Firmware Outdated (CVE-2022-9821)',sev:'HIGH',score:7.6,desc:'Device firmware v2.1.3 contains known RCE vulnerability in UPnP handler.',tags:['RCE','firmware','UPnP']},
+    {name:'MQTT Broker Unauthenticated',sev:'MEDIUM',score:6.1,desc:'MQTT port 1883 accepts connections without credentials — IoT data exposed.',tags:['CWE-287','MQTT','IoT']},
+  ],
+  api:[
+    {name:'JWT None Algorithm (CVE-2023-4321)',sev:'CRITICAL',score:9.3,desc:'API accepts JWT tokens with alg:none — full authentication bypass possible for any endpoint.',tags:['CWE-347','JWT','auth bypass']},
+    {name:'BOLA — Broken Object Level Auth',sev:'HIGH',score:8.0,desc:'/api/v1/users/{id} returns any user record without ownership validation.',tags:['OWASP API1','BOLA','IDOR']},
+    {name:'Rate Limiting Absent',sev:'MEDIUM',score:5.8,desc:'No rate limiting on /api/auth/login — brute force attack vector open.',tags:['CWE-307','brute force','rate limit']},
+    {name:'Verbose Error Messages',sev:'LOW',score:2.9,desc:'Stack traces returned in production — reveals internal framework and file paths.',tags:['CWE-209','disclosure','config']},
+  ],
+  db:[
+    {name:'PostgreSQL Exposed (Port 5432)',sev:'CRITICAL',score:9.5,desc:'PostgreSQL port directly accessible from external interface with default pg_hba.conf.',tags:['CWE-284','network','database']},
+    {name:'No Encryption at Rest',sev:'HIGH',score:7.8,desc:'Database files stored unencrypted — physical access yields plaintext sensitive data.',tags:['CWE-311','encryption','data']},
+    {name:'Excessive DB Permissions',sev:'MEDIUM',score:5.5,desc:'Application user has SUPERUSER privileges — principle of least privilege violated.',tags:['CWE-269','privilege','config']},
+  ]
+};
+const TARGET_PROFILES={'192.168.1.100':'web','10.0.0.50':'iot','172.16.0.10':'api','10.10.0.200':'db'};
+
+let scanRunning=false;
+function runScan(){
+  if(scanRunning)return;
+  const target=document.getElementById('target-input').value.trim();
+  if(!target){document.getElementById('target-input').style.borderColor='var(--rose)';setTimeout(()=>document.getElementById('target-input').style.borderColor='',1500);return;}
+  scanRunning=true;
+  const btn=document.getElementById('scan-btn');
+  btn.disabled=true;btn.textContent='⠇ Scanning...';
+  document.getElementById('scan-progress').style.display='block';
+  document.getElementById('vuln-list').innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--t3);padding:20px">Scanning...</div>';
+  document.getElementById('result-header').textContent='Scanning: '+target;
+  resetBars();
+  const term=document.getElementById('terminal');
+  const profile=TARGET_PROFILES[target]||'web';
+  const vulns=VULNS_DB[profile]||VULNS_DB.web;
+  let termLines=[];
+  function addLine(txt,cls='tc-info',delay=0){setTimeout(()=>{const d=document.createElement('div');d.className='term-line '+cls;d.innerHTML=txt;term.appendChild(d);term.scrollTop=term.scrollHeight;},delay);}
+  term.innerHTML='';
+  const steps=[
+    [0,'tc-cmd',`$ vulnscan --target ${target} --full --ai-backend gemini`],
+    [200,'tc-info',`[*] VulnScan v2.0 initialized · AI: Gemini · Agents: 5`],
+    [400,'tc-dim','─────────────────────────────────────────────────'],
+    [600,'tc-acc','[AGENT-01] Recon Agent starting...'],
+    [900,'tc-info',`[*] Nmap SYN scan: ${target}/24 (1024 ports)`],
+    [1400,'tc-info','[*] Running subfinder · httpx · nuclei...'],
+    [1900,'tc-ok',`[+] Open ports: 22, 80, 443, ${profile==='db'?'5432':(profile==='iot'?'23,1883':'3000,8080')}`],
+    [2200,'tc-ok',`[+] Services: ${profile==='iot'?'HTTP/Telnet/MQTT':(profile==='db'?'PostgreSQL/SSH':'HTTP/HTTPS/API')}`],
+    [2500,'tc-dim','─────────────────────────────────────────────────'],
+    [2700,'tc-acc','[AGENT-02] Static Analysis Agent starting...'],
+    [3000,'tc-info','[*] Running semgrep, bandit, trivy, checkov...'],
+    [3500,'tc-ok','[+] Static scan complete · findings staged'],
+    [3700,'tc-dim','─────────────────────────────────────────────────'],
+    [3900,'tc-acc','[AGENT-03] Dynamic Agent starting...'],
+    [4200,'tc-info',`[*] OWASP ZAP spider: http://${target}`],
+    [4700,'tc-info','[*] ffuf fuzzing /api/v1/* (8192 wordlist)'],
+    [5200,'tc-ok','[+] Dynamic scan complete'],
+    [5400,'tc-dim','─────────────────────────────────────────────────'],
+    [5600,'tc-acc','[AGENT-04] Validation Agent starting...'],
+    [5900,'tc-info','[*] EPSS scoring · deduplication · CVSS mapping...'],
+    [6200,'tc-ok',`[+] ${vulns.length} unique findings · severity ranked`],
+    [6400,'tc-dim','─────────────────────────────────────────────────'],
+    [6600,'tc-acc','[AGENT-05] Report Agent starting...'],
+    [6900,'tc-info','[*] Generating PDF report...'],
+    [7100,'tc-info','[*] Creating Jira tickets for CRITICAL/HIGH...'],
+    [7300,'tc-info','[*] Sending Telegram alert...'],
+    [7500,'tc-ok','[+] PDF: vuln_report_'+target.replace(/\./g,'_')+'.pdf saved'],
+    [7700,'tc-ok','[+] Telegram alert sent · '+vulns.filter(v=>v.sev==='CRITICAL'||v.sev==='HIGH').length+' tickets created'],
+    [8000,'tc-dim','─────────────────────────────────────────────────'],
+    [8200,'tc-ok','[✓] SCAN COMPLETE — '+vulns.length+' vulnerabilities found'],
+  ];
+  steps.forEach(([d,c,t])=>addLine(t,c,d));
+  // Progress bars
+  const barSeqs=[
+    ['sp-recon','spv-recon',100,400,1800],
+    ['sp-static','spv-static',100,2600,3400],
+    ['sp-dynamic','spv-dynamic',100,3800,5100],
+    ['sp-valid','spv-valid',100,5500,6300],
+    ['sp-report','spv-report',100,6600,7800],
+  ];
+  barSeqs.forEach(([barId,valId,target,startT,endT])=>{
+    const dur=endT-startT;
+    const startTime=performance.now()+startT;
+    function animBar(){
+      const now=performance.now();
+      const p=Math.max(0,Math.min(1,(now-startTime)/dur));
+      const v=Math.round(p*target);
+      const el=document.getElementById(barId);
+      const vel=document.getElementById(valId);
+      if(el)el.style.width=v+'%';
+      if(vel)vel.textContent=v+'%';
+      if(p<1)requestAnimationFrame(animBar);
+    }
+    setTimeout(()=>requestAnimationFrame(animBar),startT);
+  });
+  // Show results after scan
+  setTimeout(()=>{
+    renderVulns(vulns,target);
+    btn.disabled=false;btn.textContent='▶ Scan Target';
+    scanRunning=false;
+  },8400);
+}
+
+function resetBars(){
+  ['sp-recon','sp-static','sp-dynamic','sp-valid','sp-report'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.width='0%';});
+  ['spv-recon','spv-static','spv-dynamic','spv-valid','spv-report'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0%';});
+}
+
+function renderVulns(vulns,target){
+  const sevColors={CRITICAL:'var(--rose)',HIGH:'var(--amber)',MEDIUM:'var(--acc)',LOW:'var(--sage)'};
+  const sevClasses={CRITICAL:'sev-crit',HIGH:'sev-high',MEDIUM:'sev-med',LOW:'sev-low'};
+  document.getElementById('result-header').textContent=`${vulns.length} findings — ${target}`;
+  document.getElementById('vuln-list').innerHTML=vulns.map(v=>`
+    <div class="vuln-item" style="--vc:${sevColors[v.sev]||'var(--acc)'}">
+      <div class="vi-header">
+        <span class="vi-name">${v.name}</span>
+        <span class="severity-badge ${sevClasses[v.sev]||''}">${v.sev}</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:10px;color:${sevColors[v.sev]};margin-bottom:6px">CVSS ${v.score}</div>
+      <div class="vi-desc">${v.desc}</div>
+      <div class="vi-meta">${v.tags.map(t=>`<span class="vi-tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
