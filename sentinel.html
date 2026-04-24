@@ -423,53 +423,170 @@ footer{border-top:1px solid var(--rim0);padding:24px clamp(20px,4vw,60px);displa
 </div>
 </section>
 
-<!-- ═══ PHASE 2 ═══ -->
-<section id="s-phase2">
-<div class="wrap">
-  <div class="eyebrow" data-r="u">Roadmap</div>
-  <h2 class="sec-h" data-r="u" data-d="1">Phase II <span style="color:var(--acc)">Upgrades</span></h2>
-  <p class="body-md" data-r="u" data-d="2" style="max-width:500px;margin-top:10px">Hardware already acquired. Software development in progress.</p>
+<!-- ═══ PHASE 2 — WORLD CLASS ═══ -->
+<section id="s-phase2" style="background:var(--bg);position:relative;overflow:hidden;">
+<div style="position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+  <div style="position:absolute;width:900px;height:900px;top:-30%;left:-20%;border-radius:50%;background:radial-gradient(circle,rgba(252,129,129,.025),transparent 65%);"></div>
+  <div style="position:absolute;width:600px;height:600px;bottom:-20%;right:-10%;border-radius:50%;background:radial-gradient(circle,rgba(99,179,237,.02),transparent 65%);"></div>
+</div>
+<div class="wrap" style="position:relative;z-index:1">
+  <div class="eyebrow" data-r="u">Next Generation</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Phase II — <span style="color:var(--rose)">SENTINEL Mk-II</span></h2>
+  <p style="font-size:15px;color:var(--t2);max-width:640px;margin-top:12px;line-height:1.9;border-left:3px solid rgba(252,129,129,.3);padding-left:20px" data-r="u" data-d="2">
+    A complete sensor-fusion upgrade. Phase II transforms SENTINEL from a single-modal visual tracker into a <strong style="color:var(--t0)">multi-spectrum threat identification system</strong> — combining RF spectrum analysis, angle-of-arrival triangulation, directional neutralization, and AI quantization for real-time edge performance.
+  </p>
 
-  <div class="phase2-grid" data-r="u" data-d="3">
-    <div class="p2-card" style="--pc:var(--rose)">
-      <div class="p2-icon">📡</div>
-      <div class="p2-title">HTOOL-SA 6G Spectrum</div>
-      <div class="p2-body">Full RF spectrum fusion replacing RTL-SDR — wideband coverage from sub-GHz to 6GHz for comprehensive drone frequency detection.</div>
-      <div class="p2-status p2-acquired">Hardware Acquired</div>
+  <!-- STATUS BAR -->
+  <div style="display:flex;gap:12px;margin:32px 0 0;flex-wrap:wrap" data-r="u" data-d="3">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.2);border-radius:40px">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--sage);animation:s-pulse 1.8s ease infinite"></div>
+      <span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--sage)">2 COMPONENTS ACQUIRED</span>
     </div>
-    <div class="p2-card" style="--pc:var(--acc)">
-      <div class="p2-icon">📐</div>
-      <div class="p2-title">ULA Array — AoA Estimation</div>
-      <div class="p2-body">4-element Uniform Linear Array for 60° Angle-of-Arrival estimation using MUSIC algorithm — precise directional bearing to target.</div>
-      <div class="p2-status p2-planned">In Development</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.2);border-radius:40px">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--acc)"></div>
+      <span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--acc)">4 IN DEVELOPMENT</span>
     </div>
-    <div class="p2-card" style="--pc:var(--amber)">
-      <div class="p2-icon">⚡</div>
-      <div class="p2-title">GaN Directional Jammer</div>
-      <div class="p2-body">Directional GaN-based jamming antenna for neutralization. Pending NTRA regulatory clearance under Law No. 10/2003.</div>
-      <div class="p2-status p2-planned">Pending Clearance</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(246,173,85,.06);border:1px solid rgba(246,173,85,.2);border-radius:40px">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--amber)"></div>
+      <span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--amber)">1 REGULATORY CLEARANCE</span>
     </div>
-    <div class="p2-card" style="--pc:var(--teal)">
-      <div class="p2-icon">🔄</div>
-      <div class="p2-title">360° Servo Platform</div>
-      <div class="p2-body">Replace stepper motor with servo for full 360° platform rotation and faster slew rate. Eliminates current 180° limitation.</div>
-      <div class="p2-status p2-planned">Planned</div>
+  </div>
+
+  <!-- MAIN UPGRADE GRID -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:32px;border-radius:16px;overflow:hidden;border:1px solid var(--rim1)" data-r="u" data-d="4">
+
+    <!-- HTOOL-SA 6G — LARGE CARD -->
+    <div style="grid-column:span 2;background:linear-gradient(135deg,rgba(12,20,36,.98),rgba(8,14,26,.98));padding:36px;position:relative;overflow:hidden;border-bottom:1px solid var(--rim1)">
+      <div style="position:absolute;top:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(252,129,129,.07),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(99,179,237,.05),transparent 70%);pointer-events:none"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:20px;position:relative;z-index:1">
+        <div style="flex:1;min-width:280px">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--sage);background:rgba(104,211,145,.08);border:1px solid rgba(104,211,145,.2);padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:16px">HARDWARE ACQUIRED ✓</div>
+          <h3 style="font-family:var(--display);font-size:clamp(22px,3vw,34px);font-weight:800;color:var(--t0);letter-spacing:-.02em;line-height:1.1;margin-bottom:12px">HTOOL-SA 6G<br><span style="color:var(--rose)">Spectrum Analyzer</span></h3>
+          <p style="font-size:14px;color:var(--t2);line-height:1.85;max-width:480px">Wideband RF spectrum analysis from <strong style="color:var(--t1)">35MHz to 6.2GHz</strong> — replaces the RTL-SDR entirely. Simultaneous monitoring of all known drone control frequencies: 433MHz, 868MHz, 915MHz, 2.4GHz, 5.8GHz. Real-time energy waterfall display with RSSI-to-range estimation and anomaly flagging.</p>
+          <div style="display:grid;grid-template-columns:repeat(3,auto);gap:16px;margin-top:20px;width:fit-content">
+            <div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--rose)">6.2GHz</div><div style="font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--t3);margin-top:3px">MAX FREQUENCY</div></div>
+            <div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--acc)">35MHz</div><div style="font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--t3);margin-top:3px">MIN FREQUENCY</div></div>
+            <div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--sage)">USB</div><div style="font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--t3);margin-top:3px">INTERFACE</div></div>
+          </div>
+        </div>
+        <!-- Spectrum visualization -->
+        <div style="flex-shrink:0;width:clamp(200px,28%,320px)">
+          <div style="font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--t3);margin-bottom:8px">LIVE SPECTRUM PREVIEW</div>
+          <div style="background:#050810;border:1px solid var(--rim1);border-radius:8px;padding:10px;position:relative;overflow:hidden">
+            <canvas id="spec-viz" width="280" height="100" style="width:100%;height:80px;display:block"></canvas>
+            <div style="position:absolute;top:6px;left:8px;font-family:var(--mono);font-size:7px;color:rgba(252,129,129,.5)">FREQ →</div>
+            <div style="position:absolute;bottom:6px;left:8px;font-family:var(--mono);font-size:7px;color:rgba(100,140,180,.4)">35MHz</div>
+            <div style="position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:7px;color:rgba(100,140,180,.4)">6.2GHz</div>
+            <!-- Frequency markers -->
+            <div style="position:absolute;bottom:18px;left:18%;width:1px;height:30px;background:rgba(246,173,85,.4)"></div>
+            <div style="position:absolute;bottom:48px;left:18%;font-family:var(--mono);font-size:6px;color:rgba(246,173,85,.6)">433M</div>
+            <div style="position:absolute;bottom:18px;left:37%;width:1px;height:40px;background:rgba(252,129,129,.5)"></div>
+            <div style="position:absolute;bottom:58px;left:37%;font-family:var(--mono);font-size:6px;color:rgba(252,129,129,.7)">2.4G</div>
+            <div style="position:absolute;bottom:18px;left:88%;width:1px;height:36px;background:rgba(99,179,237,.5)"></div>
+            <div style="position:absolute;bottom:54px;right:2%;font-family:var(--mono);font-size:6px;color:rgba(99,179,237,.7)">5.8G</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="p2-card" style="--pc:var(--purple)">
-      <div class="p2-icon">🧠</div>
-      <div class="p2-title">ONNX/INT8 Quantization</div>
-      <div class="p2-body">Convert YOLOv8 to ONNX INT8 format for 2× inference speedup on RPi5 — targeting 38+ FPS in multi-target scenarios.</div>
-      <div class="p2-status p2-planned">Planned</div>
+
+    <!-- ULA / MUSIC -->
+    <div style="background:var(--bg2);padding:28px;position:relative;overflow:hidden;border-right:1px solid var(--rim1)">
+      <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(99,179,237,.06),transparent 70%);pointer-events:none"></div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--acc);background:rgba(99,179,237,.08);border:1px solid rgba(99,179,237,.2);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:14px">IN DEVELOPMENT</div>
+      <h3 style="font-family:var(--display);font-size:clamp(16px,2.2vw,22px);font-weight:800;color:var(--t0);margin-bottom:10px;letter-spacing:-.02em">ULA Array<br><span style="color:var(--acc)">Angle-of-Arrival</span></h3>
+      <p style="font-size:13px;color:var(--t2);line-height:1.8">4-element Uniform Linear Array feeding the <strong style="color:var(--t1)">MUSIC algorithm</strong> — generates a 60° spatial spectrum. Provides precise bearing angle to target drone, enabling directional slew without camera confirmation.</p>
+      <div style="margin-top:14px;padding:10px 12px;background:rgba(99,179,237,.04);border:1px solid rgba(99,179,237,.1);border-radius:6px">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--acc);margin-bottom:4px">P_MUSIC(θ) = 1 / (a(θ)ᴴ E_n E_nᴴ a(θ))</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--t3)">MUSIC spatial spectrum — peak = target bearing</div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:14px">
+        <div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--acc)">60°</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">AoA RESOLUTION</div></div>
+        <div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--acc)">4</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">ANTENNA ELEMENTS</div></div>
+        <div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--acc)">λ/2</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">ELEMENT SPACING</div></div>
+      </div>
     </div>
-    <div class="p2-card" style="--pc:var(--sage)">
-      <div class="p2-icon">🔋</div>
-      <div class="p2-title">4S LiPo Battery Pack</div>
-      <div class="p2-body">Field-deployable power supply — 4S LiPo with voltage regulation for untethered operation in field conditions.</div>
-      <div class="p2-status p2-acquired">Hardware Acquired</div>
+
+    <!-- GaN JAMMER -->
+    <div style="background:var(--bg2);padding:28px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(246,173,85,.06),transparent 70%);pointer-events:none"></div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--amber);background:rgba(246,173,85,.08);border:1px solid rgba(246,173,85,.2);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:14px">PENDING CLEARANCE · NTRA Law 10/2003</div>
+      <h3 style="font-family:var(--display);font-size:clamp(16px,2.2vw,22px);font-weight:800;color:var(--t0);margin-bottom:10px;letter-spacing:-.02em">GaN Directional<br><span style="color:var(--amber)">Neutralization</span></h3>
+      <p style="font-size:13px;color:var(--t2);line-height:1.8">High-power Gallium Nitride directional jammer — targets drone control links (2.4GHz / 5.8GHz) with narrow-beam RF emission. Slaved to AoA bearing from ULA array for pinpoint neutralization. Regulatory clearance under review.</p>
+      <div style="display:flex;gap:12px;margin-top:14px">
+        <div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--amber)">GaN</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">TRANSISTOR TECH</div></div>
+        <div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--amber)">2.4/5.8</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">TARGET GHz</div></div>
+        <div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--amber)">~15°</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">BEAM WIDTH</div></div>
+      </div>
+    </div>
+
+    <!-- ONNX/INT8 -->
+    <div style="background:var(--bg2);padding:28px;border-right:1px solid var(--rim1);border-top:1px solid var(--rim1)">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--acc);background:rgba(99,179,237,.08);border:1px solid rgba(99,179,237,.2);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:14px">IN DEVELOPMENT</div>
+      <h3 style="font-family:var(--display);font-size:clamp(16px,2.2vw,22px);font-weight:800;color:var(--t0);margin-bottom:10px;letter-spacing:-.02em">ONNX/INT8<br><span style="color:var(--teal)">AI Quantization</span></h3>
+      <p style="font-size:13px;color:var(--t2);line-height:1.8">Converts YOLOv8-nano to ONNX INT8 format — eliminating PyTorch overhead. Expected <strong style="color:var(--t1)">2× inference speedup</strong> on RPi5 ARM64, targeting 38+ FPS in multi-target scenarios without GPU acceleration.</p>
+      <div style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:var(--mono);font-size:9px;color:var(--t3)">Current: PyTorch FP32</span><span style="font-family:var(--mono);font-size:9px;color:var(--t2)">14ms/frame</span></div>
+        <div style="height:4px;background:var(--rim0);border-radius:2px;overflow:hidden;margin-bottom:10px"><div style="width:58%;height:100%;background:rgba(252,129,129,.6);border-radius:2px"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:var(--mono);font-size:9px;color:var(--teal)">Target: ONNX INT8</span><span style="font-family:var(--mono);font-size:9px;color:var(--teal)">~7ms/frame</span></div>
+        <div style="height:4px;background:var(--rim0);border-radius:2px;overflow:hidden"><div style="width:28%;height:100%;background:rgba(79,209,197,.7);border-radius:2px"></div></div>
+      </div>
+    </div>
+
+    <!-- SERVO + LIOPO side by side -->
+    <div style="background:var(--bg2);padding:28px;border-top:1px solid var(--rim1)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--acc);background:rgba(99,179,237,.08);border:1px solid rgba(99,179,237,.2);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:12px">PLANNED</div>
+          <h4 style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--t0);margin-bottom:8px">360° Servo Platform</h4>
+          <p style="font-size:12px;color:var(--t2);line-height:1.7">Replaces stepper motor — continuous rotation servo eliminates the 180° mechanical limit. Faster slew rate, quieter operation, lower power draw.</p>
+        </div>
+        <div style="border-left:1px solid var(--rim0);padding-left:16px">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--sage);background:rgba(104,211,145,.08);border:1px solid rgba(104,211,145,.2);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:12px">ACQUIRED ✓</div>
+          <h4 style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--t0);margin-bottom:8px">4S LiPo Field Power</h4>
+          <p style="font-size:12px;color:var(--t2);line-height:1.7">Field-deployable 4S LiPo pack with 5V/12V regulation. Untethered operation — no mains power required for field deployment.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ARCHITECTURE EVOLUTION DIAGRAM -->
+  <div style="margin-top:40px;background:var(--bg2);border:1px solid var(--rim1);border-radius:16px;padding:28px" data-r="u" data-d="5">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--t3);margin-bottom:20px">SYSTEM EVOLUTION — MK-I → MK-II</div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center">
+      <!-- MK-I -->
+      <div style="background:var(--bg3);border:1px solid var(--rim0);border-radius:10px;padding:18px">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--t3);margin-bottom:12px">SENTINEL MK-I (Phase I)</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.15);border-radius:4px">✓ YOLOv8-nano Vision</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.15);border-radius:4px">✓ CSRT + Kalman Tracking</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.15);border-radius:4px">✓ RTL-SDR RF Monitor</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.15);border-radius:4px">✓ PTZ Stepper Motor</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.15);border-radius:4px">✓ Flask Dashboard</div>
+        </div>
+      </div>
+      <!-- Arrow -->
+      <div style="text-align:center">
+        <div style="font-family:var(--mono);font-size:20px;color:var(--rose)">→</div>
+        <div style="font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:var(--t3);margin-top:4px">UPGRADE</div>
+      </div>
+      <!-- MK-II -->
+      <div style="background:var(--bg3);border:1px solid rgba(252,129,129,.2);border-radius:10px;padding:18px">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--rose);margin-bottom:12px">SENTINEL MK-II (Phase II)</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(252,129,129,.06);border:1px solid rgba(252,129,129,.15);border-radius:4px">+ HTOOL-SA 6G Spectrum</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.15);border-radius:4px">+ ULA AoA (MUSIC)</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(246,173,85,.06);border:1px solid rgba(246,173,85,.15);border-radius:4px">+ GaN Directional Jammer</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(79,209,197,.06);border:1px solid rgba(79,209,197,.15);border-radius:4px">+ ONNX/INT8 (2× speed)</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t2);padding:5px 10px;background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.15);border-radius:4px">+ 360° Servo + 4S LiPo</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 </section>
+
 
 <footer>
   <div class="footer-l">SENTINEL — <span>Islam Emad</span> · Horus University ECE · 2026</div>
@@ -828,6 +945,53 @@ setInterval(()=>{
   const n=new Date(),p=v=>String(v).padStart(2,'0');
   document.getElementById('cp-clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
 },1000);
+
+// SPECTRUM VISUALIZER (Phase II showcase)
+(function(){
+  const canvas = document.getElementById('spec-viz');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+  function drawSpec(){
+    canvas.width = canvas.offsetWidth * (window.devicePixelRatio||1);
+    canvas.height = 100 * (window.devicePixelRatio||1);
+    ctx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+    const W = canvas.offsetWidth||280, H = 100;
+    ctx.fillStyle = '#050810'; ctx.fillRect(0,0,W,H);
+    // Waterfall background glow
+    const numBars = 80;
+    for(let i=0;i<numBars;i++){
+      const x = i/numBars*W;
+      const freq = i/numBars; // normalized
+      // Base noise floor
+      let h = 4 + Math.random()*3;
+      // Signal peaks at key frequencies
+      const f433 = 0.18, f915 = 0.28, f24 = 0.37, f58 = 0.88;
+      const peaks = [[f433,0.4],[f24,0.9],[f58,0.6]];
+      for(const [pf,amp] of peaks){
+        const dist = Math.abs(freq-pf);
+        if(dist < 0.03){
+          h += amp * H * (1-dist/0.03) * (0.7+Math.sin(t*3+pf*20)*0.3);
+        }
+      }
+      // Moving interference lines
+      const interference = Math.sin(t*2+freq*15)*0.08*H;
+      h = Math.min(H-4, h + interference);
+      // Color: red for strong signals, blue for weak
+      const intensity = h/H;
+      const r = Math.round(intensity*252+(1-intensity)*40);
+      const g = Math.round(intensity*129+(1-intensity)*80);
+      const b = Math.round(intensity*129+(1-intensity)*255);
+      ctx.fillStyle = `rgba(${r},${g},${b},0.85)`;
+      const bw = W/numBars - 1;
+      ctx.fillRect(x, H-h, bw, h);
+    }
+    t += 0.04;
+    requestAnimationFrame(drawSpec);
+  }
+  drawSpec();
+})();
+
 </script>
 </body>
 </html>
