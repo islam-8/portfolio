@@ -43,7 +43,7 @@ body.ch #cr div{width:48px;height:48px;border-color:var(--acc);}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:500;height:56px;padding:0 clamp(20px,4vw,60px);display:flex;align-items:center;justify-content:space-between;background:var(--glass);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim0);}
-.nav-back{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--t3);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s;cursor:none;}
+.nav-back{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--t3);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s;}
 .nav-back:hover{color:var(--acc);}
 .nav-id{font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
 .nav-pulse{width:6px;height:6px;border-radius:50%;background:var(--rose);animation:pulse 1.5s ease infinite;}
@@ -226,7 +226,7 @@ footer{border-top:1px solid var(--rim0);padding:24px clamp(20px,4vw,60px);displa
 <nav>
   <a class="nav-back" href="index.html">← Back to Portfolio</a>
   <div class="nav-id"><div class="nav-pulse"></div>SENTINEL C-UAS — Islam Emad</div>
-  <button class="nav-theme" onclick="toggleTheme()">☀ / ◑</button>
+  <button class="nav-theme" onclick="setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">☀ / ◑</button>
 </nav>
 
 <!-- ═══ HERO ═══ -->
@@ -602,8 +602,14 @@ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.tra
 document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));});
 
 // THEME
-function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('ie-theme',t);}
-const st=localStorage.getItem('ie-theme');if(st)document.documentElement.setAttribute('data-theme',st);
+/* THEME */
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('ie-theme',t);
+  const btn=document.getElementById('theme-btn');
+  if(btn)btn.textContent=(t==='dark'?'☀️ Light':'🌙 Dark');
+}
+(()=>{setTheme(localStorage.getItem('ie-theme')||'dark');})();
 
 // REVEAL
 const ro=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.08});
