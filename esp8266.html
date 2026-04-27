@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="WiFi Deauther Lab — Islam Emad Portfolio">
+<title>WiFi Deauther Lab — Islam Emad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1);--fd:'Bricolage Grotesque',sans-serif;--fb:'Instrument Sans',sans-serif;--fm:'DM Mono',monospace;--max:1140px;--gap:clamp(18px,4vw,52px);--rad:14px}
+[data-theme="dark"]{--bg:#07090e;--bg1:#0b0f1a;--bg2:#0f1524;--bg3:#13192e;--acc:#63b3ed;--acc2:#b794f4;--acc3:#68d391;--acc4:#f6ad55;--rose:#fc8181;--teal:#4fd1c5;--ad:rgba(99,179,237,.09);--ag:rgba(99,179,237,.2);--r0:rgba(99,179,237,.04);--r1:rgba(99,179,237,.12);--r2:rgba(99,179,237,.24);--glass:rgba(7,9,14,.82);--t0:#f0f6fc;--t1:#c4d8ec;--t2:#6a8baa;--t3:#2e445c;--t4:#0e1f30;--sh:0 28px 70px rgba(0,0,0,.65);--gc:rgba(99,179,237,.035)}
+[data-theme="light"]{--bg:#f4f7fc;--bg1:#eaeff8;--bg2:#dfe6f4;--bg3:#d4dcee;--acc:#2563eb;--acc2:#7c3aed;--acc3:#16a34a;--acc4:#d97706;--rose:#dc2626;--teal:#0891b2;--ad:rgba(37,99,235,.07);--ag:rgba(37,99,235,.16);--r0:rgba(0,20,80,.04);--r1:rgba(0,20,80,.1);--r2:rgba(0,20,80,.2);--glass:rgba(255,255,255,.9);--t0:#050f2a;--t1:#0f2040;--t2:#3b5380;--t3:#8099be;--t4:#d0dcf0;--sh:0 28px 70px rgba(0,20,80,.1);--gc:rgba(0,20,80,.03)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--t3) transparent}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);font-size:15px;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .5s var(--ease),color .4s var(--ease)}
+::selection{background:var(--ad);color:var(--acc)}
+a{text-decoration:none;color:inherit}
+
+/* CURSOR */
+@media(pointer:fine){
+  body{cursor:none}
+  #ch-x,#ch-y,#ch-dot,#ch-ring{position:fixed;pointer-events:none;z-index:9999;will-change:transform}
+  #ch-x{top:0;left:0;width:100vw;height:1px;background:linear-gradient(90deg,transparent 0%,var(--acc) 48%,transparent 50%,var(--acc) 52%,transparent 100%);opacity:.13;transform:translateY(-50%);transition:opacity .3s}
+  #ch-y{top:0;left:0;height:100vh;width:1px;background:linear-gradient(180deg,transparent 0%,var(--acc) 48%,transparent 50%,var(--acc) 52%,transparent 100%);opacity:.13;transform:translateX(-50%);transition:opacity .3s}
+  #ch-dot{width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 12px var(--acc),0 0 24px var(--ag);transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s}
+  #ch-ring{width:22px;height:22px;border:1px solid var(--acc);border-radius:50%;transform:translate(-50%,-50%);opacity:.55;transition:width .35s var(--ease),height .35s var(--ease),opacity .3s,border-radius .3s}
+  body.ch-hov #ch-x{opacity:.28}body.ch-hov #ch-y{opacity:.28}
+  body.ch-hov #ch-ring{width:46px;height:46px;opacity:.9;border-radius:4px;box-shadow:0 0 14px var(--ag)}
+  body.ch-hov #ch-dot{width:3px;height:3px}
+  body.ch-ck #ch-ring{width:18px;height:18px;opacity:.7}
+  body.ch-lock #ch-ring{border-radius:2px;border-color:var(--acc2);opacity:1;box-shadow:0 0 18px rgba(183,148,244,.4);animation:ch-lock-pulse .8s ease-in-out infinite alternate}
+  body.ch-lock #ch-dot{background:var(--acc2);box-shadow:0 0 16px var(--acc2)}
+  body.ch-lock #ch-x,body.ch-lock #ch-y{opacity:.22}
+  @keyframes ch-lock-pulse{0%{box-shadow:0 0 10px rgba(183,148,244,.3)}100%{box-shadow:0 0 24px rgba(183,148,244,.7)}}
+}
+@media(pointer:coarse){body{cursor:auto}#ch-x,#ch-y,#ch-dot,#ch-ring{display:none!important}}
+
+/* GRAIN */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:998;opacity:.02;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='280' height='280' filter='url(%23n)'/%3E%3C/svg%3E") repeat;background-size:280px}
+
+/* RIBBON */
+#ribbon-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.38;mix-blend-mode:screen}
+[data-theme="light"] #ribbon-canvas{opacity:.2;mix-blend-mode:multiply}
+
+/* ORBS */
+.orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(120px)}
+.orb-a{width:800px;height:800px;top:-20%;right:-18%;background:radial-gradient(circle,rgba(183,148,244,.04),transparent 70%);animation:orbdrift 28s linear infinite alternate}
+.orb-b{width:600px;height:600px;bottom:-18%;left:-14%;background:radial-gradient(circle,rgba(99,179,237,.03),transparent 70%);animation:orbdrift 22s linear infinite alternate-reverse}
+[data-theme="light"] .orb-a{background:radial-gradient(circle,rgba(124,58,237,.035),transparent 70%)}
+[data-theme="light"] .orb-b{background:radial-gradient(circle,rgba(37,99,235,.025),transparent 70%)}
+@keyframes orbdrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(50px,40px) scale(1.1)}}
+
+
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:54px;padding:0 var(--gap);display:flex;align-items:center;justify-content:space-between;transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.scrolled{background:var(--glass);backdrop-filter:blur(24px) saturate(1.4);border-bottom-color:var(--r0)}
+.nav-back{font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--t3);display:flex;align-items:center;gap:8px;transition:color .2s;text-decoration:none;text-transform:uppercase}
+.nav-back:hover{color:var(--acc)}
+.nav-theme{font-family:var(--fm);font-size:10px;padding:5px 12px;border:1px solid var(--r1);background:transparent;color:var(--t3);border-radius:6px;cursor:pointer;transition:all .22s;}
+.nav-theme:hover{border-color:var(--acc);color:var(--acc);}
+.nav-id{font-family:var(--fd);font-size:14px;font-weight:800;color:var(--t0);display:flex;align-items:center;gap:8px}
+.nav-pulse{width:7px;height:7px;border-radius:50%;background:var(--acc2);flex-shrink:0;animation:pulse-ring 2.6s ease infinite}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(183,148,244,.5)}70%{box-shadow:0 0 0 10px rgba(183,148,244,0)}100%{box-shadow:0 0 0 0 rgba(183,148,244,0)}}
+
+/* LAYOUT */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gap)}
+section{padding:clamp(64px,8vw,100px) 0;position:relative;z-index:1;display:block}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--r1),transparent);margin:0 var(--gap);position:relative;z-index:1}
+.eyebrow{font-family:var(--fm);font-size:10px;letter-spacing:.22em;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.eyebrow::before{content:'';width:28px;height:1px;background:var(--acc2);opacity:.7;flex-shrink:0}
+.sec-h{font-family:var(--fd);font-size:clamp(28px,5vw,52px);font-weight:800;color:var(--t0);letter-spacing:-.03em;line-height:1.02}
+
+/* REVEAL */
+[data-r]{opacity:0;transition:opacity .85s var(--ease),transform .85s var(--ease)}
+[data-r="u"]{transform:translateY(34px)}[data-r="l"]{transform:translateX(-28px)}[data-r="r"]{transform:translateX(28px)}[data-r="s"]{transform:scale(.93)}
+[data-r].in{opacity:1;transform:none}
+[data-d="1"]{transition-delay:.1s}[data-d="2"]{transition-delay:.2s}[data-d="3"]{transition-delay:.3s}[data-d="4"]{transition-delay:.4s}
+
+/* HERO */
+#hero{min-height:92vh;padding-top:54px;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--gc) 1px,transparent 1px),linear-gradient(90deg,var(--gc) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 90% at 40% 52%,black,transparent 82%)}
+.hero-scanline{position:absolute;left:0;right:0;height:2px;top:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,transparent,var(--acc2),transparent);opacity:.18;animation:scanmove 7s ease-in-out infinite}
+@keyframes scanmove{0%{top:0;opacity:.18}50%{opacity:.32}100%{top:100%;opacity:.18}}
+/* HUD corners */
+.hc{position:absolute;width:24px;height:24px;border-style:solid;opacity:.28;transition:opacity .4s}
+#hero:hover .hc{opacity:.8}
+.hc-tl{top:14px;left:14px;border-color:var(--acc2);border-width:1.5px 0 0 1.5px}
+.hc-tr{top:14px;right:14px;border-color:var(--acc2);border-width:1.5px 1.5px 0 0}
+.hc-bl{bottom:14px;left:14px;border-color:var(--acc2);border-width:0 0 1.5px 1.5px}
+.hc-br{bottom:14px;right:14px;border-color:var(--acc2);border-width:0 1.5px 1.5px 0}
+
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px);align-items:center;position:relative;z-index:2;padding:clamp(48px,7vw,88px) 0}
+@media(max-width:800px){.hero-inner{grid-template-columns:1fr}}
+
+.h-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;color:var(--acc2);background:rgba(183,148,244,.07);border:1px solid rgba(183,148,244,.22);padding:6px 16px;border-radius:40px;margin-bottom:20px;width:fit-content}
+.h-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc2);animation:pulse-ring 2s ease infinite;flex-shrink:0}
+.hero-title{font-family:var(--fd);font-size:clamp(36px,6vw,68px);font-weight:800;line-height:.92;letter-spacing:-.04em;color:var(--t0);margin-bottom:16px}
+.hero-title .grad{background:linear-gradient(135deg,var(--acc2) 0%,var(--acc) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--t2);text-transform:uppercase;margin-bottom:14px}
+.hero-p{font-size:14px;color:var(--t2);line-height:1.85;max-width:480px;padding-left:16px;border-left:2px solid rgba(183,148,244,.25)}
+.hero-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+.pill{font-family:var(--fm);font-size:9px;letter-spacing:.1em;padding:4px 12px;border-radius:40px;border:1px solid var(--r1);color:var(--t3);background:var(--glass);backdrop-filter:blur(10px);transition:all .22s}
+.pill:hover{border-color:var(--acc2);color:var(--acc2)}
+.hero-kpis{display:flex;flex-wrap:wrap;gap:0;margin-top:22px}
+.kpi{padding:12px 20px 12px 0;border-right:1px solid var(--r0);margin-right:20px}
+.kpi:last-child{border-right:none}
+.kpi-n{font-family:var(--fd);font-size:24px;font-weight:800;color:var(--t0);line-height:1;letter-spacing:-.03em}
+.kpi-n sup{font-size:11px;color:var(--acc2);vertical-align:super}
+.kpi-l{font-family:var(--fm);font-size:8px;letter-spacing:.14em;color:var(--t3);margin-top:4px;text-transform:uppercase}
+.hero-btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.btn{font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:11px 22px;border-radius:8px;display:inline-flex;align-items:center;gap:8px;transition:all .3s var(--ease);cursor:pointer;text-decoration:none}
+.btn-p{background:var(--acc2);color:#fff;border:1px solid var(--acc2);font-weight:600}
+[data-theme="dark"] .btn-p{color:#07090e}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(183,148,244,.25);filter:brightness(1.1)}
+.btn-s{background:transparent;color:var(--t1);border:1px solid var(--r2)}
+.btn-s:hover{border-color:var(--acc2);color:var(--acc2);background:rgba(183,148,244,.06)}
+
+/* HERO VISUAL — WiFi animation */
+.hero-visual{position:relative;z-index:2}
+@media(max-width:800px){.hero-visual{display:none}}
+.wifi-frame{background:var(--bg1);border:1px solid var(--r1);border-radius:16px;padding:28px;position:relative;overflow:hidden}
+[data-theme="light"] .wifi-frame{background:#fff}
+.wifi-screen{background:#000;border-radius:8px;padding:16px;font-family:var(--fm);font-size:11px;color:#4fd1c5;min-height:180px;position:relative;overflow:hidden}
+.wifi-line{display:flex;align-items:center;gap:10px;margin-bottom:6px;opacity:0;animation:linefade .4s var(--ease) forwards}
+.wifi-bar{display:inline-flex;gap:2px;align-items:flex-end}
+.wifi-bar span{display:inline-block;width:4px;background:var(--acc3);border-radius:1px}
+.wifi-label{color:#a0f0d0;font-size:10px}
+.wifi-ssid{color:#fff}
+.wifi-rssi{color:#f6ad55;font-size:10px}
+.wifi-cursor{display:inline-block;width:8px;height:14px;background:var(--teal);animation:blink .8s step-end infinite;margin-left:3px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes linefade{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+
+.wifi-frame-label{font-family:var(--fm);font-size:8px;letter-spacing:.14em;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.wifi-frame-label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--acc3);box-shadow:0 0 8px var(--acc3);flex-shrink:0;animation:pulse-ring 2s ease infinite}
+.hw-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.hw-spec{background:var(--bg2);border:1px solid var(--r0);border-radius:8px;padding:10px 12px}
+[data-theme="light"] .hw-spec{background:var(--bg3)}
+.hw-spec-k{font-family:var(--fm);font-size:8px;letter-spacing:.1em;color:var(--t3);margin-bottom:3px;text-transform:uppercase}
+.hw-spec-v{font-family:var(--fm);font-size:11px;color:var(--acc2);font-weight:500}
+
+/* SECTIONS */
+.card-grid{display:grid;gap:10px;margin-top:28px}
+.card-grid-2{grid-template-columns:1fr 1fr}
+.card-grid-3{grid-template-columns:repeat(3,1fr)}
+.card-grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:800px){.card-grid-2,.card-grid-3,.card-grid-4{grid-template-columns:1fr}}
+@media(max-width:600px){.card-grid-2{grid-template-columns:1fr}}
+
+.card{background:var(--bg2);border:1px solid var(--r0);border-radius:var(--rad);padding:20px;position:relative;overflow:hidden;transition:border-color .28s,transform .28s var(--ease),box-shadow .28s;transform-style:preserve-3d}
+[data-theme="light"] .card{background:#fff}
+.card:hover{border-color:var(--r2);transform:translateY(-4px) perspective(800px);box-shadow:0 16px 44px rgba(0,0,0,.12)}
+[data-theme="light"] .card:hover{box-shadow:0 16px 44px rgba(0,20,80,.07)}
+.card-accent{position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-top,transparent);transition:opacity .3s}
+.card .card-accent{opacity:0}.card:hover .card-accent{opacity:1}
+
+.card-ico{font-size:24px;margin-bottom:12px}
+.card-h{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--t0);letter-spacing:-.02em;margin-bottom:7px}
+.card-p{font-size:13px;color:var(--t2);line-height:1.85}
+.lbl{font-family:var(--fm);font-size:9px;letter-spacing:.1em;padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:10px}
+.lbl-purple{background:rgba(183,148,244,.1);color:var(--acc2);border:1px solid rgba(183,148,244,.2)}
+.lbl-blue{background:var(--ad);color:var(--acc);border:1px solid var(--ag)}
+.lbl-teal{background:rgba(79,209,197,.1);color:var(--teal);border:1px solid rgba(79,209,197,.2)}
+.lbl-warn{background:rgba(246,173,85,.1);color:var(--acc4);border:1px solid rgba(246,173,85,.2)}
+.lbl-red{background:rgba(252,129,129,.1);color:var(--rose);border:1px solid rgba(252,129,129,.2)}
+.lbl-green{background:rgba(104,211,145,.1);color:var(--acc3);border:1px solid rgba(104,211,145,.2)}
+.chip{font-family:var(--fm);font-size:8px;letter-spacing:.06em;padding:3px 8px;border-radius:3px;background:var(--bg3);border:1px solid var(--r0);color:var(--t3)}
+
+/* ARCHITECTURE FLOW */
+.arch-flow{display:flex;align-items:center;gap:0;margin-top:24px;flex-wrap:wrap}
+.arch-node{background:var(--bg2);border:1px solid var(--r1);border-radius:12px;padding:18px 22px;text-align:center;flex:1;min-width:160px;position:relative;transition:border-color .25s,transform .25s var(--ease)}
+[data-theme="light"] .arch-node{background:#fff}
+.arch-node:hover{border-color:var(--acc2);transform:translateY(-3px)}
+.arch-node-ico{font-size:28px;margin-bottom:8px}
+.arch-node-h{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--t0);letter-spacing:-.02em;margin-bottom:5px}
+.arch-node-sub{font-family:var(--fm);font-size:9px;color:var(--t3);line-height:1.5}
+.arch-arr{padding:0 12px;color:var(--acc);font-size:18px;opacity:.5;flex-shrink:0}
+@media(max-width:640px){.arch-arr{transform:rotate(90deg);width:100%;text-align:center;padding:4px 0}.arch-node{width:100%}}
+
+/* OLED SIM */
+.oled-sim{background:#000;border:2px solid #1a2a1a;border-radius:8px;padding:14px 16px;font-family:var(--fm);font-size:12px;color:#4fd1c5;min-height:120px;position:relative;box-shadow:0 0 20px rgba(79,209,197,.12),inset 0 0 30px rgba(0,0,0,.8);flex-shrink:0}
+.oled-sim::before{content:'SSD1306 OLED · 128×64px · I2C';position:absolute;top:-22px;left:0;font-family:var(--fm);font-size:8px;letter-spacing:.12em;color:var(--t3)}
+.oled-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.oled-row.selected{color:#ffffff;background:rgba(79,209,197,.15);margin:-2px -6px 4px;padding:2px 6px;border-radius:2px}
+.oled-cursor{display:inline-block;color:#fff}
+
+/* PHASES TIMELINE */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+@media(max-width:700px){.phases{grid-template-columns:1fr}}
+.phase-card{background:var(--bg2);border:1px solid var(--r0);border-radius:var(--rad);padding:20px;border-top:3px solid var(--phase-col,var(--acc2));transition:transform .25s var(--ease),box-shadow .25s}
+[data-theme="light"] .phase-card{background:#fff}
+.phase-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.12)}
+.phase-num{font-family:var(--fm);font-size:9px;letter-spacing:.15em;color:var(--phase-col,var(--acc2));margin-bottom:8px;text-transform:uppercase}
+.phase-h{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--t0);letter-spacing:-.02em;margin-bottom:6px}
+.phase-p{font-size:13px;color:var(--t2);line-height:1.8}
+
+/* FIRMWARE STEPS */
+.fw-steps{display:flex;align-items:flex-start;gap:0;margin-top:24px;position:relative}
+.fw-steps::before{content:'';position:absolute;top:20px;left:20px;right:20px;height:1px;background:var(--acc2);opacity:.2;z-index:0}
+@media(max-width:700px){.fw-steps{flex-direction:column}.fw-steps::before{width:1px;height:auto;top:20px;bottom:20px;left:20px;right:auto}}
+.fw-step{flex:1;text-align:center;position:relative;z-index:1;padding:0 8px}
+.fw-step-ico{width:40px;height:40px;border-radius:50%;border:2px solid var(--acc2);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto 10px;transition:background .25s,box-shadow .25s}
+[data-theme="light"] .fw-step-ico{background:#fff}
+.fw-step:hover .fw-step-ico{background:rgba(183,148,244,.1);box-shadow:0 0 16px rgba(183,148,244,.3)}
+.fw-step-n{font-family:var(--fm);font-size:9px;letter-spacing:.1em;color:var(--acc2);margin-bottom:5px}
+.fw-step-h{font-family:var(--fm);font-size:10px;font-weight:500;color:var(--t0);margin-bottom:4px}
+.fw-step-p{font-size:11px;color:var(--t3);line-height:1.6}
+
+/* CAPABILITIES TABLE */
+.cap-table{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+@media(max-width:600px){.cap-table{grid-template-columns:1fr}}
+.cap-col{border-radius:var(--rad);overflow:hidden;border:1px solid var(--r1)}
+.cap-col-h{padding:12px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.1em;font-weight:600;text-transform:uppercase}
+.cap-col-h.pros{background:rgba(104,211,145,.12);color:var(--acc3);border-bottom:1px solid rgba(104,211,145,.2)}
+.cap-col-h.cons{background:rgba(246,173,85,.1);color:var(--acc4);border-bottom:1px solid rgba(246,173,85,.2)}
+.cap-row{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--r0);font-size:13px;color:var(--t1);line-height:1.65;background:var(--bg2)}
+[data-theme="light"] .cap-row{background:#fff}
+.cap-row:last-child{border-bottom:none}
+.cap-ico{flex-shrink:0;font-size:14px;margin-top:2px}
+
+/* TEAM */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;margin-top:24px}
+.team-card{background:var(--bg2);border:1px solid var(--r0);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:border-color .2s,transform .2s var(--ease)}
+[data-theme="light"] .team-card{background:#fff}
+.team-card:hover{border-color:var(--r2);transform:translateX(4px)}
+.team-ava{width:36px;height:36px;border-radius:50%;background:rgba(183,148,244,.12);border:1px solid rgba(183,148,244,.25);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:13px;font-weight:800;color:var(--acc2);flex-shrink:0}
+.team-name{font-size:13px;font-weight:500;color:var(--t0);line-height:1.3;margin-bottom:2px}
+.team-role{font-family:var(--fm);font-size:9px;color:var(--t3)}
+.team-lead-badge{font-family:var(--fm);font-size:7px;letter-spacing:.1em;padding:2px 7px;border-radius:10px;background:rgba(183,148,244,.15);color:var(--acc2);border:1px solid rgba(183,148,244,.3);margin-left:auto;flex-shrink:0}
+
+/* FOOTER */
+footer{border-top:1px solid var(--r0);padding:18px var(--gap);display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:9px;letter-spacing:.08em;color:var(--t4);position:relative;z-index:1}
+footer span{color:var(--t3)}
+@media(max-width:460px){footer{flex-direction:column;gap:7px;text-align:center}}
+
+/* WARNING BOX */
+.warn-box{background:rgba(246,173,85,.07);border:1px solid rgba(246,173,85,.22);border-left:3px solid var(--acc4);border-radius:0 10px 10px 0;padding:16px 18px;margin-top:20px}
+.warn-box-h{font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--acc4);margin-bottom:8px;text-transform:uppercase}
+.warn-box p{font-size:13px;color:var(--t2);line-height:1.8}
+
+/* SPECTRUM VISUALIZER */
+.spectrum{display:flex;align-items:flex-end;gap:2px;height:64px;margin-top:16px}
+.spectrum-bar{flex:1;background:var(--acc2);border-radius:2px 2px 0 0;min-width:4px;transition:height .4s var(--ease),background .3s;opacity:.7}
+.spectrum-bar:hover{opacity:1;background:var(--acc)}
+</style>
+</head>
+<body>
+
+<div id="ch-x" aria-hidden="true"></div>
+<div id="ch-y" aria-hidden="true"></div>
+<div id="ch-dot" aria-hidden="true"></div>
+<div id="ch-ring" aria-hidden="true"></div>
+
+<div class="grain" aria-hidden="true"></div>
+<canvas id="ribbon-canvas" aria-hidden="true"></canvas>
+<div class="orbs" aria-hidden="true"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
+
+<nav id="mnav">
+  <a class="nav-back" href="index.html">← Portfolio</a>
+  <div class="nav-id"><div class="nav-pulse"></div>WiFi Deauther Lab</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-scanline" aria-hidden="true"></div>
+  <div class="hc hc-tl"></div><div class="hc hc-tr"></div>
+  <div class="hc hc-bl"></div><div class="hc hc-br"></div>
+  <div class="wrap" style="width:100%">
+    <div class="hero-inner">
+      <div>
+        <div class="h-badge" data-r="u">802.11 Management Frames · Embedded Security · WiFi Analysis</div>
+        <h1 class="hero-title" data-r="u" data-d="1">
+          ESP8266<br><span class="grad">Security</span><br>Analyzer
+        </h1>
+        <div class="hero-sub" data-r="u" data-d="2">802.11 Protocol Deauthentication Analysis · Embedded HMI Design · Real-Time WiFi Telemetry</div>
+        <p class="hero-p" data-r="u" data-d="2">A standalone embedded platform for exploring WiFi security concepts, visualizing protocol vulnerabilities, and mastering real-time network telemetry — built for educational &amp; cybersecurity awareness.</p>
+        <div class="hero-pills" data-r="u" data-d="3">
+          <span class="pill">ESP8266</span><span class="pill">OLED SSD1306</span><span class="pill">802.11 Frames</span>
+          <span class="pill">I2C</span><span class="pill">2.4 GHz</span><span class="pill">Arduino IDE</span>
+          <span class="pill">Embedded C++</span><span class="pill">PCB Design</span>
+        </div>
+        <div class="hero-kpis" data-r="u" data-d="4">
+          <div class="kpi"><div class="kpi-n">2.4<sup>GHz</sup></div><div class="kpi-l">WiFi Band</div></div>
+          <div class="kpi"><div class="kpi-n">3<sup>stage</sup></div><div class="kpi-l">HW Evolution</div></div>
+          <div class="kpi"><div class="kpi-n">12<sup>mem</sup></div><div class="kpi-l">Team Members</div></div>
+          <div class="kpi"><div class="kpi-n">5<sup>mode</sup></div><div class="kpi-l">OLED Functions</div></div>
+        </div>
+        <div class="hero-btns" data-r="u" data-d="4">
+          <a href="#architecture" class="btn btn-p">Explore System ↓</a>
+          <a href="#team" class="btn btn-s">View Team ↗</a>
+        </div>
+        <div class="warn-box" data-r="u" data-d="5" style="margin-top:22px;max-width:500px">
+          <div class="warn-box-h">⚠ Educational &amp; Cybersecurity Awareness Only</div>
+          <p>Must ONLY be used on networks you personally own or possess explicit, documented permission to test. Unauthorized network disruption violates local and international cybersecurity law.</p>
+        </div>
+      </div>
+
+      <div class="hero-visual" data-r="r" data-d="2">
+        <div class="wifi-frame">
+          <div class="wifi-frame-label">LIVE SCAN · SSD1306 OLED EMULATOR</div>
+          <div class="wifi-screen" id="oled-sim">
+            <div class="oled-row selected"><span class="oled-cursor">|</span><span>SCAN</span></div>
+            <div class="oled-row">SELECT</div>
+            <div class="oled-row">ATTACK</div>
+            <div class="oled-row">PACKET MONITOR</div>
+            <div class="oled-row">CLOCK</div>
+            <div style="margin-top:8px;font-size:9px;color:#2a4a3a">CH: <span id="oled-ch">0</span>&nbsp; Pkts: <span id="oled-pkts">0</span></div>
+          </div>
+          <div class="spectrum" id="spectrum" style="margin-top:14px"></div>
+          <div class="hw-specs">
+            <div class="hw-spec"><div class="hw-spec-k">MCU</div><div class="hw-spec-v">ESP8266 D1 Mini</div></div>
+            <div class="hw-spec"><div class="hw-spec-k">Display</div><div class="hw-spec-v">SSD1306 OLED 0.96″</div></div>
+            <div class="hw-spec"><div class="hw-spec-k">Protocol</div><div class="hw-spec-v">I2C (SDA D2, SCL D1)</div></div>
+            <div class="hw-spec"><div class="hw-spec-k">Power</div><div class="hw-spec-v">3.3V via Li-Po</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:22px;left:var(--gap);font-family:var(--fm);font-size:9px;letter-spacing:.15em;color:var(--t4);text-transform:uppercase;z-index:2;animation:scrlbob 2.4s ease-in-out infinite">Scroll ↓</div>
+  @keyframes scrlbob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+</section>
+<div class="sdiv"></div>
+
+<!-- ═══ DECONSTRUCT ═══ -->
+<section id="architecture">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">System Blueprint</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Deconstructing <span style="color:var(--acc2)">the System</span></h2>
+  <p style="font-size:14px;color:var(--t2);max-width:560px;margin-top:8px;line-height:1.85" data-r="u" data-d="2">A six-layer blueprint from wireless security context to legal compliance — bridging protocol analysis and hardware design.</p>
+  <div class="card-grid card-grid-3" data-r="u" data-d="3">
+    <div class="card"><div class="card-accent" style="--card-top:var(--acc2)"></div><span class="lbl lbl-purple">01 · Context</span><div class="card-h">The Wireless Security Landscape</div><div class="card-p">Rapid wireless expansion has outpaced comprehensive protocol security. Legacy 802.11 standards handle critical connection coordination via unencrypted management frames.</div></div>
+    <div class="card"><div class="card-accent" style="--card-top:var(--acc)"></div><span class="lbl lbl-blue">02 · Architecture</span><div class="card-h">System &amp; Hardware Components</div><div class="card-p">Tripartite embedded design: ESP8266 NodeMCU (brain), SSD1306 OLED (interface), and 3-button tactile HMI (input). Full standalone portability via Li-Po battery.</div></div>
+    <div class="card"><div class="card-accent" style="--card-top:var(--teal)"></div><span class="lbl lbl-teal">03 · Engineering</span><div class="card-h">Circuit Design &amp; Firmware</div><div class="card-p">I2C bus integration (SDA→D2, SCL→D1), pull-down resistor input array, common GND distribution, and precompiled .bin firmware flashing workflow.</div></div>
+    <div class="card"><div class="card-accent" style="--card-top:var(--acc4)"></div><span class="lbl lbl-warn">04 · Theory</span><div class="card-h">Working Principles — 802.11 Frames</div><div class="card-p">WiFi relies on Management Frames for connectivity state. Deauthentication frames are historically unencrypted and unverified — the core vulnerability explored.</div></div>
+    <div class="card"><div class="card-accent" style="--card-top:var(--acc3)"></div><span class="lbl lbl-green">05 · Synthesis</span><div class="card-h">Applications, Limitations &amp; Scope</div><div class="card-p">Three pillars: Cybersecurity education, network &amp; hardware testing, embedded systems mastery. Constrained to 2.4 GHz band and authorized lab environments only.</div></div>
+    <div class="card"><div class="card-accent" style="--card-top:var(--rose)"></div><span class="lbl lbl-red">06 · Compliance</span><div class="card-h">Safety, Ethics &amp; Legal Mandates</div><div class="card-p">Responsible experimentation is non-negotiable. Never deploy in public spaces. Unauthorized disruption violates local and international cybersecurity laws.</div></div>
+  </div>
+</div>
+</section>
+<div class="sdiv"></div>
+
+<!-- ═══ TRIPARTITE ARCHITECTURE ═══ -->
+<section id="hw">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Hardware</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Tripartite <span style="color:var(--acc2)">Architecture</span></h2>
+  <p style="font-size:14px;color:var(--t2);max-width:520px;margin-top:8px;line-height:1.85" data-r="u" data-d="2">A standalone embedded design with three communicating subsystems — no external PC required during operation.</p>
+  <div class="arch-flow" data-r="u" data-d="3">
+    <div class="arch-node">
+      <div class="arch-node-ico">🔘</div>
+      <div class="arch-node-h">The Input</div>
+      <div class="arch-node-sub">Tactile Buttons (UP / DOWN / CONFIRM)<br>Digital GPIO · Pull-down resistors<br>Untethered physical navigation</div>
+    </div>
+    <div class="arch-arr">→</div>
+    <div class="arch-node" style="border-color:rgba(183,148,244,.3)">
+      <div class="arch-node-ico">🧠</div>
+      <div class="arch-node-h">The Brain</div>
+      <div class="arch-node-sub">ESP8266 NodeMCU D1 Mini<br>2.4 GHz native WiFi · UART &amp; I2C<br>Core logic, scanning, protocol sim</div>
+    </div>
+    <div class="arch-arr">→</div>
+    <div class="arch-node">
+      <div class="arch-node-ico">📺</div>
+      <div class="arch-node-h">The Interface</div>
+      <div class="arch-node-sub">SSD1306 OLED 0.96″ (128×64px)<br>I2C · SDA→D2 · SCL→D1<br>Real-time telemetry &amp; menus</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px">
+    <div class="eyebrow" data-r="u">Processing Core</div>
+    <div class="card-grid card-grid-2" data-r="u" data-d="2" style="margin-top:16px">
+      <div class="card">
+        <span class="lbl lbl-purple">ESP8266 SoC Specs</span>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--r0)"><span style="font-family:var(--fm);font-size:10px;color:var(--t3)">Core</span><span style="font-family:var(--fm);font-size:11px;color:var(--t1)">Tensilica L106 32-bit</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--r0)"><span style="font-family:var(--fm);font-size:10px;color:var(--t3)">WiFi</span><span style="font-family:var(--fm);font-size:11px;color:var(--acc2)">Native 2.4 GHz 802.11 b/g/n</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--r0)"><span style="font-family:var(--fm);font-size:10px;color:var(--t3)">GPIO</span><span style="font-family:var(--fm);font-size:11px;color:var(--t1)">Versatile peripheral interfacing</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--r0)"><span style="font-family:var(--fm);font-size:10px;color:var(--t3)">Protocols</span><span style="font-family:var(--fm);font-size:11px;color:var(--t1)">UART · I2C native</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="font-family:var(--fm);font-size:10px;color:var(--t3)">Power</span><span style="font-family:var(--fm);font-size:11px;color:var(--acc3)">3.3V · Li-Po battery compatible</span></div>
+        </div>
+        <div style="margin-top:14px"><div class="card-p" style="font-size:12px"><strong style="color:var(--t1)">System Role:</strong> Central hub — parses physical inputs, drives the I2C display, executes wireless telemetry operations.</div></div>
+      </div>
+      <div class="card">
+        <span class="lbl lbl-blue">HMI — OLED + Buttons</span>
+        <div style="margin-bottom:14px">
+          <div class="oled-sim" style="font-size:11px;min-height:100px">
+            <div style="color:#2a4a3a;font-size:8px;margin-bottom:6px">CH: 0&nbsp; Pkts: 67&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</div>
+            <div style="color:#4fd1c5">| SCAN</div>
+            <div style="color:#4fd1c5;opacity:.6">SELECT</div>
+            <div style="color:#4fd1c5;opacity:.6">ATTACK</div>
+            <div style="color:#4fd1c5;opacity:.6">PACKET MONITOR</div>
+            <div style="color:#4fd1c5;opacity:.6">CLOCK</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px">
+          <div style="background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">⬆</div><div style="font-family:var(--fm);font-size:8px;color:var(--t3)">UP</div></div>
+          <div style="background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">⬇</div><div style="font-family:var(--fm);font-size:8px;color:var(--t3)">DOWN</div></div>
+          <div style="background:rgba(183,148,244,.1);border:1px solid rgba(183,148,244,.3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">✓</div><div style="font-family:var(--fm);font-size:8px;color:var(--acc2)">CONFIRM</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<div class="sdiv"></div>
+
+<!-- ═══ WORKING PRINCIPLES ═══ -->
+<section id="principles">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Working Principles</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Phase I &amp; II — <span style="color:var(--acc2)">How It Works</span></h2>
+  <div class="card-grid card-grid-2" style="margin-top:28px" data-r="u" data-d="2">
+    <div class="card">
+      <div class="card-accent" style="--card-top:var(--acc)"></div>
+      <span class="lbl lbl-blue">Phase I — Scanning</span>
+      <div class="card-h">Environmental Reconnaissance</div>
+      <div class="card-p" style="margin-bottom:14px">The ESP8266 operates as a passive observer across the 2.4 GHz spectrum. Raw invisible radio waves are parsed, structured, and graphed onto the OLED in real time — transforming invisible signals into readable intelligence.</div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;border:1px solid var(--r0)">
+        <div style="font-family:var(--fm);font-size:9px;color:var(--t3);margin-bottom:8px;letter-spacing:.1em">DATA ACQUISITION TARGETS</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--acc2);font-family:var(--fm);font-size:10px;font-weight:600;min-width:52px">SSID</span><span style="font-size:12px;color:var(--t2)">Service Set Identifier — Broadcast Network Name</span></div>
+          <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--acc4);font-family:var(--fm);font-size:10px;font-weight:600;min-width:52px">RSSI</span><span style="font-size:12px;color:var(--t2)">Received Signal Strength Indicator</span></div>
+          <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--acc3);font-family:var(--fm);font-size:10px;font-weight:600;min-width:52px">CH</span><span style="font-size:12px;color:var(--t2)">Operating Frequency Channel Allocation</span></div>
+        </div>
+      </div>
+      <!-- Live spectrum sim -->
+      <div style="margin-top:14px">
+        <div style="font-family:var(--fm);font-size:8px;letter-spacing:.12em;color:var(--t3);margin-bottom:6px">2.4 GHz SPECTRUM · LIVE SIM</div>
+        <div class="spectrum" id="spectrum2"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-accent" style="--card-top:var(--rose)"></div>
+      <span class="lbl lbl-red">Phase II — Deauthentication</span>
+      <div class="card-h">802.11 Management Frame Mechanics</div>
+      <div class="card-p" style="margin-bottom:14px">WiFi relies on Management Frames for connectivity state. A deauthentication frame is a legitimate structural command used to gracefully disconnect a client — but these frames are historically unencrypted and the origin entirely unverified.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:11px">
+          <div style="font-family:var(--fm);font-size:9px;color:var(--t3);margin-bottom:5px">The Protocol</div>
+          <div style="font-size:12px;color:var(--t1);line-height:1.65">Management Frames explicitly handle connectivity state in 802.11</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:11px">
+          <div style="font-family:var(--fm);font-size:9px;color:var(--t3);margin-bottom:5px">The Vulnerability</div>
+          <div style="font-size:12px;color:var(--rose);line-height:1.65">Frames are completely unencrypted · origin entirely unverified</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--r0);border-radius:8px;padding:11px">
+          <div style="font-family:var(--fm);font-size:9px;color:var(--t3);margin-bottom:5px">The Simulation</div>
+          <div style="font-size:12px;color:var(--t1);line-height:1.65">ESP8266 simulates frames in authorized lab to observe client behavior</div>
+        </div>
+        <div style="background:rgba(104,211,145,.06);border:1px solid rgba(104,211,145,.18);border-radius:8px;padding:11px">
+          <div style="font-family:var(--fm);font-size:9px;color:var(--acc3);margin-bottom:5px">The Goal</div>
+          <div style="font-size:12px;color:var(--t1);line-height:1.65">Design defenses &amp; understand security to build resilient systems</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OLED Interface Modes -->
+  <div style="margin-top:32px">
+    <div class="eyebrow" data-r="u">Interface Architecture</div>
+    <h3 style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--t0);letter-spacing:-.02em;margin-bottom:18px" data-r="u" data-d="1">OLED Navigation &amp; <span style="color:var(--acc2)">HMI Menu</span></h3>
+    <div class="card-grid card-grid-4" data-r="u" data-d="2">
+      <div class="card"><div class="card-ico">📡</div><div class="card-h">SCAN</div><div class="card-p">Discover and map the surrounding 2.4 GHz topological environment to locate active networks.</div></div>
+      <div class="card"><div class="card-ico">🎯</div><div class="card-h">SELECT</div><div class="card-p">Isolate and specify exact hardware targets (Access Points or Clients) for controlled lab testing.</div></div>
+      <div class="card"><div class="card-ico">⚡</div><div class="card-h">ATTACK</div><div class="card-p">Initiate theoretical tests (Deauth simulation, Beacon flooding) strictly within authorized parameters.</div></div>
+      <div class="card"><div class="card-ico">📊</div><div class="card-h">PACKET MONITOR</div><div class="card-p">Activate real-time visual graphing of local network traffic density directly on the hardware screen.</div></div>
+    </div>
+  </div>
+</div>
+</section>
+<div class="sdiv"></div>
+
+<!-- ═══ HARDWARE EVOLUTION ═══ -->
+<section id="evolution">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Iterative Design</div>
+  <h2 class="sec-h" data-r="u" data-d="1">From Concept <span style="color:var(--acc2)">to Custom PCB</span></h2>
+  <div class="phases" data-r="u" data-d="2">
+    <div class="phase-card" style="--phase-col:var(--acc)">
+      <div class="phase-num">Phase 1 — Prototyping</div>
+      <div class="phase-h">Breadboard Validation</div>
+      <div class="phase-p">Breadboard validation of firmware and wiring logic via jumper cables. Testing sensor responsiveness and I2C display communication before committing to PCB layout.</div>
+    </div>
+    <div class="phase-card" style="--phase-col:var(--acc2)">
+      <div class="phase-num">Phase 2 — Custom PCB</div>
+      <div class="phase-h">Consolidated Hardware</div>
+      <div class="phase-p">Consolidation of all components onto a unified, purpose-built printed circuit board. Elimination of jumper wire fragility and significant size reduction.</div>
+    </div>
+    <div class="phase-card" style="--phase-col:var(--acc3)">
+      <div class="phase-num">Phase 3 — Integration</div>
+      <div class="phase-h">Standalone System</div>
+      <div class="phase-p">Incorporation of onboard lithium battery management for true standalone functionality — no external power source or serial monitor required for operation.</div>
+    </div>
+  </div>
+
+  <!-- Firmware flashing steps -->
+  <div style="margin-top:40px">
+    <div class="eyebrow" data-r="u">Firmware Workflow</div>
+    <h3 style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--t0);letter-spacing:-.02em;margin-bottom:20px" data-r="u" data-d="1">Deploying <span style="color:var(--acc2)">Precompiled Firmware</span></h3>
+    <div class="fw-steps" data-r="u" data-d="2">
+      <div class="fw-step"><div class="fw-step-ico">🔌</div><div class="fw-step-n">Step 1</div><div class="fw-step-h">USB Connect</div><div class="fw-step-p">Interface ESP8266 to PC via USB cable</div></div>
+      <div class="fw-step"><div class="fw-step-ico">💾</div><div class="fw-step-n">Step 2</div><div class="fw-step-h">Drivers</div><div class="fw-step-p">Install CH340 serial drivers for UART</div></div>
+      <div class="fw-step"><div class="fw-step-ico">🛠</div><div class="fw-step-n">Step 3</div><div class="fw-step-h">Flash Tool</div><div class="fw-step-p">Launch ESP8266 Flasher utility</div></div>
+      <div class="fw-step"><div class="fw-step-ico">📄</div><div class="fw-step-n">Step 4</div><div class="fw-step-h">Select .bin</div><div class="fw-step-p">Select COM port and target precompiled .bin file</div></div>
+      <div class="fw-step"><div class="fw-step-ico">🔄</div><div class="fw-step-n">Step 5</div><div class="fw-step-h">Flash &amp; Boot</div><div class="fw-step-p">Execute flash; system auto-reboots to firmware</div></div>
+    </div>
+    <div style="background:rgba(99,179,237,.06);border:1px solid var(--ag);border-radius:10px;padding:14px 18px;margin-top:16px;font-size:13px;color:var(--t2);line-height:1.8">
+      <strong style="color:var(--acc)">Precompiled Efficiency:</strong> Using precompiled .bin files allows students to focus entirely on system behavior and theoretical analysis rather than low-level code compilation.
+    </div>
+  </div>
+</div>
+</section>
+<div class="sdiv"></div>
+
+<!-- ═══ CAPABILITIES ═══ -->
+<section id="capabilities">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">Diagnostic Matrix</div>
+  <h2 class="sec-h" data-r="u" data-d="1">Capabilities &amp; <span style="color:var(--acc2)">Constraints</span></h2>
+  <p style="font-size:14px;color:var(--t2);max-width:520px;margin-top:8px;line-height:1.85" data-r="u" data-d="2">Engineering trade-offs of the ESP8266 platform — honest assessment of what this system can and cannot do.</p>
+  <div class="cap-table" data-r="u" data-d="3">
+    <div class="cap-col">
+      <div class="cap-col-h pros">✓ Advantages — System Capabilities</div>
+      <div class="cap-row"><span class="cap-ico">💰</span><span>Highly cost-effective and globally accessible component list</span></div>
+      <div class="cap-row"><span class="cap-ico">🔋</span><span>True standalone portability — Li-Po battery and charging module compatible</span></div>
+      <div class="cap-row"><span class="cap-ico">⚡</span><span>Rapid prototyping with minimal foundational coding required</span></div>
+      <div class="cap-row"><span class="cap-ico">📺</span><span>Immediate, real-time visual feedback via I2C OLED interface</span></div>
+    </div>
+    <div class="cap-col">
+      <div class="cap-col-h cons">⚠ Limitations — System Constraints</div>
+      <div class="cap-row"><span class="cap-ico">📡</span><span>Restricted exclusively to 2.4 GHz networks — lacks 5 GHz radio capability</span></div>
+      <div class="cap-row"><span class="cap-ico">🧮</span><span>Constrained by the limited CPU processing power of the ESP8266 chip</span></div>
+      <div class="cap-row"><span class="cap-ico">🔧</span><span>Requires foundational electronics and soldering knowledge to fully assemble</span></div>
+      <div class="cap-row"><span class="cap-ico">⚖</span><span>Governed by strict legal parameters that completely limit operational deployment</span></div>
+    </div>
+  </div>
+
+  <!-- Future scope -->
+  <div style="margin-top:36px">
+    <div class="eyebrow" data-r="u">Architectural Evolution</div>
+    <h3 style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--t0);letter-spacing:-.02em;margin-bottom:18px" data-r="u" data-d="1">Next Gen: <span style="color:var(--acc2)">ESP32 Architecture</span></h3>
+    <div class="card-grid card-grid-3" data-r="u" data-d="2">
+      <div class="card"><div class="card-accent" style="--card-top:var(--acc2)"></div><span class="lbl lbl-purple">Processing Upgrade</span><div class="card-h">Multi-threading + 5 GHz</div><div class="card-p">Transitioning to ESP32 unlocks multi-threading capabilities and potential 5 GHz spectrum analysis.</div></div>
+      <div class="card"><div class="card-accent" style="--card-top:var(--acc)"></div><span class="lbl lbl-blue">UI Enhancements</span><div class="card-h">Touch + Mobile BLE</div><div class="card-p">Replacing tactile buttons with capacitive touchscreen integration, and developing mobile apps via Bluetooth Low Energy (BLE).</div></div>
+      <div class="card"><div class="card-accent" style="--card-top:var(--teal)"></div><span class="lbl lbl-teal">Data Retention</span><div class="card-h">SD Card Logging</div><div class="card-p">Implementing SPI-driven SD card modules for long-term packet logging and comprehensive historical network analysis.</div></div>
+    </div>
+  </div>
+</div>
+</section>
+<div class="sdiv"></div>
+
+<!-- ═══ TEAM ═══ -->
+<section id="team">
+<div class="wrap">
+  <div class="eyebrow" data-r="u">The Team</div>
+  <h2 class="sec-h" data-r="u" data-d="1">12 <span style="color:var(--acc2)">Members</span></h2>
+  <p style="font-size:14px;color:var(--t2);max-width:480px;margin-top:8px;line-height:1.85" data-r="u" data-d="2">Supervised by <strong style="color:var(--t1)">Dr. Rania Hamdy Elabd</strong> · Horus University Faculty of Engineering</p>
+  <div class="team-grid" data-r="u" data-d="3">
+    <div class="team-card"><div class="team-ava">AA</div><div><div class="team-name">Ahmad Mohamad Abdelrazek</div><div class="team-role">Hardware & Firmware</div></div></div>
+    <div class="team-card"><div class="team-ava">RM</div><div><div class="team-name">Rafeek Marzouk El-fauomy</div><div class="team-role">Protocol Analysis</div></div></div>
+    <div class="team-card"><div class="team-ava">MR</div><div><div class="team-name">Mohammed Reda Alasmar</div><div class="team-role">Circuit Design</div></div></div>
+    <div class="team-card"><div class="team-ava">OA</div><div><div class="team-name">Omar Ahmed El-Desokey</div><div class="team-role">PCB Integration</div></div></div>
+    <div class="team-card"><div class="team-ava">RE</div><div><div class="team-name">Refaat Elsayed Refaat</div><div class="team-role">Firmware & Testing</div></div></div>
+    <div class="team-card"><div class="team-ava" style="background:rgba(99,179,237,.12);border-color:rgba(99,179,237,.3);color:var(--acc)">IE</div><div><div class="team-name">Islam Emad Ismail</div><div class="team-role">Systems & Architecture</div></div><span class="team-lead-badge">Member</span></div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div>Islam Emad — <span>WiFi Deauther Lab · Horus University ECE</span></div>
+  <a href="index.html" style="font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:.1em">← Back to Portfolio</a>
+</footer>
+
+<script>
+/* THEME */
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('ie-theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=(t==='dark'?'☀️':'🌙')}
+(()=>setTheme(localStorage.getItem('ie-theme')||'dark'))();
+document.getElementById('theme-btn').addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+
+/* NAV */
+window.addEventListener('scroll',()=>document.getElementById('mnav').classList.toggle('scrolled',scrollY>30),{passive:true});
+
+/* REVEAL */
+const ro=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');ro.unobserve(x.target)}})},{threshold:.06,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('[data-r]').forEach(el=>ro.observe(el));
+
+/* CROSSHAIR CURSOR */
+(function(){
+  if(!window.matchMedia('(pointer:fine)').matches) return;
+  const chx=document.getElementById('ch-x'),chy=document.getElementById('ch-y'),dot=document.getElementById('ch-dot'),ring=document.getElementById('ch-ring');
+  if(!chx||!chy||!dot||!ring) return;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my,raf;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;chx.style.transform=`translateY(${my}px)`;chy.style.transform=`translateX(${mx}px)`;dot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`},{passive:true});
+  (function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;raf=requestAnimationFrame(loop)})();
+  document.querySelectorAll('.card,.phase-card,.arch-node,.team-card').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch-lock'),{passive:true});el.addEventListener('mouseleave',()=>document.body.classList.remove('ch-lock'),{passive:true})});
+  document.querySelectorAll('a,button,.pill').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch-hov'),{passive:true});el.addEventListener('mouseleave',()=>document.body.classList.remove('ch-hov'),{passive:true})});
+  document.addEventListener('mousedown',()=>document.body.classList.add('ch-ck'),{passive:true});
+  document.addEventListener('mouseup',()=>document.body.classList.remove('ch-ck'),{passive:true});
+})();
+
+/* 3D TILT */
+document.querySelectorAll('.card,.phase-card').forEach(card=>{
+  card.style.transition='transform .32s ease,box-shadow .32s';
+  card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(820px) rotateX(${-y*8}deg) rotateY(${x*10}deg) scale3d(1.015,1.015,1.015) translateY(-4px)`},{passive:true});
+  card.addEventListener('mouseleave',()=>{card.style.transform='perspective(820px) rotateX(0) rotateY(0) scale3d(1,1,1)'});
+});
+
+/* NEON RIBBON */
+(function(){
+  const canvas=document.getElementById('ribbon-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');const CFG={MAX_LENGTH:80,RS:.018,GS:.013,BS:.022,SPREAD:14};
+  let W=0,H=0,anim;const pts=[],mouse={x:0,y:0},prev={x:0,y:0},cs={r:0,g:200,b:255,sz:0};
+  function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}resize();
+  window.addEventListener('resize',resize,{passive:true});
+  document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY},{passive:true});
+  mouse.x=prev.x=innerWidth/2;mouse.y=prev.y=innerHeight/2;
+  function sp(p){p.x+=p.dx;p.y+=p.dy}
+  function dl(){const n=pts.length;if(n<3)return;for(let i=n-1;i>1;i--){const p0=pts[i],p1=pts[i-1],p2=pts[i-2];ctx.beginPath();ctx.strokeStyle=p0.color;ctx.lineWidth=p0.sz;ctx.globalAlpha=i/n;ctx.moveTo((p1.x+p0.x)/2,(p1.y+p0.y)/2);ctx.quadraticCurveTo(p1.x,p1.y,(p1.x+p2.x)/2,(p1.y+p2.y)/2);ctx.stroke();sp(p0)}if(pts[0])sp(pts[0]);if(pts[n-1])sp(pts[n-1])}
+  function draw(){let dx=Math.max(-CFG.SPREAD,Math.min(CFG.SPREAD,(mouse.x-prev.x)*.14));let dy=Math.max(-CFG.SPREAD,Math.min(CFG.SPREAD,(mouse.y-prev.y)*.14));prev.x=mouse.x;prev.y=mouse.y;cs.sz+=.12;cs.r+=CFG.RS;cs.g+=CFG.GS;cs.b+=CFG.BS;const sz=Math.abs(Math.sin(cs.sz)*8)+1;const r=Math.floor(Math.sin(cs.r)*128+128),g=Math.floor(Math.sin(cs.g)*128+128),b=Math.floor(Math.sin(cs.b)*128+128);pts.push({x:mouse.x,y:mouse.y,dx,dy,sz,color:`rgb(${r},${g},${b})`});if(pts.length>CFG.MAX_LENGTH)pts.shift();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='lighter';dl();dl();dl();anim=requestAnimationFrame(draw)}
+  draw();document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(anim);else draw()});
+})();
+
+/* OLED PACKET COUNTER */
+let pkts=0,ch=0;
+setInterval(()=>{
+  pkts+=Math.floor(Math.random()*12+2);
+  ch=(ch+Math.floor(Math.random()*2))%14;
+  const pe=document.getElementById('oled-pkts');const ce=document.getElementById('oled-ch');
+  if(pe)pe.textContent=pkts;if(ce)ce.textContent=ch;
+},600);
+
+/* SPECTRUM VISUALIZERS */
+function buildSpectrum(id){
+  const el=document.getElementById(id);if(!el)return;
+  for(let i=0;i<28;i++){const b=document.createElement('div');b.className='spectrum-bar';b.style.height=Math.floor(Math.random()*80+10)+'%';el.appendChild(b)}
+  setInterval(()=>{el.querySelectorAll('.spectrum-bar').forEach(b=>{b.style.height=Math.floor(Math.random()*80+8)+'%'})},700);
+}
+buildSpectrum('spectrum');buildSpectrum('spectrum2');
+</script>
+</body>
+</html>
