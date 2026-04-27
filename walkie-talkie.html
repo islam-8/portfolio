@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Digital Walkie-Talkie — Islam Emad</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --ease:cubic-bezier(.16,1,.3,1);
@@ -156,10 +156,6 @@ footer{border-top:1px solid var(--r0);padding:22px clamp(20px,4vw,56px);display:
 .fl{font-size:10px;color:var(--t3);}
 .fl span{color:var(--acc);}
 @media(max-width:600px){nav{padding:0 18px;}section{padding:clamp(50px,7vw,76px) 0;}}
-
-/* Neon ribbon */
-#ribbon-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.42;mix-blend-mode:screen}
-[data-theme="light"] #ribbon-canvas{opacity:.22;mix-blend-mode:multiply}
 </style>
 </head>
 <body>
@@ -170,7 +166,7 @@ footer{border-top:1px solid var(--r0);padding:22px clamp(20px,4vw,56px);display:
 <nav>
   <a class="nav-back" href="index.html">← Portfolio</a>
   <div class="nav-brand"><div class="nav-dot"></div>WALKIE-TALKIE DSP</div>
-  <button class="nav-theme" onclick="setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">☀ / ◑</button>
+  <button class="nav-theme" onclick="toggleTheme()">☀ / ◑</button>
 </nav>
 
 <!-- HERO -->
@@ -191,7 +187,7 @@ footer{border-top:1px solid var(--r0);padding:22px clamp(20px,4vw,56px);display:
       <div class="hkpi"><div class="hkpi-n">~200m</div><div class="hkpi-l">Range</div></div>
     </div>
     <div style="margin-top:20px;font-size:9px;letter-spacing:.1em;color:var(--t3)" data-r="u" data-d="4">
-      LEADER: Ahmed Abdulrazeq &nbsp;|&nbsp; TEAM: Islam Emad Ismail · Refaat Elsayed Refaat · Omar Tarek Elmaghawri · Omar Ahmed Desokey · Mohammed Reda Alasmar · Omar Alaa Zaghloul
+      LEADER: Ahmed Abdulrazeq &nbsp;|&nbsp; LEADER: Ahmed Abdulrazeq &nbsp;|&nbsp; TEAM: Islam Emad Ismail · Refaat Elsayed Refaat · Omar Tarek Elmaghawri · Omar Ahmed Desokey · Mohammed Reda Alasmar · Omar Alaa Zaghloul
       &nbsp;|&nbsp; SUPERVISOR: Dr. Rania Al-Abd
     </div>
     <div class="hero-btns" data-r="u" data-d="4">
@@ -513,14 +509,8 @@ let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.transform=`translate(${mx}px,${my}px)`;});
 (function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(loop)})();
 document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));});
-/* THEME */
-function setTheme(t){
-  document.documentElement.setAttribute('data-theme',t);
-  localStorage.setItem('ie-theme',t);
-  const btn=document.getElementById('theme-btn');
-  if(btn)btn.textContent=(t==='dark'?'☀️ Light':'🌙 Dark');
-}
-(()=>{setTheme(localStorage.getItem('ie-theme')||'dark');})();
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('wt-theme',t);}
+const st=localStorage.getItem('wt-theme');if(st)document.documentElement.setAttribute('data-theme',st);
 const ro=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.08});
 document.querySelectorAll('[data-r]').forEach(el=>ro.observe(el));
 // Animate bars on scroll
@@ -619,87 +609,5 @@ function wfLoop(){
 wfLoop();
 document.getElementById('wf-snr').textContent='SNR: 28dB (clean)';
 </script>
-
-/* NEON RIBBON */
-(function(){
-  const canvas=document.getElementById('ribbon-canvas');
-  if(!canvas)return;
-  const ctx=canvas.getContext('2d');
-  const CFG={SPEED_X:.14,SPEED_Y:.14,MAX_LENGTH:90,RS:.018,GS:.013,BS:.022,SPREAD:16};
-  let anim=0,W=0,H=0;
-  const pts=[],mouse={x:0,y:0},prev={x:0,y:0},cs={r:0,g:200,b:255,sz:0};
-  function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}
-  resize();window.addEventListener('resize',resize,{passive:true});
-  document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY},{passive:true});
-  mouse.x=prev.x=innerWidth/2;mouse.y=prev.y=innerHeight/2;
-  function sp(p){p.x+=p.dx;p.y+=p.dy}
-  function dl(){
-    const n=pts.length;if(n<3)return;
-    for(let i=n-1;i>1;i--){
-      const p0=pts[i],p1=pts[i-1],p2=pts[i-2];
-      ctx.beginPath();ctx.strokeStyle=p0.color;ctx.lineWidth=p0.sz;ctx.globalAlpha=i/n;
-      ctx.moveTo((p1.x+p0.x)/2,(p1.y+p0.y)/2);
-      ctx.quadraticCurveTo(p1.x,p1.y,(p1.x+p2.x)/2,(p1.y+p2.y)/2);ctx.stroke();sp(p0);
-    }
-    if(pts[0])sp(pts[0]);if(pts[n-1])sp(pts[n-1]);
-  }
-  function draw(){
-    let dx=Math.max(-CFG.SPREAD,Math.min(CFG.SPREAD,(mouse.x-prev.x)*CFG.SPEED_X));
-    let dy=Math.max(-CFG.SPREAD,Math.min(CFG.SPREAD,(mouse.y-prev.y)*CFG.SPEED_Y));
-    prev.x=mouse.x;prev.y=mouse.y;cs.sz+=.12;cs.r+=CFG.RS;cs.g+=CFG.GS;cs.b+=CFG.BS;
-    const sz=Math.abs(Math.sin(cs.sz)*8)+1;
-    const r=Math.floor(Math.sin(cs.r)*128+128),g=Math.floor(Math.sin(cs.g)*128+128),b=Math.floor(Math.sin(cs.b)*128+128);
-    pts.push({x:mouse.x,y:mouse.y,dx,dy,sz,color:`rgb(${r},${g},${b})`});
-    if(pts.length>CFG.MAX_LENGTH)pts.shift();
-    ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,W,H);
-    ctx.globalCompositeOperation='lighter';dl();dl();dl();
-    anim=requestAnimationFrame(draw);
-  }
-  draw();
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(anim);else draw()});
-})();
-
-/* 3D TILT on cards */
-document.querySelectorAll('.spec-card,.feature-card,.stat-card,.phase-card,.card,.metric-card,.tech-card,.detail-card,.comp-card,.step-card,.challenge-card').forEach(card=>{
-  card.style.transition='transform .32s ease,box-shadow .32s';
-  card.addEventListener('mousemove',e=>{
-    const r=card.getBoundingClientRect();
-    const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
-    card.style.transform=`perspective(820px) rotateX(${-y*8}deg) rotateY(${x*10}deg) scale3d(1.015,1.015,1.015)`;
-  },{passive:true});
-  card.addEventListener('mouseleave',()=>{card.style.transform='perspective(820px) rotateX(0) rotateY(0) scale3d(1,1,1)'});
-});
-
-/* CIPHER TEXT on section headings */
-(function(){
-  const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@!%';
-  function cipher(el,target,delay){
-    setTimeout(()=>{
-      let frame=0;const total=Math.floor(1000/30);
-      const id=setInterval(()=>{
-        const prog=frame/total;let out='';
-        for(let i=0;i<target.length;i++)out+=prog>(i/target.length)?target[i]:CHARS[Math.floor(Math.random()*CHARS.length)];
-        el.textContent=out;
-        if(frame>=total){clearInterval(id);el.textContent=target}
-        frame++;
-      },30);
-    },delay);
-  }
-  const ro=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        const el=e.target;
-        const orig=el.dataset.cipherText||el.textContent;
-        el.dataset.cipherText=orig;
-        cipher(el,orig,0);
-        ro.unobserve(el);
-      }
-    });
-  },{threshold:.3});
-  document.querySelectorAll('h2,h3').forEach(h=>{
-    if(h.textContent.trim().length<60)ro.observe(h);
-  });
-})();
 </body>
 </html>
