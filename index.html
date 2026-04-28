@@ -57,24 +57,25 @@ a{text-decoration:none;color:inherit}
 
 /* ═══ CURSOR ═══ */
 
-/* PRECISION CROSSHAIR */
+/* ═══ CROSSHAIR CURSOR ═══ */
 @media(pointer:fine){
   body{cursor:none}
   #ch-x,#ch-y,#ch-dot,#ch-ring{position:fixed;pointer-events:none;z-index:9999;will-change:transform}
-  #ch-x{top:0;left:0;width:100vw;height:1px;background:linear-gradient(90deg,transparent,var(--acc) 48%,transparent 50%,var(--acc) 52%,transparent);opacity:.13;transform:translateY(-50%);transition:opacity .3s}
-  #ch-y{top:0;left:0;height:100vh;width:1px;background:linear-gradient(180deg,transparent,var(--acc) 48%,transparent 50%,var(--acc) 52%,transparent);opacity:.13;transform:translateX(-50%);transition:opacity .3s}
-  #ch-dot{width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 12px var(--acc),0 0 24px var(--ag);transform:translate(-50%,-50%);transition:width .2s,height .2s}
-  #ch-ring{width:22px;height:22px;border:1px solid var(--acc);border-radius:50%;transform:translate(-50%,-50%);opacity:.55;transition:width .35s var(--ease),height .35s var(--ease),opacity .3s,border-radius .3s}
-  body.ch-hov #ch-x,body.ch-hov #ch-y{opacity:.28}
-  body.ch-hov #ch-ring{width:46px;height:46px;opacity:.9;border-radius:4px;box-shadow:0 0 14px var(--ag)}
+  #ch-x{top:0;left:0;width:100vw;height:1px;background:linear-gradient(90deg,transparent,var(--acc) 48%,transparent 50%,var(--acc) 52%,transparent);opacity:.12;transform:translateY(-50%);transition:opacity .3s}
+  #ch-y{top:0;left:0;height:100vh;width:1px;background:linear-gradient(180deg,transparent,var(--acc) 48%,transparent 50%,var(--acc) 52%,transparent);opacity:.12;transform:translateX(-50%);transition:opacity .3s}
+  #ch-dot{width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc);transform:translate(-50%,-50%)}
+  #ch-ring{width:20px;height:20px;border:1px solid var(--acc);border-radius:50%;transform:translate(-50%,-50%);opacity:.5;transition:width .35s var(--ease),height .35s var(--ease),opacity .3s,border-radius .3s}
+  body.ch-hov #ch-x,body.ch-hov #ch-y{opacity:.26}
+  body.ch-hov #ch-ring{width:42px;height:42px;opacity:.88;border-radius:4px;box-shadow:0 0 12px var(--ag)}
   body.ch-hov #ch-dot{width:3px;height:3px}
-  body.ch-ck #ch-ring{width:18px;height:18px;opacity:.7}
-  body.ch-lock #ch-ring{border-radius:2px;border-color:var(--rose);opacity:1;box-shadow:0 0 18px rgba(252,129,129,.4);animation:chlk .8s ease-in-out infinite alternate}
-  body.ch-lock #ch-dot{background:var(--rose);box-shadow:0 0 16px var(--rose)}
-  body.ch-lock #ch-x,body.ch-lock #ch-y{opacity:.22}
-  @keyframes chlk{0%{box-shadow:0 0 10px rgba(252,129,129,.3)}100%{box-shadow:0 0 24px rgba(252,129,129,.7)}}
+  body.ch-ck #ch-ring{width:16px;height:16px;opacity:.6}
+  body.ch-lock #ch-ring{border-radius:3px;border-color:var(--rose);opacity:1;box-shadow:0 0 16px rgba(252,129,129,.4);animation:chlk .85s ease-in-out infinite alternate}
+  body.ch-lock #ch-dot{background:var(--rose);box-shadow:0 0 14px var(--rose)}
+  body.ch-lock #ch-x,body.ch-lock #ch-y{opacity:.2}
+  @keyframes chlk{0%{box-shadow:0 0 8px rgba(252,129,129,.28)}100%{box-shadow:0 0 22px rgba(252,129,129,.65)}}
 }
-@media(pointer:coarse){body{cursor:auto}#ch-x,#ch-y,#ch-dot,#ch-ring{display:none!important}}body{cursor:auto}}
+@media(pointer:coarse){body{cursor:auto}#ch-x,#ch-y,#ch-dot,#ch-ring{display:none!important}}
+body{cursor:auto}}
 
 /* ═══ GRAIN ═══ */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.022;
@@ -573,13 +574,12 @@ footer span{color:var(--t3)}
       <a href="rover.html" class="card-link" style="border-color:var(--teal);color:var(--teal);background:rgba(79,209,197,.06)">View Full Project ↗</a>
     </div>
     <div class="bento-card b4" style="--bc-color:var(--acc4)" data-dom="embedded" data-r="u" data-d="3">
-      <div class="card-spotlight"></div><span class="card-label lbl-dim">Mechatronics · Renewable Energy</span>
+      <div class="card-spotlight"></div><span class="card-label lbl-dim">Embedded</span>
       <div class="card-title">LDR Solar Tracker</div>
-      <div class="card-desc">Dual-axis autonomous solar tracking. 4× LDR differential sensing → Arduino Nano → 2× micro servo motors → 3D-printed SolidWorks chassis. Continuously maximizes solar panel irradiance absorption throughout the day.</div>
-      <div class="card-tags"><span class="card-tag">Arduino Nano</span><span class="card-tag">4× LDR</span><span class="card-tag">Servo PWM</span><span class="card-tag">SolidWorks</span><span class="card-tag">3D Print</span><span class="card-tag">C++</span></div>
-      <div class="card-team">TEAM: Islam Emad · Omar El-Sherbiny · Shada Wally · Mohamed El-Sharawy · Ahmed Ayyad · Abdullah Issam · SUP: Prof. Mohamed Kamal · Prof. Omar Elkelany</div>
-      <a href="ldr-solar-tracker.html" class="card-link" style="border-color:var(--acc4);color:var(--acc4);background:rgba(246,173,85,.06)">View Full Project ↗</a>
-    </div>
+      <div class="card-desc">Dual-axis sun tracking. LDR differential sensing + servo control + SolidWorks mechanical design.</div>
+      <div class="card-tags"><span class="card-tag">LDR</span><span class="card-tag">Servo</span><span class="card-tag">SolidWorks</span><span class="card-tag">C</span></div>
+    
+      <a href="ldr-solar-tracker.html" class="card-link" style="border-color:var(--acc4);color:var(--acc4);background:rgba(246,173,85,.06)">View Full Project ↗</a></div>
     <div class="bento-card b4" style="--bc-color:var(--acc3)" data-dom="software" data-r="u" data-d="1">
       <div class="card-spotlight"></div><span class="card-label lbl-dim">Software</span>
       <div class="card-title">Java Restaurant System</div>
