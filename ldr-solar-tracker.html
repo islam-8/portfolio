@@ -216,7 +216,8 @@ section{padding:clamp(64px,8vw,100px) 0;position:relative;z-index:1;display:bloc
 footer{border-top:1px solid var(--r0);padding:18px var(--gap);display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:9px;letter-spacing:.08em;color:var(--t4);position:relative;z-index:1}
 footer span{color:var(--t3)}
 @media(max-width:460px){footer{flex-direction:column;gap:7px;text-align:center}}
-</style>
+
+@keyframes scb{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}</style>
 </head>
 <body>
 
@@ -259,7 +260,8 @@ footer span{color:var(--t3)}
           <div class="kpi"><div class="kpi-n">360<sup>°</sup></div><div class="kpi-l">Azimuth Range</div></div>
           <div class="kpi"><div class="kpi-n">100<sup>%</sup></div><div class="kpi-l">Auto Tracking</div></div>
         </div>
-        <div class="hero-btns" data-r="u" data-d="4">
+        <div class="hero-team" data-r="u" data-d="4">TEAM: Islam Emad Ismail · Omar El-Sherbiny · Shada Wally · Mohamed El-Sharawy · Ahmed Ayyad · Abdullah Issam &nbsp;|&nbsp; SUP: Prof. Mohamed Kamal · Prof. Omar Elkelany</div>
+    <div class="hero-btns" data-r="u" data-d="4">
           <a href="#system" class="btn btn-p">Explore System ↓</a>
           <a href="#team" class="btn btn-s">View Team ↗</a>
         </div>
@@ -299,7 +301,7 @@ footer span{color:var(--t3)}
     </div>
   </div>
   <div style="position:absolute;bottom:22px;left:var(--gap);font-family:var(--fm);font-size:9px;letter-spacing:.15em;color:var(--t4);text-transform:uppercase;z-index:2;animation:scb 2.4s ease-in-out infinite">Scroll ↓</div>
-  @keyframes scb{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+  }
 </section>
 <div class="sdiv"></div>
 
@@ -554,25 +556,6 @@ document.querySelectorAll('.card').forEach(card=>{
   card.addEventListener('mouseleave',()=>{card.style.transform='perspective(820px) rotateX(0) rotateY(0) scale3d(1,1,1)'});
 });
 
-/* NEON RIBBON */
-(function(){
-  const canvas=document.getElementById('ribbon-canvas');if(!canvas)return;
-  const ctx=canvas.getContext('2d');const CFG={MAX_LENGTH:80,SPREAD:14};
-  let W=0,H=0,anim;const pts=[],mouse={x:0,y:0},prev={x:0,y:0},cs={r:.8,g:.4,b:0,sz:0};
-  function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}resize();
-  window.addEventListener('resize',resize,{passive:true});
-  document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY},{passive:true});
-  mouse.x=prev.x=innerWidth/2;mouse.y=prev.y=innerHeight/2;
-  function sp(p){p.x+=p.dx;p.y+=p.dy}
-  function dl(){const n=pts.length;if(n<3)return;for(let i=n-1;i>1;i--){const p0=pts[i],p1=pts[i-1],p2=pts[i-2];ctx.beginPath();ctx.strokeStyle=p0.color;ctx.lineWidth=p0.sz;ctx.globalAlpha=i/n;ctx.moveTo((p1.x+p0.x)/2,(p1.y+p0.y)/2);ctx.quadraticCurveTo(p1.x,p1.y,(p1.x+p2.x)/2,(p1.y+p2.y)/2);ctx.stroke();sp(p0)}if(pts[0])sp(pts[0]);if(pts[n-1])sp(pts[n-1])}
-  function draw(){let dx=Math.max(-CFG.SPREAD,Math.min(CFG.SPREAD,(mouse.x-prev.x)*.14));let dy=Math.max(-CFG.SPREAD,Math.min(CFG.SPREAD,(mouse.y-prev.y)*.14));prev.x=mouse.x;prev.y=mouse.y;cs.sz+=.12;cs.r+=.015;cs.g+=.01;cs.b+=.02;const sz=Math.abs(Math.sin(cs.sz)*8)+1;
-    /* warm amber-to-green ribbon matching solar theme */
-    const r=Math.floor(Math.sin(cs.r)*80+175);const g=Math.floor(Math.sin(cs.g)*100+130);const b=Math.floor(Math.sin(cs.b)*60+50);
-    pts.push({x:mouse.x,y:mouse.y,dx,dy,sz,color:`rgb(${r},${g},${b})`});if(pts.length>CFG.MAX_LENGTH)pts.shift();
-    ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='lighter';dl();dl();dl();anim=requestAnimationFrame(draw)}
-  draw();document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(anim);else draw()});
-})();
-
 /* SUN TRACKER SIMULATION */
 (function(){
   let t=0;
@@ -606,5 +589,21 @@ document.querySelectorAll('.card').forEach(card=>{
   },400);
 })();
 </script>
+
+/* RIBBON — mouse-only, no idle animation */
+(function(){
+  const canvas=document.getElementById('ribbon-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');let W=0,H=0,raf,stopTimer;
+  const pts=[],prev={x:innerWidth/2,y:innerHeight/2},cs={r:0,g:200,b:255,sz:0};
+  const MAX=80,SPREAD=14;
+  function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}resize();
+  window.addEventListener('resize',resize,{passive:true});
+  function sp(p){p.x+=p.dx;p.y+=p.dy}
+  function dl(){const n=pts.length;if(n<3)return;for(let i=n-1;i>1;i--){const a=pts[i],b=pts[i-1],c=pts[i-2];ctx.beginPath();ctx.strokeStyle=a.color;ctx.lineWidth=a.sz;ctx.globalAlpha=i/n;ctx.moveTo((b.x+a.x)/2,(b.y+a.y)/2);ctx.quadraticCurveTo(b.x,b.y,(b.x+c.x)/2,(b.y+c.y)/2);ctx.stroke();sp(a)}if(pts[0])sp(pts[0]);if(pts[n-1])sp(pts[n-1])}
+  function drawStep(mx,my){const dx=Math.max(-SPREAD,Math.min(SPREAD,(mx-prev.x)*.14));const dy=Math.max(-SPREAD,Math.min(SPREAD,(my-prev.y)*.14));prev.x=mx;prev.y=my;cs.sz+=.12;cs.r+=.018;cs.g+=.013;cs.b+=.022;const sz=Math.abs(Math.sin(cs.sz)*7)+1;const r=Math.floor(Math.sin(cs.r)*128+128),g=Math.floor(Math.sin(cs.g)*128+128),b=Math.floor(Math.sin(cs.b)*128+128);pts.push({x:mx,y:my,dx,dy,sz,color:`rgb(${r},${g},${b})`});if(pts.length>MAX)pts.shift();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.06)';ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='lighter';dl();dl()}
+  function fade(){if(!pts.length)return;ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.08)';ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='lighter';dl();if(pts.length)raf=requestAnimationFrame(fade)}
+  document.addEventListener('mousemove',e=>{clearTimeout(stopTimer);cancelAnimationFrame(raf);drawStep(e.clientX,e.clientY);stopTimer=setTimeout(()=>{raf=requestAnimationFrame(fade)},60)},{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf)});
+})();
 </body>
 </html>
