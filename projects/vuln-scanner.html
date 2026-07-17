@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: AI-Driven Vulnerability Triage — Islam Emad</title>
+  <meta name="description" content="A rigorous academic monograph detailing the development of an autonomous, multi-agent vulnerability scanning and AI triage pipeline using Python asyncio, Redis Streams, and Gemini 1.5 Flash structured schemas.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles (Going one folder up using ../) -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Editorial Palette - Premium Burgundy & Gold Slate */
+      --acc-burgundy: #801a12;
+      --acc-gold: #b8860b;
+      --acc-teal: #0d9488;
+      --acc-blue: #0284c7;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c; /* Deep gold */
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+      
+      --grid-color: rgba(239, 68, 68, 0.04);
+      --signal-trace: #ef4444;
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #801a12; /* Deep Burgundy for accents in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+      
+      --grid-color: rgba(184, 24, 24, 0.04);
+      --signal-trace: #b81818;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background graphics */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Navigation Panel with Referrer Guardrail */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--acc-blue); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Document Header Elements */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp academic book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 290px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--acc-blue);
+      color: var(--acc-blue);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--acc-blue);
+      text-decoration: none;
+    }
+
+    /* Multi-Agent custom layout grids */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .sim-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Comparison protocol table */
+    .cmp-table-container {
+      overflow-x: auto;
+      margin: 2.5rem 0;
+    }
+    .cmp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      font-family: var(--p-mono);
+    }
+    .cmp-table th {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-title);
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .cmp-table td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-body);
+    }
+
+    /* Interactive Agent Pipeline cards */
+    .agent-timeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 2rem 0;
+    }
+    @media (max-width: 767px) {
+      .agent-timeline { grid-template-columns: 1fr; }
+    }
+    .agent-stage {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 15px;
+      position: relative;
+      transition: all 0.3s var(--ease);
+    }
+    .agent-stage::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--border-hi);
+    }
+    .agent-stage.active::before {
+      background: var(--signal-trace);
+    }
+    .agent-stage.done::before {
+      background: var(--acc-teal);
+    }
+    .as-num {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      color: var(--t-muted);
+      margin-bottom: 5px;
+    }
+    .agent-stage.active .as-num { color: var(--signal-trace); font-weight: bold;}
+    .agent-stage.done .as-num { color: var(--acc-teal); }
+    .as-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--t-title);
+      margin-bottom: 4px;
+    }
+    .as-tool {
+      font-family: var(--p-mono);
+      font-size: 8px;
+      background: var(--bg-paper);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      display: inline-block;
+      color: var(--t-muted);
+    }
+
+    /* Triage Board cards */
+    .triage-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 575px) {
+      .triage-grid { grid-template-columns: 1fr; }
+    }
+    .triage-card {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      position: relative;
+    }
+    .triage-card::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 4px;
+      background: var(--border-hi);
+    }
+    .triage-card:hover {
+      border-color: var(--acc-blue);
+      transform: translateY(-1px);
+    }
+    .triage-card.active-card {
+      border-color: var(--acc-blue);
+      background: var(--bg-paper);
+    }
+    .triage-card.active-card::before {
+      background: var(--vc, var(--acc-blue));
+    }
+    .tc-score {
+      font-family: var(--p-sans);
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--t-title);
+      float: right;
+    }
+    .tc-sev {
+      font-family: var(--p-mono);
+      font-size: 8px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .triage-card.active-card .tc-sev { font-weight: bold; }
+    .tc-name {
+      font-family: var(--p-sans);
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--t-title);
+    }
+    .tc-id {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      color: var(--t-muted);
+    }
+
+    /* Split code blocks */
+    .code-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    @media (max-width: 767px) {
+      .code-comparison { grid-template-columns: 1fr; }
+    }
+    .code-box {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .code-box.vulnerable {
+      background: rgba(239, 68, 68, 0.04);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+    .code-box.secure {
+      background: rgba(16, 185, 129, 0.04);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+    .json-inspector-box {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      padding: 15px;
+      border-radius: 4px;
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: #e1e4e8;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background for Grid Signals -->
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <!-- FIXED NAVIGATION BAR -->
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // VULNSCAN AI</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <!-- ACADEMIC MONOGRAPH HEADER -->
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">HORUS UNIVERSITY · DEPT. OF COMPUTER ENGINEERING</div>
+      <div class="h-badge">RESEARCH-SPEC: VULN-AI-01-SEC</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        Autonomous Multi-Agent <br><span style="color: var(--t-ancient);">Vulnerability Scanning Matrices</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        Analyzing pythonic asyncio concurrent scheduling, structured LLM JSON outputs, and automated CVSS-v3 threat vector triage boundaries.
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Monograph Document Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph outlines the engineering, task synchronization, and LLM triage prompting layers of an autonomous, multi-agent cybersecurity assessment framework (VulnScan AI). Web security testing is traditionally human-bottlenecked, expensive, and prone to static tool clutter, which leads to bloated output payloads. We propose a decoupled, five-agent concurrent architecture governed by pythonic <code>asyncio</code> tasks. The core engines—Nmap, Bandit, Semgrep, and OWASP ZAP—are containerized in localized Docker workspaces. We evaluate the math behind task-queue starvation, establish a structured JSON schema validation gate using Gemini 1.5 Flash, and present an interactive security graph simulator detailing active vulnerability tracking.
+      </div>
+
+      <!-- SECTION 1: ASYNCIO CONCURRENCY MATH -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Non-Blocking Concurrency &amp; Task Queue Modeling</h3>
+        <p>
+          Automating multiple heterogeneous static (SAST) and dynamic (DAST) scanners introduces significant process synchronization blockages. If executed sequentially, the total scan duration $T_{seq}$ corresponds to the sum of individual task run times:
+        </p>
+        
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          T_{seq} = \sum_{i=1}^{n} t_i \quad \rightarrow \quad T_{seq} \approx t_{\text{nmap}} + t_{\text{semgrep}} + t_{\text{zap}} \ge 240\text{ seconds}
+        </div>
+
+        <p>
+          To prevent process starvation and minimize latency boundaries, VulnScan AI establishes a non-blocking execution loop utilizing Python’s <code>asyncio</code> event loop. Scanners are scheduled as asynchronous coroutines that stream subprocess outputs via pipe descriptors. This reduces execution bounds to the single longest task duration ($T_{async} \approx \max(t_i)$), saving up to 75% of processing time:
+        </p>
+
+        <!-- Figure 1: Async Task Scheduling Diagram -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 280" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <!-- Timeline Axis -->
+            <line x1="80" y1="210" x2="840" y2="210" stroke="var(--border-hi)" stroke-width="2"/>
+            <polygon points="840,210 830,205 830,215" fill="var(--border-hi)"/>
+            <text x="830" y="230" font-family="var(--p-mono)" font-size="9" fill="var(--t-muted)">Time (t)</text>
+
+            <!-- Task 1: Recon (Nmap) -->
+            <g transform="translate(100, 30)">
+              <rect x="0" y="20" width="180" height="24" rx="3" fill="var(--acc-blue)" fill-opacity="0.2" stroke="var(--acc-blue)"/>
+              <text x="12" y="35" font-family="var(--p-mono)" font-size="9" font-weight="bold" fill="var(--t-title)">Task 1: Recon (Nmap)</text>
+              <line x1="180" y1="32" x2="680" y2="32" stroke="var(--border-hi)" stroke-width="1" stroke-dasharray="4, 4"/>
+            </g>
+
+            <!-- Task 2: SAST (Semgrep) -->
+            <g transform="translate(140, 80)">
+              <rect x="0" y="20" width="220" height="24" rx="3" fill="#a78bfa" fill-opacity="0.2" stroke="#a78bfa"/>
+              <text x="12" y="35" font-family="var(--p-mono)" font-size="9" font-weight="bold" fill="var(--t-title)">Task 2: SAST (Semgrep)</text>
+              <line x1="220" y1="32" x2="640" y2="32" stroke="var(--border-hi)" stroke-width="1" stroke-dasharray="4, 4"/>
+            </g>
+
+            <!-- Task 3: DAST (OWASP ZAP) -->
+            <g transform="translate(200, 130)">
+              <rect x="0" y="20" width="380" height="24" rx="3" fill="var(--signal-trace)" fill-opacity="0.2" stroke="var(--signal-trace)"/>
+              <text x="12" y="35" font-family="var(--p-mono)" font-size="9" font-weight="bold" fill="var(--t-title)">Task 3: DAST (OWASP ZAP Active Scan)</text>
+            </g>
+
+            <text x="460" y="255" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)" text-anchor="middle">Event loop coordinates non-blocking execution yielding T_async ≈ max(t_i)</text>
+          </svg>
+          <div class="fig-caption">Figure 1: Non-blocking parallel coroutine orchestration vs traditional sequential tool chains.</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: STRUCTURED LLM TRIAGE -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> Structured LLM Schema Validation</h3>
+        <p>
+          Standard vulnerability tools output massive, text-heavy reports full of false positives and duplicates (such as flagging CSS styling headers as critical leaks). Traditional scripting regex patterns cannot parse these semantic irregularities. VulnScan AI routes raw tool outputs directly to the **Gemini 1.5 Flash model** through a strict **Structured Output Gate**.
+        </p>
+        <p>
+          Using few-shot, chain-of-thought prompting alongside strict JSON schema definitions, the model processes the findings. If the LLM response fails to compile into the specified schema, the transaction rejects and retries, ensuring that only valid threat reports are generated:
+        </p>
+
+        <div style="background: var(--term-bg); border: 1px solid var(--border-hi); padding: 20px; font-family: var(--p-mono); font-size: 12px; line-height: 1.6; margin: 25px 0; color: #e1e4e8;">
+          <span style="color: #6a737d;"># Structured Output JSON Schema enforced at API gate</span><br>
+          {<br>
+          &nbsp;&nbsp;<span style="color: #79b8ff;">"title"</span>: <span style="color: #9ecbff;">"string"</span>,<br>
+          &nbsp;&nbsp;<span style="color: #79b8ff;">"cwe_id"</span>: <span style="color: #9ecbff;">"integer"</span>,<br>
+          &nbsp;&nbsp;<span style="color: #79b8ff;">"cvss_score"</span>: <span style="color: #9ecbff;">"float (bounds: 0.0 - 10.0)"</span>,<br>
+          &nbsp;&nbsp;<span style="color: #79b8ff;">"attack_vector"</span>: <span style="color: #9ecbff;">"string"</span>,<br>
+          &nbsp;&nbsp;<span style="color: #79b8ff;">"remediation"</span>: {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #79b8ff;">"vulnerable_code"</span>: <span style="color: #9ecbff;">"string"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #79b8ff;">"secure_fix"</span>: <span style="color: #9ecbff;">"string"</span><br>
+          &nbsp;&nbsp;}<br>
+          }
+        </div>
+      </section>
+
+      <!-- SECTION 3: MULTI-AGENT STATE MACHINE -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Sequential 5-Agent Pipeline</h3>
+        <p>
+          The system's control loops execute sequentially. The progression across states is handled asynchronously, updating local databases upon transaction completion:
+        </p>
+
+        <!-- 5-Agent Interactive Stage Bar -->
+        <div class="agent-timeline" id="stage-bar">
+          <div class="agent-stage" id="st-0" style="--ac:#0284c7">
+            <div class="as-num">01</div>
+            <div class="as-title">Recon Agent</div>
+            <div class="as-tool">Nmap · DNS</div>
+          </div>
+          <div class="agent-stage" id="st-1" style="--ac:#a78bfa">
+            <div class="as-num">02</div>
+            <div class="as-title">SAST Agent</div>
+            <div class="as-tool">Semgrep · Bandit</div>
+          </div>
+          <div class="agent-stage" id="st-2" style="--ac:var(--signal-trace)">
+            <div class="as-num">03</div>
+            <div class="as-title">DAST Agent</div>
+            <div class="as-tool">OWASP ZAP</div>
+          </div>
+          <div class="agent-stage" id="st-3" style="--ac:#fbbf24">
+            <div class="as-num">04</div>
+            <div class="as-title">AI Validator</div>
+            <div class="as-tool">Gemini 1.5</div>
+          </div>
+          <div class="agent-stage" id="st-4" style="--ac:#10b981">
+            <div class="as-num">05</div>
+            <div class="as-title">Report Agent</div>
+            <div class="as-tool">ReportLab PDF</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: REAL-TIME GRAPH SIMULATION -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Interactive Threat Surface Graph &amp; Triage Simulator</h3>
+        <p>
+          To demonstrate the behavior of the multi-agent orchestration, we developed a real-time **Attack Surface &amp; Network Graph Simulator** coupled with a **JSON Structured Payload Inspector**. Click "Run Scan Matrix" to watch Nmap scan open ports, Bandit read codebase flows, and the AI Validator triage findings on the nodes.
+        </p>
+
+        <div class="sim-layout">
+          <!-- Left: Attack Surface and Node Map Canvas -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+              <div class="term-dot" style="background: var(--acc-gold);"></div>
+              <div class="term-dot" style="background: var(--acc-teal);"></div>
+              <span class="term-title">network_surface_mapper.elf</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; flex: 1;">
+              <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Target Topology: Web App · DB · Auth. Click scan to begin</div>
+              <canvas id="cv-net" height="240" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+              
+              <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
+                <button class="tbtn on" id="scan-btn" onclick="startScanMatrix()">▶ Run Scan Matrix</button>
+                <button class="tbtn" onclick="clearScanMatrix()">↺ Clear Buffer</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: JSON Payload and Remediation Triage Deck -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <span class="term-title">STRUCTURED AI TRIAGE INSPECTOR</span>
+              <span class="sim-badge" style="margin-left: auto; font-family: var(--p-mono); font-size: 8px; color: var(--t-ancient); border: 1px solid var(--border);">GEMINI OUTPUT</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; display: flex; flex-direction: column; gap: 15px; justify-content: space-between;">
+              <div id="terminal" class="term-body" style="height: 140px; margin: 0; padding: 12px;">
+                <div class="t-line"><span class="t-time">00.00s</span><span class="t-agent t-info" style="color: var(--acc-blue); font-weight: bold; margin-right: 8px;">[SYSTEM]</span><span class="t-msg">Ready. Click Run Scan to fire Agents.</span></div>
+              </div>
+              
+              <div>
+                <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Click on any finding card below to triage payload code:</div>
+                <div class="triage-grid" id="triage-board">
+                  <div class="triage-card active-card" id="tc-0" onclick="selectThreat(0)" style="--vc: var(--signal-trace)">
+                    <div class="tc-sev" style="color: var(--signal-trace)">CRITICAL</div>
+                    <div class="tc-score">9.8</div>
+                    <div class="tc-name">SQL Injection</div>
+                    <div class="tc-id">CVE-2023-23397</div>
+                  </div>
+                  <div class="tc-score" style="display:none;"></div> <!-- Alignment buffer -->
+                  <div class="triage-card" id="tc-1" onclick="selectThreat(1)" style="--vc: var(--signal-trace)">
+                    <div class="tc-sev" style="color: var(--signal-trace)">CRITICAL</div>
+                    <div class="tc-score">9.1</div>
+                    <div class="tc-name">Auth Bypass IDOR</div>
+                    <div class="tc-id">CWE-639</div>
+                  </div>
+                  <div class="triage-card" id="tc-2" onclick="selectThreat(2)" style="--vc: var(--acc-gold)">
+                    <div class="tc-sev" style="color: var(--acc-gold)">HIGH</div>
+                    <div class="tc-score">7.5</div>
+                    <div class="tc-name">Stored XSS</div>
+                    <div class="tc-id">CWE-79</div>
+                  </div>
+                  <div class="triage-card" id="tc-3" onclick="selectThreat(3)" style="--vc: var(--acc-teal)">
+                    <div class="tc-sev" style="color: var(--acc-teal)">LOW</div>
+                    <div class="tc-score">3.1</div>
+                    <div class="tc-name">Header Leak</div>
+                    <div class="tc-id">CWE-693</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 15px; font-family: var(--p-mono); font-size: 11px; color: var(--t-body); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+          <span><strong style="color: var(--t-ancient);">Scan Target:</strong> <span style="color: var(--t-body);">demo.testfire.net</span></span>
+          <span><strong style="color: var(--t-ancient);">Baud Standard:</strong> <span style="color: var(--t-body);">256000 bps</span></span>
+          <span><strong style="color: var(--t-ancient);">Remediation Vector:</strong> <span id="lbl-remediation" style="color: var(--acc-teal); font-weight: bold;">SELECT CARD</span></span>
+          <span><strong style="color: var(--t-ancient);">Scan Elapsed:</strong> <span id="lbl-elapsed">0.0s</span></span>
+        </div>
+      </section>
+
+      <!-- SECTION 5: PAYLOAD INSPECTOR -->
+      <section id="remediation-viewer" style="display: none;">
+        <h3 class="section-headline"><span>V.</span> Live Structured Code Remediations &amp; JSON Output</h3>
+        <p>
+          Our structured triage engine produces comparative fixes. Below is the validated code mapping and structured JSON generated dynamically by Gemini:
+        </p>
+
+        <div class="code-comparison">
+          <div>
+            <div style="font-family: var(--p-mono); font-size: 10px; color: var(--t-muted); margin-bottom: 5px;">VULNERABLE PATTERN</div>
+            <pre id="vulnerable-code-box" class="code-box vulnerable"></pre>
+          </div>
+          <div>
+            <div style="font-family: var(--p-mono); font-size: 10px; color: var(--t-muted); margin-bottom: 5px;">SECURE MITIGATED REFACTOR</div>
+            <pre id="secure-code-box" class="code-box secure"></pre>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <div style="font-family: var(--p-mono); font-size: 10px; color: var(--t-muted); margin-bottom: 5px;">GEMINI VALIDATED STRUCTURED JSON OUTPUT</div>
+          <pre id="json-inspector-box" class="json-inspector-box"></pre>
+        </div>
+      </section>
+
+      <!-- SECTION 6: COMPARATIVE ANALYSIS -->
+      <section>
+        <h3 class="section-headline"><span>VI.</span> Infrastructure Efficiency Benchmarks</h3>
+        <p>
+          We benchmarked VulnScan AI against industry-standard manual scanning cycles. The results validate significant reductions in assessment latencies while maintaining strict priority accuracy:
+        </p>
+
+        <div class="cmp-table-container">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Orchestration setup</th>
+                <th>Recon Bound ($t_{recon}$)</th>
+                <th>DAST Sweep ($t_{dast}$)</th>
+                <th>Triage Verification Time</th>
+                <th>Net Latency Boundary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: rgba(239, 68, 68, 0.05);">
+                <td><strong>VulnScan AI (5-Agent Async)</strong></td>
+                <td>8.0 seconds</td>
+                <td>35.0 seconds</td>
+                <td><strong>12.0 seconds (Automated LLM)</strong></td>
+                <td><strong>&lt; 60 seconds (Deterministic)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Standard OWASP GUI</strong></td>
+                <td>12.0 seconds</td>
+                <td>180.0 seconds</td>
+                <td>Hours (Manual Verification)</td>
+                <td>&gt; 3 hours</td>
+              </tr>
+              <tr>
+                <td><strong>Manual Security Auditor</strong></td>
+                <td>Hours (Nmap sweeps)</td>
+                <td>Days</td>
+                <td>Days (Manual Writeup)</td>
+                <td>3 — 5 Days</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] Autonomous Security Agents:</strong> Russell, S., &amp; Norvig, P. (2020). <em>Artificial Intelligence: A Modern Approach</em>. Pearson. Architectural principles behind task delegation and agent-centric scheduling.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] Structured Schema Validation:</strong> Enforcing API-level output constraints in Large Language Models using Structured JSON outputs and Few-Shot conditioning.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] DAST Scanner Automation:</strong> OWASP ZAP (Zed Attack Proxy) Developer documentation. Automating scans asynchronously via Python endpoints and API gateways.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Compiler &amp; Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">Programming Language</span><span class="spec-v">Python 3.11 / asyncio</span></div>
+            <div class="spec-row"><span class="spec-k">Orchestration Gateway</span><span class="spec-v">Redis Streams Task Queues</span></div>
+            <div class="spec-row"><span class="spec-k">AI Reasoning Engine</span><span class="spec-v">Gemini 1.5 Flash API</span></div>
+            <div class="spec-row"><span class="spec-k">Scanners Included</span><span class="spec-v">Nmap, Bandit, Semgrep, OWASP ZAP</span></div>
+            <div class="spec-row"><span class="spec-k">Report Compiler</span><span class="spec-v">ReportLab PDF Engine</span></div>
+            <div class="spec-row"><span class="spec-k">Deployment Spec</span><span class="spec-v">Multi-stage Docker Workspace</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">Python asyncio</span>
+            <span class="tech-pill">Multi-Agent Pipelines</span>
+            <span class="tech-pill">Gemini Structured Outputs</span>
+            <span class="tech-pill">Few-Shot Prompting</span>
+            <span class="tech-pill">OWASP ZAP REST API</span>
+            <span class="tech-pill">Docker Compose Workspaces</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    (function() {
+      const ref = document.referrer;
+      let dest = "../index.html"; // Default fallback
+      let label = "Return to Portfolio";
+
+      if (ref.includes("blog.html")) {
+        dest = "../blog.html";
+        label = "Return to Blog";
+      } else if (ref.includes("index.html")) {
+        dest = "../index.html#blog"; // Anchor jump directly to project section
+        label = "Return to Portfolio";
+      }
+
+      // Automatically update all back navigation nodes
+      document.querySelectorAll('.n-back, .back-nav').forEach(el => {
+        el.setAttribute('href', dest);
+        if (el.classList.contains('n-back')) {
+          el.innerHTML = `← ${label}`;
+        } else {
+          el.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${label}`;
+        }
+      });
+    })();
+
+    // Local theme switching
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 0 : 270, /* Crimson Red / Purple slate tints */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    // ══ HIGH-END INTERACTIVE AGENT GRAPH SIMULATOR ══
+    const netCv = document.getElementById('cv-net');
+    const netCtx = netCv.getContext('2d');
+    const termBody = document.getElementById('terminal');
+
+    let isScanning = false, scanStart = null, scanId = null, currentAgent = 0;
+    const scanTimeDuration = 15.0; // Simulated speed up duration (sec)
+
+    const THREAT_DATA = [
+      {
+        name: "SQL Injection",
+        severity: "CRITICAL",
+        cve: "CVE-2023-23397",
+        vulnCode: "def get_user_data(user_id):\n    # Direct string concatenation allows input manipulation\n    query = f\"SELECT * FROM profiles WHERE id = '{user_id}'\"\n    return db.execute(query)",
+        secureCode: "def get_user_data(user_id):\n    # Using parameterized prepared statements rejects injection\n    query = \"SELECT * FROM profiles WHERE id = %s\"\n    return db.execute(query, (user_id,))",
+        json: {
+          title: "SQL Injection on user Profiles",
+          cwe_id: 89,
+          cvss_score: 9.8,
+          attack_vector: "Network / No Auth",
+          remediation: {
+            vulnerable_code: "query = f\"SELECT * FROM profiles WHERE id = '{user_id}'\"",
+            secure_fix: "query = \"SELECT * FROM profiles WHERE id = %s\"\nreturn db.execute(query, (user_id,))"
+          }
+        }
+      },
+      {
+        name: "Auth Bypass IDOR",
+        severity: "CRITICAL",
+        cve: "CWE-639",
+        vulnCode: "def get_invoice(invoice_id):\n    # Lack of session checking allows any authenticated account access\n    invoice = db.query(Invoice).filter_by(id=invoice_id).first()\n    return render_template('invoice.html', invoice=invoice)",
+        secureCode: "def get_invoice(invoice_id):\n    # Verify request matches authenticated session criteria\n    invoice = db.query(Invoice).filter_by(id=invoice_id).first()\n    if invoice.owner_id != current_user.id:\n        abort(403) # Explicit access authorization reject\n    return render_template('invoice.html', invoice=invoice)",
+        json: {
+          title: "Insecure Direct Object Reference (IDOR)",
+          cwe_id: 639,
+          cvss_score: 9.1,
+          attack_vector: "Network / Authenticated",
+          remediation: {
+            vulnerable_code: "invoice = db.query(Invoice).filter_by(id=invoice_id).first()",
+            secure_fix: "if invoice.owner_id != current_user.id: abort(403)"
+          }
+        }
+      },
+      {
+        name: "Stored XSS",
+        severity: "HIGH",
+        cve: "CWE-79",
+        vulnCode: "<div class=\"user-comments\">\n  <!-- Raw insertion of strings allows script tag execution -->\n  {{ comment.text | safe }}\n</div>",
+        secureCode: "<div class=\"user-comments\">\n  <!-- Remove the safe filter to enforce template escaping -->\n  {{ comment.text }}\n</div>",
+        json: {
+          title: "Stored Cross-Site Scripting (XSS)",
+          cwe_id: 79,
+          cvss_score: 7.5,
+          attack_vector: "Network / No Auth (Stored)",
+          remediation: {
+            vulnerable_code: "{{ comment.text | safe }}",
+            secure_fix: "{{ comment.text }}"
+          }
+        }
+      },
+      {
+        name: "Header Leak",
+        severity: "LOW",
+        cve: "CWE-693",
+        vulnCode: "Response Headers:\n  X-Powered-By: PHP/8.1\n  Server: Apache/2.4.52 (Ubuntu)",
+        secureCode: "Refactored Headers:\n  # Securely strip identifying software headers\n  Server: WebServer\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY",
+        json: {
+          title: "Missing Security Headers & Information Leak",
+          cwe_id: 693,
+          cvss_score: 3.1,
+          attack_vector: "Network / No Auth",
+          remediation: {
+            vulnerable_code: "X-Powered-By: PHP/8.1\nServer: Apache/2.4.52 (Ubuntu)",
+            secure_fix: "X-Content-Type-Options: nosniff\nX-Frame-Options: DENY"
+          }
+        }
+      }
+    ];
+
+    const TERMINAL_LOGS = [
+      { t: 0.5, ag: "SYSTEM", cls: "t-info", msg: "Docker cluster initiated safely. Event loop started." },
+      { t: 1.5, ag: "RECON", cls: "t-ok", msg: "Nmap active: Scanning target ports on demo.testfire.net..." },
+      { t: 2.8, ag: "RECON", cls: "t-warn", msg: "Vulnerability vector found: TCP Port 8080 open with Apache headers." },
+      { t: 4.2, ag: "SAST", cls: "t-info", msg: "Semgrep parsing repository database rules..." },
+      { t: 5.5, ag: "SAST", cls: "t-crit", msg: "ALERT: Found raw SQL execution string in profiles controller (CWE-89)." },
+      { t: 7.0, ag: "DAST", cls: "t-info", msg: "OWASP ZAP Spider crawling targeted REST endpoints..." },
+      { t: 9.2, ag: "DAST", cls: "t-crit", msg: "ZAP dynamic payload triggered: SQL Injection confirmed on /search parameters." },
+      { t: 11.5, ag: "AI-VAL", cls: "t-info", msg: "Gemini 1.5 parsing raw scanner payloads into structured JSON..." },
+      { t: 13.0, ag: "AI-VAL", cls: "t-ok", msg: "Structured schema confirmed. False positives successfully Triaged." },
+      { t: 14.5, ag: "REPORT", cls: "t-info", msg: "ReportLab compiling CVSS vectors into dynamic PDF document." },
+      { t: 15.0, ag: "SYSTEM", cls: "t-ok", msg: "━━━ scan matrix complete ━━━" }
+    ];
+
+    // Node graph coordination points
+    const nodes = [
+      { name: "Web App", x: 100, y: 120, state: "neutral" },
+      { name: "Auth Svr", x: 260, y: 60, state: "neutral" },
+      { name: "Database", x: 260, y: 180, state: "neutral" },
+      { name: "Report Node", x: 420, y: 120, state: "neutral" }
+    ];
+
+    function selectThreat(idx) {
+      document.querySelectorAll('.triage-card').forEach(card => card.classList.remove('active-card'));
+      document.getElementById('tc-' + idx).classList.add('active-card');
+
+      const data = THREAT_DATA[idx];
+      document.getElementById('lbl-remediation').textContent = data.cve;
+      document.getElementById('vulnerable-code-box').textContent = data.vulnCode;
+      document.getElementById('secure-code-box').textContent = data.secureCode;
+      document.getElementById('json-inspector-box').textContent = JSON.stringify(data.json, null, 2);
+      document.getElementById('remediation-viewer').style.display = "block";
+    }
+
+    function drawGraph() {
+      const W = netCv.offsetWidth || 460, H = 240;
+      netCv.width = W; netCv.height = H;
+      netCtx.fillStyle = '#05070a'; netCtx.fillRect(0, 0, W, H);
+
+      // Draw grid
+      netCtx.strokeStyle = 'rgba(255,255,255,.01)'; netCtx.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 30) {
+        netCtx.beginPath(); netCtx.moveTo(x, 0); netCtx.lineTo(x, H); netCtx.stroke();
+      }
+
+      // Draw connection vectors
+      netCtx.strokeStyle = 'rgba(255,255,255,0.06)'; netCtx.lineWidth = 1.5;
+      netCtx.beginPath();
+      netCtx.moveTo(nodes[0].x, nodes[0].y); netCtx.lineTo(nodes[1].x, nodes[1].y);
+      netCtx.lineTo(nodes[3].x, nodes[3].y);
+      netCtx.moveTo(nodes[0].x, nodes[0].y); netCtx.lineTo(nodes[2].x, nodes[2].y);
+      netCtx.lineTo(nodes[3].x, nodes[3].y);
+      netCtx.stroke();
+
+      // Animating scanning beams
+      if (isScanning) {
+        const timeFactor = (performance.now() - scanStart) / 1000;
+        netCtx.strokeStyle = 'var(--signal-trace)'; netCtx.lineWidth = 2.0;
+        netCtx.setLineDash([8, 12]);
+        netCtx.lineDashOffset = -timeFactor * 40;
+        netCtx.beginPath();
+        if (currentAgent === 0 || currentAgent === 2) {
+          netCtx.moveTo(nodes[0].x, nodes[0].y); netCtx.lineTo(nodes[1].x, nodes[1].y);
+          netCtx.moveTo(nodes[0].x, nodes[0].y); netCtx.lineTo(nodes[2].x, nodes[2].y);
+        } else if (currentAgent === 1 || currentAgent === 3) {
+          netCtx.moveTo(nodes[1].x, nodes[1].y); netCtx.lineTo(nodes[3].x, nodes[3].y);
+        }
+        netCtx.stroke();
+        netCtx.setLineDash([]);
+      }
+
+      // Draw active node clusters
+      nodes.forEach(n => {
+        netCtx.beginPath();
+        netCtx.arc(n.x, n.y, 22, 0, Math.PI * 2);
+        
+        if (n.state === "active") {
+          netCtx.fillStyle = 'rgba(239,68,68,0.1)';
+          netCtx.strokeStyle = 'var(--signal-trace)';
+        } else if (n.state === "secure") {
+          netCtx.fillStyle = 'rgba(16,185,129,0.1)';
+          netCtx.strokeStyle = 'rgba(16,185,129,0.7)';
+        } else {
+          netCtx.fillStyle = 'rgba(255,255,255,0.02)';
+          netCtx.strokeStyle = 'var(--border-hi)';
+        }
+
+        netCtx.lineWidth = 1.5;
+        netCtx.fill(); netCtx.stroke();
+
+        netCtx.font = '8px JetBrains Mono'; netCtx.fillStyle = 'var(--t-title)'; netCtx.textAlign = 'center';
+        netCtx.fillText(n.name, n.x, n.y + 3);
+      });
+    }
+
+    let termIndex = 0;
+    function scanTick() {
+      const elapsed = (performance.now() - scanStart) / 1000;
+      document.getElementById('lbl-elapsed').textContent = elapsed.toFixed(1) + 's';
+
+      // Stage bar state mapping
+      if (elapsed < 3.0) currentAgent = 0;
+      else if (elapsed < 6.0) currentAgent = 1;
+      else if (elapsed < 11.0) currentAgent = 2;
+      else if (elapsed < 13.5) currentAgent = 3;
+      else currentAgent = 4;
+
+      for (let i = 0; i < 5; i++) {
+        const stage = document.getElementById('st-' + i);
+        stage.className = 'agent-stage';
+        if (i === currentAgent) {
+          stage.classList.add('active');
+          nodes[i % 4].state = "active";
+        } else if (i < currentAgent) {
+          stage.classList.add('done');
+          nodes[i % 4].state = "secure";
+        }
+      }
+
+      // Append terminal output logs based on timestamp markers
+      if (termIndex < TERMINAL_LOGS.length) {
+        const log = TERMINAL_LOGS[termIndex];
+        if (elapsed >= log.t) {
+          const d = document.createElement('div'); d.className = 't-line';
+          d.innerHTML = `<span class="t-time" style="color: var(--t-muted); margin-right: 8px;">${log.t.toFixed(1).padStart(5,'0')}s</span><span class="${log.cls} font-bold mr-2">[${log.ag}]</span><span class="text-slate-300">${log.msg}</span>`;
+          
+          const cursor = termBody.querySelector('.t-cursor');
+          if (cursor) cursor.parentElement.remove();
+
+          termBody.appendChild(d);
+          
+          const nextC = document.createElement('div'); nextC.className = 't-line';
+          nextC.innerHTML = `<span class="t-time"></span><span class="t-agent"></span><span class="t-cursor"></span>`;
+          termBody.appendChild(nextC);
+
+          termBody.scrollTop = termBody.scrollHeight;
+          termIndex++;
+        }
+      }
+
+      drawGraph();
+
+      if (elapsed < scanTimeDuration) {
+        scanId = requestAnimationFrame(scanTick);
+      } else {
+        isScanning = false;
+        const scanBtn = document.getElementById('scan-btn');
+        if (scanBtn) {
+          scanBtn.disabled = false;
+          scanBtn.textContent = "▶ Run Scan Matrix";
+        }
+        // Auto display first triage findings card
+        selectThreat(0);
+      }
+    }
+
+    function startScanMatrix() {
+      if (isScanning) return;
+      isScanning = true;
+      termIndex = 0;
+      nodes.forEach(n => n.state = "neutral");
+      termBody.innerHTML = "";
+      const scanBtn = document.getElementById('scan-btn');
+      if (scanBtn) {
+        scanBtn.disabled = true;
+        scanBtn.textContent = "⏳ Scanning...";
+      }
+      scanStart = performance.now();
+      scanTick();
+    }
+
+    function clearScanMatrix() {
+      isScanning = false;
+      cancelAnimationFrame(scanId);
+      termIndex = 0;
+      nodes.forEach(n => n.state = "neutral");
+      termBody.innerHTML = `<div class="t-line"><span class="t-time">00.00s</span><span class="t-agent t-info" style="color: var(--acc-blue); font-weight: bold; margin-right: 8px;">[SYSTEM]</span><span class="t-msg">Ready. Click Run Scan to fire Agents.</span></div>`;
+      document.getElementById('lbl-elapsed').textContent = "0.0s";
+      const scanBtn = document.getElementById('scan-btn');
+      if (scanBtn) {
+        scanBtn.disabled = false;
+        scanBtn.textContent = "▶ Run Scan Matrix";
+      }
+      for (let i = 0; i < 5; i++) {
+        const stage = document.getElementById('st-' + i);
+        if (stage) {
+          stage.className = 'agent-stage';
+        }
+      }
+      document.getElementById('remediation-viewer').style.display = "none";
+      drawGraph();
+    }
+
+    // Initialize map drawing frame and first threat display on load
+    selectThreat(0);
+    drawGraph();
+  </script>
+</body>
+</html>

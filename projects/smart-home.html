@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: Inductively-Isolated Bluetooth Automation — Islam Emad</title>
+  <meta name="description" content="A rigorous academic monograph detailing ATmega32 register-level USART interrupts, HC-05 serial bridging, and inductive transient mitigation in relay H-bridge matrices.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Refined Editorial Palette - Warm Paper & Noble Accents */
+      --acc-purple: #5b21b6;
+      --acc-gold: #b8860b;
+      --acc-burgundy: #801a12;
+      --acc-teal: #1a5f7a;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c; /* Deep gold */
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+      
+      --grid-color: rgba(167, 139, 250, 0.08);
+      --signal-trace: #a78bfa;
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Premium vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #801a12; /* Deep Burgundy for accents in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+      
+      --grid-color: rgba(91, 33, 182, 0.08);
+      --signal-trace: #5b21b6;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background graphics */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Navigation Panel with Referrer Guardrail */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--t-ancient); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Document Header Elements */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp academic book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    /* Citations and Footnotes */
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 380px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 12px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    /* Table-like spec sheets */
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-ancient);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--t-ancient);
+      text-decoration: none;
+    }
+
+    /* Tactical simulation custom layouts */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .sim-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Interactive Floorplan styling */
+    .floorplan-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .room-card {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease);
+      position: relative;
+    }
+    .room-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--t-ancient);
+      opacity: 0.4;
+      transition: opacity 0.2s;
+    }
+    .room-card:hover {
+      border-color: var(--t-ancient);
+      transform: translateY(-2px);
+    }
+    .room-card:hover::before {
+      opacity: 1;
+    }
+    .room-card.active-state {
+      background: var(--bg-paper);
+      border-color: var(--t-ancient);
+    }
+    .room-card.active-state::before {
+      opacity: 1;
+      background: #10b981; /* active green */
+    }
+    .room-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .room-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--t-title);
+    }
+    .room-desc {
+      font-family: var(--p-mono);
+      font-size: 0.75rem;
+      color: var(--t-muted);
+      margin-top: 4px;
+    }
+    .room-status {
+      display: inline-block;
+      font-family: var(--p-mono);
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+    .status-on {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .status-off {
+      background: rgba(131, 142, 158, 0.1);
+      color: var(--t-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* Comparison protocol table */
+    .cmp-table-container {
+      overflow-x: auto;
+      margin: 2.5rem 0;
+    }
+    .cmp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      font-family: var(--p-mono);
+    }
+    .cmp-table th {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-title);
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .cmp-table td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-body);
+    }
+    .cmp-table tr.highlight {
+      background: rgba(167, 139, 250, 0.05);
+    }
+    .cmp-table tr.highlight td:first-child {
+      color: var(--t-ancient);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background for Grid Signals -->
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <!-- FIXED NAVIGATION BAR -->
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // SMART HOME</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <!-- ACADEMIC MONOGRAPH HEADER -->
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">MANSOURA UNIVERSITY · INFORMATION TECHNOLOGY INSTITUTE (ITI)</div>
+      <div class="h-badge">RESEARCH-SPEC: ATMEGA32-REL-04</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        Low-Latency Inductively Isolated <br><span style="color: var(--t-ancient);">Bluetooth Switching Engines</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        Analyzing register-level USART interrupts, HC-05 SPP bridging, and back-EMF transient isolation matrices under Proteus hardware-in-the-loop environments.
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Monograph Document Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph details the research, hardware-software co-design, and assembly of an inductively isolated home automation switching engine designed on an 8-bit AVR architecture. Traditional micro-automation setups suffer from significant processing lag when using bloated abstraction frameworks, and frequently experience hardware resets due to flyback induction transients. We propose a bare-metal implementation utilizing USART RX complete interrupt registers on an ATmega32 MCU operating at 16 MHz. Communication with the host supervisor relies on an HC-05 RF transceiver configured over the Bluetooth Serial Port Profile (SPP). Isolation between the 5V logic domain and 220V AC mains loads is achieved via a ULN2003 Darlington array driving electromechanical SPDT relays. We analyze the mathematical back-EMF surge profile, diagram the complete HIL schematic, and present real-time logic analyzer simulations of the serial bus.
+      </div>
+
+      <!-- SECTION 1: ARCHITECTURAL ISOLATION & BACK-EMF -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Inductive Transient Physics &amp; Darlington Isolation</h3>
+        <p>
+          The primary hazard in driving electromechanical actuators from microcontrollers is **inductive kickback** (back-EMF). Electromechanical relays contain a coil which behaves as an inductor. When the GPIO pin switches the coil current off, the magnetic field collapses rapidly. According to Faraday's law of induction, the induced voltage $v_L$ is proportional to the rate of change of current:
+        </p>
+        
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          v_L = L \cdot \frac{di}{dt}
+        </div>
+
+        <p>
+          As the current transitions from nominal drive ($\approx 70\text{ mA}$) to zero in nanoseconds, $\frac{di}{dt}$ approaches infinity, producing transient voltage spikes that easily exceed $100\text{ V}$. On shared power rails, this transient leaks into the MCU, causing volatile register corruption or thermal breakdown of Port GPIO registers<cite class="citation" onclick="scrollToFootnote(3)">[3]</cite>.
+        </p>
+
+        <p>
+          To prevent this, our architecture inserts a **ULN2003 Darlington Transistor Array** between ATmega32 and the relay coils. The ULN2003 features on-chip integrated freewheeling clamping diodes. These diodes are tied directly to the coil supply rail ($V_{cc}$). When the transistor switches off and the coil's back-EMF spikes, the clamping diode becomes forward-biased, safely routing the collapsing magnetic current back to the power rail, clamping the Port transient to exactly:
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          V_{\text{clamp}} = V_{cc} + V_F \quad \approx 5.0\text{ V} + 0.7\text{ V} = 5.7\text{ V}
+        </div>
+
+        <!-- Figure 1: Transient Waveform Clamping Diagram -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 280" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <!-- Left Graph: Unprotected Spike -->
+            <g transform="translate(60, 20)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">A. UNPROTECTED COIL TRANSIENT</text>
+              <line x1="20" y1="180" x2="350" y2="180" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="40" y1="10" x2="40" y2="210" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <!-- Waveform -->
+              <path d="M 40 180 L 150 180 L 150 20 L 151 -50 L 153 210 L 158 180 L 340 180" fill="none" stroke="var(--acc-burgundy)" stroke-width="2"/>
+              <text x="160" y="30" font-family="var(--p-mono)" font-size="8" fill="var(--acc-burgundy)">v_L = L*(di/dt) &gt; 100V spike!</text>
+              <text x="45" y="195" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)">Switch OFF</text>
+              <text x="15" y="15" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)">V</text>
+              <text x="345" y="192" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)">t</text>
+            </g>
+
+            <!-- Right Graph: Protected Clamped Spike -->
+            <g transform="translate(480, 20)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">B. CLAMPED TRANSIENT (ULN2003)</text>
+              <line x1="20" y1="180" x2="350" y2="180" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="40" y1="10" x2="40" y2="210" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <!-- Waveform -->
+              <path d="M 40 180 L 150 180 L 150 150 L 152 145 L 165 180 L 340 180" fill="none" stroke="var(--acc-teal)" stroke-width="2"/>
+              <text x="160" y="140" font-family="var(--p-mono)" font-size="8" fill="var(--acc-teal)">Clamped safely at V_cc + 0.7V</text>
+              <text x="45" y="195" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)">Switch OFF</text>
+              <text x="15" y="15" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)">V</text>
+              <text x="345" y="192" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)">t</text>
+            </g>
+          </svg>
+          <div class="fig-caption">Figure 1: Transient voltage decay curves showing unprotected inductive feedback (A) vs ULN2003 clamped response (B).</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: INTERRUPT-DRIVEN DEMODULATION -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> Interrupt-Driven USART Demodulation</h3>
+        <p>
+          Polling-based serial communications represent a major bottleneck in real-time embedded systems. Waiting inside blocking loops like `while(!(UCSRA &amp; (1&lt;&lt;RXC)))` wastes CPU cycles, preventing execution of other safety-critical routines.
+        </p>
+
+        <p>
+          Our firmware leverages the **ATmega32 USART RX Complete Interrupt (USART_RXC)** vector. Upon receiving a full byte on the RX pin, hardware suspends current thread execution and jumps directly to the interrupt vector. This asynchronous interrupt handler reads the UDR (USART Data Register) in exactly 2 clock cycles ($0.125\ \mu\text{s}$), checks for frame errors, and maps the ASCII character directly to PORTB pins driving the Darlington inputs<cite class="citation" onclick="scrollToFootnote(2)">[2]</cite>.
+        </p>
+
+        <div style="background: var(--term-bg); border: 1px solid var(--border-hi); padding: 20px; font-family: var(--p-mono); font-size: 12px; line-height: 1.6; margin: 25px 0; color: #e1e4e8;">
+          <span style="color: #f9758b;">#include</span> <span style="color: #9ecbff;">&lt;avr/io.h&gt;</span><br>
+          <span style="color: #f9758b;">#include</span> <span style="color: #9ecbff;">&lt;avr/interrupt.h&gt;</span><br><br>
+          <span style="color: #79b8ff;">ISR</span>(USART_RXC_vect) {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f9758b;">char</span> receivedByte = UDR; <span style="color: #6a737d;">// Fetch serial hardware buffer</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f9758b;">switch</span>(receivedByte) {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f9758b;">case</span> <span style="color: #9ecbff;">'1'</span>: PORTB |= (<span style="color: #79b8ff;">1</span> &lt;&lt; PB0); <span style="color: #f9758b;">break</span>; <span style="color: #6a737d;">// Toggle CH1 ON</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #f9758b;">case</span> <span style="color: #9ecbff;">'a'</span>: PORTB &amp;= ~(<span style="color: #79b8ff;">1</span> &lt;&lt; PB0); <span style="color: #f9758b;">break</span>; <span style="color: #6a737d;">// Toggle CH1 OFF</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a737d;">// Additional routing cases handled here...</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+          }
+        </div>
+      </section>
+
+      <!-- SECTION 3: REAL-TIME INTERACTIVE DASHBOARD & SIMULATION -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Interactive Laboratory Simulation</h3>
+        <p>
+          To demonstrate the real-time interaction between mobile Bluetooth commands, UART waveforms, and galvanic relay switching, we designed a responsive 2D smart home apartment layout coupled to a **real-time Logic Analyzer**. Click on any zone in the smart home below to trigger a Bluetooth packet transmission.
+        </p>
+
+        <div class="sim-layout">
+          <!-- Left: 2D Interactive Smart Apartment Blueprint -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+              <div class="term-dot" style="background: var(--acc-gold);"></div>
+              <div class="term-dot" style="background: var(--acc-teal);"></div>
+              <span class="term-title">interactive_floorplan_v2.cad</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; flex: 1;">
+              <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">SMART HOME FLOORPLAN — CLICK TO INTERACT</div>
+              <div class="floorplan-container">
+                <div class="room-card active-state" id="room-0" onclick="toggleRelay(0)">
+                  <div class="room-icon">💡</div>
+                  <div class="room-title">Living Room</div>
+                  <div class="room-desc">CH1 · Pin PB0 · Lamp</div>
+                  <span class="room-status status-on" id="status-label-0">ON</span>
+                </div>
+                <div class="room-card active-state" id="room-1" onclick="toggleRelay(1)">
+                  <div class="room-icon">🌀</div>
+                  <div class="room-title">Bedroom Fan</div>
+                  <div class="room-desc">CH2 · Pin PB1 · Vent</div>
+                  <span class="room-status status-on" id="status-label-1">ON</span>
+                </div>
+                <div class="room-card" id="room-2" onclick="toggleRelay(2)">
+                  <div class="room-icon">❄️</div>
+                  <div class="room-title">Study AC</div>
+                  <div class="room-desc">CH3 · Pin PB2 · Climate</div>
+                  <span class="room-status status-off" id="status-label-2">OFF</span>
+                </div>
+                <div class="room-card active-state" id="room-3" onclick="toggleRelay(3)">
+                  <div class="room-icon">🔌</div>
+                  <div class="room-title">Kitchen Load</div>
+                  <div class="room-desc">CH4 · Pin PB3 · Aux</div>
+                  <span class="room-status status-on" id="status-label-3">ON</span>
+                </div>
+              </div>
+              <div style="margin-top: 15px; font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); line-height: 1.5;">
+                <span style="color: var(--t-ancient); font-weight: bold;">HIL Status:</span> UART bridged to HC-05 SPP profile at 9600 bps. 4 independent output channels available.
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Real-time Serial Oscilloscope / Logic Analyzer -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <span class="term-title">USART OSCILLOSCOPE / LOGIC ANALYZER</span>
+              <span class="sim-badge" style="margin-left: auto;">9600 BAUD</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; display: flex; flex-direction: column; gap: 15px; justify-content: space-between;">
+              <div>
+                <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Serial Bit-Stream Waveform (Start - Data - Stop)</div>
+                <canvas id="logic-analyzer-canvas" height="85" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+              </div>
+              <div>
+                <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Coil Transient Waveform (Clamping protection)</div>
+                <canvas id="clamping-waveform-canvas" height="85" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 15px; font-family: var(--p-mono); font-size: 11px; color: var(--t-body); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+          <span><strong style="color: var(--t-ancient);">Transmitted byte:</strong> <span id="lbl-cmd">'1'</span></span>
+          <span><strong style="color: var(--t-ancient);">Hex value:</strong> <span id="lbl-hex">0x31</span></span>
+          <span><strong style="color: var(--t-ancient);">Active Loads:</strong> <span id="lbl-active">3 / 4 ON</span></span>
+          <span><strong style="color: var(--t-ancient);">End-to-End Latency:</strong> <span id="lbl-latency">~72 ms</span></span>
+        </div>
+      </section>
+
+      <!-- SECTION 4: PROTOCOL ANALYSIS -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Communication Protocol Comparative Study</h3>
+        <p>
+          Selecting a communication framework for high-reliability embedded interfaces requires evaluating power budgets, spectrum occupancy, and deployment complexity. Below, we contrast the Bluetooth SPP architecture against contemporary IoT technologies:
+        </p>
+
+        <div class="cmp-table-container">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Protocol Standard</th>
+                <th>Physical Band</th>
+                <th>Topological Structure</th>
+                <th>Router Requirement</th>
+                <th>Typical Latency Bounds</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight">
+                <td><strong>Bluetooth Classic (SPP)</strong></td>
+                <td>2.40 — 2.48 GHz (ISM)</td>
+                <td>Point-to-Point (P2P)</td>
+                <td>None (Direct RF Bridging)</td>
+                <td>20 ms — 50 ms</td>
+              </tr>
+              <tr>
+                <td><strong>Zigbee (802.15.4)</strong></td>
+                <td>2.40 GHz / 868 MHz</td>
+                <td>Dynamic Mesh Topology</td>
+                <td>Required (Mesh Coordinator)</td>
+                <td>50 ms — 150 ms</td>
+              </tr>
+              <tr>
+                <td><strong>Wi-Fi (802.11 b/g/n)</strong></td>
+                <td>2.40 GHz / 5.00 GHz</td>
+                <td>Star Infrastructure</td>
+                <td>Required (Central AP Router)</td>
+                <td>10 ms — 250 ms (Jitter prone)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          While Wi-Fi-based protocols offer unmatched data bandwidth, they are inherently prone to routing jitter caused by TCP/IP handshake handovers and router traffic. The Bluetooth SPP profile maps directly as a peer-to-point hardware transceiver channel, bypassing intermediate stack overheads and maintaining highly predictable response curves.
+        </p>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] Bluetooth RF Communication Profiles:</strong> Bluetooth Special Interest Group (SIG) specifications, Core SPP (Serial Port Profile) mapping, detailing transparent serial RF links.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] AVR Microcontroller Architecture:</strong> ATmega32 8-Bit Microcontroller Datasheet. Detailed exploration of USART Control registers (UCSRA, UCSRB, UCSRC) and RX Complete Interrupt processing.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] Inductive Switching Design:</strong> Mohan, N., Undeland, T. M., &amp; Robbins, W. P. (2003). <em>Power Electronics: Converters, Applications, and Design</em>. John Wiley &amp; Sons. Suppressing transients in electromagnetic inductive actuators.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Hardware Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">Main MCU SoC</span><span class="spec-v">ATmega32 (8-Bit AVR architecture)</span></div>
+            <div class="spec-row"><span class="spec-k">Clock Speed</span><span class="spec-v">16.00 MHz External Crystal</span></div>
+            <div class="spec-row"><span class="spec-k">Bluetooth Module</span><span class="spec-v">HC-05 Serial SPP Transceiver</span></div>
+            <div class="spec-row"><span class="spec-k">Relay Isolation Array</span><span class="spec-v">ULN2003 Darlington Transistor Array</span></div>
+            <div class="spec-row"><span class="spec-k">Relay Drive Channels</span><span class="spec-v">4 × SPDT Relays (10A @ 250V AC)</span></div>
+            <div class="spec-row"><span class="spec-k">Baud Rate Standard</span><span class="spec-v">9,600 Baud over Hardware USART</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">ATmega32 Registers</span>
+            <span class="tech-pill">Interrupt Vector Routing</span>
+            <span class="tech-pill">Bluetooth SPP Profile</span>
+            <span class="tech-pill">ULN2003 Clamping Diodes</span>
+            <span class="tech-pill">Back-EMF Transient Calculus</span>
+            <span class="tech-pill">Proteus HIL Simulation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    // Referrer Guardrail router
+    (function() {
+      const ref = document.referrer;
+      let dest = "../index.html"; // Default fallback
+      let label = "Return to Portfolio";
+
+      if (ref.includes("blog.html")) {
+        dest = "../blog.html";
+        label = "Return to Blog";
+      } else if (ref.includes("index.html")) {
+        dest = "../index.html#blog"; // Anchor jump directly to project section
+        label = "Return to Portfolio";
+      }
+
+      // Automatically update all back navigation nodes
+      document.querySelectorAll('.n-back, .back-nav').forEach(el => {
+        el.setAttribute('href', dest);
+        if (el.classList.contains('n-back')) {
+          el.innerHTML = `← ${label}`;
+        } else {
+          el.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${label}`;
+        }
+      });
+    })();
+
+    // Local theme switching
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    // Dynamic wave simulation canvas background
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 272 : 36, /* Royal Purple / Warm Gold tints */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    // ══ HIGH-END INTERACTIVE SIMULATOR (Oscilloscope + Logic Analyzer + Clamping waveforms) ══
+    const logicCanvas = document.getElementById('logic-analyzer-canvas');
+    const clampCanvas = document.getElementById('clamping-waveform-canvas');
+    const ctxLogic = logicCanvas.getContext('2d');
+    const ctxClamp = clampCanvas.getContext('2d');
+
+    // Devices & Relay state
+    let relayStates = [true, true, false, true]; // CH1, CH2, CH3, CH4
+    const cmdOn = ['1', '2', '3', '4'];
+    const cmdOff = ['a', 'b', 'c', 'd'];
+
+    // Serial waveform drawing state
+    let activeChar = '1';
+    let currentByte = 0x31;
+    let signalPulseTimer = 0;
+    let transitionSpikePulse = 0; // Trigger spike on coil transitions
+    let clampingActive = false; // Is freewheeling diode suppressing right now?
+
+    function updateLogicUI() {
+      const activeCount = relayStates.filter(Boolean).length;
+      document.getElementById('lbl-active').textContent = `${activeCount} / 4 ON`;
+      document.getElementById('lbl-cmd').textContent = `'${activeChar}'`;
+      document.getElementById('lbl-hex').textContent = '0x' + currentByte.toString(16).toUpperCase();
+      document.getElementById('lbl-latency').textContent = `${Math.floor(55 + Math.random() * 20)} ms`;
+    }
+
+    function toggleRelay(i) {
+      relayStates[i] = !relayStates[i];
+      const card = document.getElementById(`room-${i}`);
+      const lbl = document.getElementById(`status-label-${i}`);
+      
+      activeChar = relayStates[i] ? cmdOn[i] : cmdOff[i];
+      currentByte = activeChar.charCodeAt(0);
+
+      if (relayStates[i]) {
+        card.classList.add('active-state');
+        lbl.className = 'room-status status-on';
+        lbl.textContent = 'ON';
+      } else {
+        card.classList.remove('active-state');
+        lbl.className = 'room-status status-off';
+        lbl.textContent = 'OFF';
+      }
+
+      // Reset transient and clamping pulse simulation triggers
+      transitionSpikePulse = 1.0; 
+      clampingActive = true; 
+      signalPulseTimer = 1.0; // Start serial trace wave scroll
+
+      updateLogicUI();
+    }
+
+    // Draws the digital Serial Waveform logic analyzing frame (ASCII bit stream representation)
+    function drawLogicAnalyzer() {
+      const W = logicCanvas.offsetWidth || 380, H = 85;
+      logicCanvas.width = W; logicCanvas.height = H;
+
+      // Dark background with technical grid
+      ctxLogic.fillStyle = '#05070a'; ctxLogic.fillRect(0,0,W,H);
+      ctxLogic.strokeStyle = 'var(--border)'; ctxLogic.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 25) { ctxLogic.beginPath(); ctxLogic.moveTo(x, 0); ctxLogic.lineTo(x, H); ctxLogic.stroke(); }
+      for (let y = 0; y < H; y += 15) { ctxLogic.beginPath(); ctxLogic.moveTo(0, y); ctxLogic.lineTo(W, y); ctxLogic.stroke(); }
+
+      // Standard UART frame: 1 Start Bit (low), 8 Data Bits, 1 Stop Bit (high)
+      // Representing byte (least significant bit first)
+      let bits = [0]; // Start bit
+      let temp = currentByte;
+      for (let i = 0; i < 8; i++) {
+        bits.push(temp & 1);
+        temp >>= 1;
+      }
+      bits.push(1); // Stop bit
+
+      // Waveform timing parameters
+      const numBits = bits.length;
+      const margin = 30;
+      const bitWidth = (W - margin * 2) / numBits;
+      const baselineY = H * 0.75;
+      const highY = H * 0.25;
+
+      // Animate sliding signal trace wave
+      let offsetX = 0;
+      if (signalPulseTimer > 0) {
+        offsetX = Math.sin(signalPulseTimer * Math.PI) * 5;
+        signalPulseTimer -= 0.03;
+      }
+
+      ctxLogic.beginPath();
+      ctxLogic.strokeStyle = 'var(--signal-trace)'; ctxLogic.lineWidth = 2.0;
+
+      let lastX = margin + offsetX;
+      let lastY = bits[0] === 1 ? highY : baselineY;
+      ctxLogic.moveTo(lastX, lastY);
+
+      for (let i = 0; i < numBits; i++) {
+        const xStart = margin + i * bitWidth + offsetX;
+        const xEnd = xStart + bitWidth;
+        const bitVal = bits[i];
+        const nextY = bitVal === 1 ? highY : baselineY;
+
+        // Draw vertical edge transitions
+        if (nextY !== lastY) {
+          ctxLogic.lineTo(xStart, lastY);
+          ctxLogic.lineTo(xStart, nextY);
+        }
+        ctxLogic.lineTo(xEnd, nextY);
+        lastY = nextY;
+      }
+      ctxLogic.stroke();
+
+      // Label UART framing zones
+      ctxLogic.font = '7px JetBrains Mono';
+      ctxLogic.fillStyle = 'var(--t-muted)';
+      ctxLogic.textAlign = 'center';
+
+      bits.forEach((b, idx) => {
+        const xLabel = margin + idx * bitWidth + bitWidth / 2 + offsetX;
+        if (xLabel > margin && xLabel < W - margin) {
+          let label = b.toString();
+          if (idx === 0) label = "START";
+          if (idx === 9) label = "STOP";
+          ctxLogic.fillText(label, xLabel, H * 0.15);
+        }
+      });
+    }
+
+    // Draws Inductive Clamping freewheeling back-EMF curve simulation
+    function drawCoilTransient() {
+      const W = clampCanvas.offsetWidth || 380, H = 85;
+      clampCanvas.width = W; clampCanvas.height = H;
+
+      ctxClamp.fillStyle = '#05070a'; ctxClamp.fillRect(0,0,W,H);
+      ctxClamp.strokeStyle = 'var(--border)'; ctxClamp.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 25) { ctxClamp.beginPath(); ctxClamp.moveTo(x, 0); ctxClamp.lineTo(x, H); ctxClamp.stroke(); }
+      for (let y = 0; y < H; y += 15) { ctxClamp.beginPath(); ctxClamp.moveTo(0, y); ctxClamp.lineTo(W, y); ctxClamp.stroke(); }
+
+      const baselineY = H / 2;
+      const margin = 40;
+
+      ctxClamp.beginPath();
+      ctxClamp.strokeStyle = 'var(--t-muted)'; ctxClamp.lineWidth = 0.8;
+      ctxClamp.setLineDash([3,3]);
+      ctxClamp.moveTo(0, baselineY); ctxClamp.lineTo(W, baselineY);
+      ctxClamp.stroke();
+      ctxClamp.setLineDash([]);
+
+      ctxClamp.beginPath();
+      ctxClamp.strokeStyle = '#f87171'; // Warning transient orange-red
+      ctxClamp.lineWidth = 1.8;
+
+      ctxClamp.moveTo(0, baselineY);
+      ctxClamp.lineTo(margin, baselineY);
+
+      if (transitionSpikePulse > 0) {
+        // High-frequency transient surge decay
+        const spikeIntensity = transitionSpikePulse * (H * 0.4);
+        const spikeY = baselineY + (clampingActive ? -0.1 : 1.5) * spikeIntensity; // Diode clamps negative spike
+
+        ctxClamp.lineTo(margin + 2, baselineY - spikeIntensity); // Transient jump
+        ctxClamp.lineTo(margin + 4, baselineY + spikeIntensity * 0.15); // Rebound
+
+        // Smooth decaying sinusoidal oscillation representing freewheeling loop
+        let decayW = W - margin - 4;
+        for (let xOffset = 0; xStart = margin + 4 + xOffset, xStart < W; xOffset++) {
+          const decayFactor = Math.exp(-xOffset * 0.08 * (1.0 - transitionSpikePulse * 0.2));
+          const wave = Math.sin(xOffset * 0.4) * (spikeIntensity * 0.2) * decayFactor;
+          ctxClamp.lineTo(xStart, baselineY + wave);
+        }
+
+        // Dissipate decay
+        transitionSpikePulse -= 0.02;
+        if (transitionSpikePulse <= 0) {
+          clampingActive = false;
+        }
+      } else {
+        ctxClamp.lineTo(W, baselineY);
+      }
+      ctxClamp.stroke();
+
+      ctxClamp.font = '7px JetBrains Mono';
+      ctxClamp.fillStyle = 'var(--t-muted)';
+      ctxClamp.textAlign = 'left';
+      ctxClamp.fillText("ULN2003 Clamping diode protection matrix active", margin + 10, H * 0.25);
+    }
+
+    function simStep() {
+      drawLogicAnalyzer();
+      drawCoilTransient();
+      requestAnimationFrame(simStep);
+    }
+
+    // Boot trigger
+    updateLogicUI();
+    simStep();
+  </script>
+</body>
+</html>

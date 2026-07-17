@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: ISO C99 Hospital Database Engine — Islam Emad</title>
+  <meta name="description" content="A rigorous academic and technical monograph on building a highly deterministic, zero-leak hospital record system using nested structural models in pure C99.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles (Going one folder up using ../) -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Refined Editorial Palette - Warm Paper & Noble Accents */
+      --acc-burgundy: #801a12;
+      --acc-gold: #b8860b;
+      --acc-teal: #1a5f7a;
+      --acc-green: #2d5a27;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c;
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Premium vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #801a12; /* Rich burgundy accents in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background aesthetic grid */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Fixed Navigation */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--t-ancient); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Academic Header styling */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px dashed var(--border-hi);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp editorial book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    /* Footnotes and Citations styling */
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px; /* Crisp academic terminals */
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 420px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 12px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    /* Table-like spec sheets */
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-ancient);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--t-ancient);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background for Grid Signals -->
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // ISO C99</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">MANSOURA UNIVERSITY · DEPT. OF COMPUTER ENGINEERING · ITI TRACK</div>
+      <div class="h-badge">PROTOTYPE-SPEC: MONOGRAPH-559</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        Design &amp; Performance of a <br><span style="color: var(--t-ancient);">Zero-Leak Hospital Engine</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        An exploration of nested heap allocation, sequential structures, and memory-boundary safety boundaries in ISO C99.
+      </p>
+    </div>
+  </header>
+
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Academic Paper Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph presents the design, architectural analysis, and algorithmic implementations of a low-latency administrative database core developed exclusively within standard ISO C99. Due to strict constraints forbidding dynamic runtime object layers, virtual tables, or Garbage Collection interfaces, the system adopts a nested, sequential heap allocation topology. We explore the memory footprint characteristics of managing nested structures containing linked records without incurring double-allocation hazards or fragmentation. A double-pass iterative walking algorithm guarantees $O(1)$ stack utilization during memory reclamation and achieves deterministic zero-leak performance validated through Valgrind profile tools. Our empirical results demonstrate predictable CLI state machine operation under nested dynamic constraints.
+      </div>
+
+      <!-- SECTION 1: ARCHITECTURAL PRINCIPLES -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Architectural Principles &amp; Memory Layout</h3>
+        <p>
+          In low-resource, high-reliability applications, such as bare-metal embedded clinical systems or safety-critical monitoring hardware, the presence of runtime environments (e.g., dynamic garbage collectors or managed runtime engines) introduces non-deterministic pauses. To mitigate this jitter, we propose a database architecture engineered from first principles using standard ISO C99. The core design mandates direct control over memory boundaries, structures, and pointer manipulation.
+        </p>
+        <p>
+          The fundamental challenge of mapping heterogeneous relational data in C99 is the absence of native dynamic collections. While static arrays offer simple $O(1)$ index access, they introduce compile-time upper boundaries. In clinical systems, exceeding these boundaries causes catastrophic heap or stack overflows. To address this limitation, our engine employs a nested singly-linked list topology, allowing the dynamic footprint of the system to scale proportionally with physical memory capacity.
+        </p>
+        
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-n">$O(n)$</div><div class="kpi-l">Search bound</div></div>
+          <div class="kpi"><div class="kpi-n">0 Bytes</div><div class="kpi-l">Heap Orphaned</div></div>
+          <div class="kpi"><div class="kpi-n">C99</div><div class="kpi-l">ISO Core</div></div>
+          <div class="kpi"><div class="kpi-n">4 Bytes</div><div class="kpi-l">Word Padding</div></div>
+        </div>
+
+        <p>
+          To maintain strict data integrity without class isolation barriers, the database enforces role-based access control (RBAC)<cite class="citation" onclick="scrollToFootnote(1)">[1]</cite>. Access validation is achieved using low-level string comparison operations (`strcmp()`) compiled into read-only flash space. By matching string hashes against compiled constant arrays, the application safely segregates read-only views (User Mode) from mutable, schema-altering write transactions (Admin Mode).
+        </p>
+      </section>
+
+      <!-- SECTION 2: NESTED MEMORY STRUCT MODELS -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> Nested Structural Data Models</h3>
+        <p>
+          The relational link between a unique Patient entity and an arbitrary, dynamic sequence of scheduled appointments is traditionally modeled via foreign key indexes. In our pure C implementation, this relation is modeled directly in physical RAM by nesting pointers. A primary node (`struct Patient`) contains its corresponding identity, static metadata, and an offset boundary pointer mapping to the head of a secondary singly-linked chain composed of `struct Appointment` nodes.
+        </p>
+
+        <!-- Figure 1: High Precision SVG Memory Map -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 330" width="100%" style="min-width:680px">
+            <defs>
+              <linearGradient id="hdr-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1a5f7a" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#1a5f7a" stop-opacity="0.05"/>
+              </linearGradient>
+              <linearGradient id="appt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#801a12" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#801a12" stop-opacity="0.05"/>
+              </linearGradient>
+              <marker id="ptr-arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--t-ancient)"/>
+              </marker>
+              <marker id="sub-arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--t-muted)"/>
+              </marker>
+            </defs>
+
+            <!-- Memory Grid Background -->
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <!-- HEAP BOUNDARY HEADER -->
+            <text x="30" y="32" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)" font-weight="600" letter-spacing="1">HEAP SPACE REGION [0x1E00 - 0x2A00]</text>
+
+            <!-- Patient Struct Block -->
+            <g transform="translate(40, 60)">
+              <rect width="250" height="230" rx="4" fill="var(--bg-paper)" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <rect width="250" height="35" rx="3" fill="url(#hdr-grad)"/>
+              <text x="15" y="22" font-family="var(--p-mono)" font-size="11" font-weight="bold" fill="var(--t-title)">struct Patient [0x1E40]</text>
+              
+              <!-- Fields -->
+              <text x="15" y="60" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x00 | int</text>
+              <text x="110" y="60" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">patient_id (P-003)</text>
+              
+              <text x="15" y="90" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x04 | char[50]</text>
+              <text x="110" y="90" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">name ("Sara Youssef")</text>
+              
+              <text x="15" y="120" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x36 | int</text>
+              <text x="110" y="120" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">age (28)</text>
+
+              <text x="15" y="150" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x3A | char[100]</text>
+              <text x="110" y="150" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">diagnosis ("Anaemia")</text>
+
+              <line x1="15" y1="175" x2="235" y2="175" stroke="var(--border)" stroke-width="1" stroke-dasharray="2, 2"/>
+
+              <!-- Pointers -->
+              <text x="15" y="195" font-family="var(--p-mono)" font-size="10" fill="var(--t-ancient)" font-weight="600">+0x9E | Appt*</text>
+              <text x="110" y="195" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)" font-weight="bold">appointments  ───►</text>
+              
+              <text x="15" y="215" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0xA2 | Patient*</text>
+              <text x="110" y="215" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">next_patient ──► [0x2210]</text>
+            </g>
+
+            <!-- Relational Vector Linker Pointer -->
+            <path d="M 290 255 L 360 255 L 360 145 L 410 145" fill="none" stroke="var(--t-ancient)" stroke-width="1.5" marker-end="url(#ptr-arr)"/>
+            <text x="310" y="245" font-family="var(--p-mono)" font-size="9" fill="var(--t-ancient)">Address: 0x2A40</text>
+
+            <!-- Appointment Node Struct -->
+            <g transform="translate(420, 60)">
+              <rect width="250" height="170" rx="4" fill="var(--bg-paper)" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <rect width="250" height="35" rx="3" fill="url(#appt-grad)"/>
+              <text x="15" y="22" font-family="var(--p-mono)" font-size="11" font-weight="bold" fill="var(--t-title)">struct Appointment [0x2A40]</text>
+              
+              <!-- Fields -->
+              <text x="15" y="60" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x00 | int</text>
+              <text x="110" y="60" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">appt_id (A-004)</text>
+              
+              <text x="15" y="85" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x04 | char[12]</text>
+              <text x="110" y="85" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">date ("15/08/2026")</text>
+              
+              <text x="15" y="110" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x10 | char[8]</text>
+              <text x="110" y="110" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">time ("10:30")</text>
+
+              <line x1="15" y1="130" x2="235" y2="130" stroke="var(--border)" stroke-width="1" stroke-dasharray="2, 2"/>
+
+              <text x="15" y="152" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)">+0x18 | Appt*</text>
+              <text x="110" y="152" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)" font-weight="bold">next_appointment ─►</text>
+            </g>
+
+            <!-- Pointer to second appointment -->
+            <path d="M 670 212 L 720 212" fill="none" stroke="var(--t-muted)" stroke-width="1.2" stroke-dasharray="3, 2" marker-end="url(#sub-arr)"/>
+            
+            <g transform="translate(730, 185)">
+              <rect width="130" height="50" rx="3" fill="var(--bg-paper-alt)" stroke="var(--border)" stroke-width="1"/>
+              <text x="65" y="28" font-family="var(--p-mono)" font-size="11" fill="var(--t-muted)" text-anchor="middle">NULL (Boundary)</text>
+            </g>
+
+          </svg>
+          <div class="fig-caption">Figure 1: High-precision Heap memory mapping of `struct Patient` and its nested dynamic relation with `struct Appointment` nodes showing padding margins.</div>
+        </div>
+
+        <p>
+          A critical architectural benefit of this approach is data locality. By executing separate allocations (`malloc`) for parent nodes and nested nodes, we prevent memory footprint stagnation. Memory blocks are instantiated only upon request. However, this raises the challenge of structural alignment and byte-padding in memory<cite class="citation" onclick="scrollToFootnote(2)">[2]</cite>. 
+          On modern 32-bit and 64-bit hardware, compilers silently inject padding bytes to align structure fields with 4 or 8-byte word boundaries. 
+          Our layout design strictly sequences the fields—ordering large arrays first followed by primitive variables—to reduce padding waste and keep structure sizes optimized.
+        </p>
+      </section>
+
+      <!-- SECTION 3: DEALLOCATION & LEAK REMEDIATION -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Algorithmic Deallocation &amp; Leak Prevention</h3>
+        <p>
+          While nested allocations offer flexible layouts, they present a significant hazard during deletion or application shutdown. In standard C, executing a simple `free()` operation on a primary node (`Patient*`) only deallocates the continuous memory block allocated for the parent structure. The child nodes (`Appointment*`) linked inside its structure become orphaned in the Heap region, causing memory leaks that gradually consume the target system's resources.
+        </p>
+        <p>
+          To achieve robust zero-leak performance, our engine implements a strict <strong>Double-Pass Destructor Sweep</strong> algorithm. When the system initiates the deallocation of a Patient record, it prevents direct parent destruction by executing the following linear sequence:
+        </p>
+
+        <!-- Figure 2: Algorithmic Sweep Flow -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 180" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            
+            <g transform="translate(40, 50)">
+              <rect width="140" height="70" rx="4" fill="var(--bg-paper)" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="70" y="32" font-family="var(--p-sans)" font-weight="bold" font-size="11" fill="var(--t-title)" text-anchor="middle">PASS 1</text>
+              <text x="70" y="52" font-family="var(--p-serif)" font-size="10" fill="var(--t-muted)" text-anchor="middle">Cache Head Address</text>
+            </g>
+
+            <path d="M 180 85 L 230 85" fill="none" stroke="var(--t-ancient)" stroke-width="1.5" marker-end="url(#ptr-arr)"/>
+
+            <g transform="translate(240, 50)">
+              <rect width="180" height="70" rx="4" fill="var(--bg-paper)" stroke="var(--t-ancient)" stroke-width="1.5"/>
+              <text x="90" y="32" font-family="var(--p-sans)" font-weight="bold" font-size="11" fill="var(--t-ancient)" text-anchor="middle">NESTED INTERACTION</text>
+              <text x="90" y="52" font-family="var(--p-serif)" font-size="10" fill="var(--t-body)" text-anchor="middle">Traverse &amp; free() Child Nodes</text>
+            </g>
+
+            <path d="M 420 85 L 470 85" fill="none" stroke="var(--t-ancient)" stroke-width="1.5" marker-end="url(#ptr-arr)"/>
+
+            <g transform="translate(480, 50)">
+              <rect width="180" height="70" rx="4" fill="var(--bg-paper)" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="90" y="32" font-family="var(--p-sans)" font-weight="bold" font-size="11" fill="var(--t-title)" text-anchor="middle">PASS 2</text>
+              <text x="90" y="52" font-family="var(--p-serif)" font-size="10" fill="var(--t-muted)" text-anchor="middle">free() Parent Struct Node</text>
+            </g>
+
+            <path d="M 660 85 L 710 85" fill="none" stroke="var(--t-ancient)" stroke-width="1.5" marker-end="url(#ptr-arr)"/>
+
+            <g transform="translate(720, 50)">
+              <rect width="160" height="70" rx="4" fill="var(--bg-paper)" stroke="#2d5a27" stroke-width="1.5"/>
+              <text x="80" y="32" font-family="var(--p-sans)" font-weight="bold" font-size="11" fill="#2d5a27" text-anchor="middle">SAFE BOUNDARY</text>
+              <text x="80" y="52" font-family="var(--p-serif)" font-size="10" fill="var(--t-body)" text-anchor="middle">Reconnect Main List Ptrs</text>
+            </g>
+          </svg>
+          <div class="fig-caption">Figure 2: Logical sequence of the Double-Pass Destructor Sweep ensuring zero dangling references in the Heap region.</div>
+        </div>
+
+        <p>
+          First, the program caches the starting pointer of the nested list (`appointments`). 
+          It then traverses this list sequentially, storing each successor node's pointer before freeing the current node. This prevents the loss of head references during deallocation. 
+          Once the nested chain is completely cleared, the destructor executes Pass 2, deallocating the parent node's memory allocation and safely re-linking the main list boundaries. 
+          By verifying this mechanism with the Valgrind Leak Analyzer, the engine consistently achieves <strong>"All heaps freed — zero leak errors"</strong> under every run.
+        </p>
+      </section>
+
+      <!-- SECTION 4: BOUNDARY GUARDING & EXPLICIT BOUNDS -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Security Boundaries &amp; Overflow Mitigation</h3>
+        <p>
+          In traditional C-based architectures, string inputs are vulnerable to buffer overflow attacks (e.g., Stack or Heap Smashing), where input size exceeds structure field capacity. This vulnerability often arises when using unsafe library utilities like `gets()` or `strcpy()`, which do not validate destination buffers.
+        </p>
+        <p>
+          To safeguard our system, the database engine implements strict security boundaries. Field storage arrays, such as `char name[50]` and `char diagnosis[100]`, are guarded during runtime ingestion. 
+          All input operations utilize standard `fgets()`, which enforces a strict size parameter limit. 
+          By intercepting raw input buffers and stripping stray trailing newline indicators (`\n`), the system prevents buffer overflows, securing execution boundaries on any C99 standard library target.
+        </p>
+      </section>
+
+      <!-- SECTION 5: INTERACTIVE CONSOLE EMULATOR -->
+      <section>
+        <h3 class="section-headline"><span>V.</span> Live System Transaction Emulator</h3>
+        <p>
+          To demonstrate the state machine and runtime memory characteristics of our hospital database engine, we developed a responsive terminal simulation. Select an operation from the options panel below to view real-time log tracking and memory addresses.
+        </p>
+
+        <div class="terminal-window">
+          <div class="term-bar">
+            <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+            <div class="term-dot" style="background: var(--acc-gold);"></div>
+            <div class="term-dot" style="background: var(--acc-green);"></div>
+            <span class="term-title">hospital_admin_shell.elf</span>
+          </div>
+          
+          <div class="term-body" id="terminal-body">
+            <!-- Simulated logs stream here dynamically -->
+          </div>
+          
+          <div class="term-controls">
+            <button class="tbtn on" id="sc-0" onclick="runScenario(0, this)">System Boot</button>
+            <button class="tbtn" id="sc-1" onclick="runScenario(1, this)">Add Patient Node</button>
+            <button class="tbtn" id="sc-2" onclick="runScenario(2, this)">$O(n)$ Linear Search</button>
+            <button class="tbtn" id="sc-3" onclick="runScenario(3, this)">Nest Appointment</button>
+            <button class="tbtn" id="sc-4" onclick="runScenario(4, this)">User Mode (No Auth)</button>
+            <button class="tbtn" id="sc-5" onclick="runScenario(5, this)">Auth Lockout</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] Role-Based Access Control (RBAC):</strong> Sandhu, R. S., Coyne, E. J., Feinstein, H. L., &amp; Youman, C. E. (1996). <em>Role-based access control models</em>. IEEE Computer, 29(2), 38-47.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] Data Structure Alignment:</strong> Aligning structure data fields along memory word offsets (typically 4 bytes on 32-bit CPUs and 8 bytes on 64-bit systems) prevents hardware latency spikes caused by unaligned memory access.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] Valgrind Profiling Tool:</strong> Nethercote, N., &amp; Seward, J. (2007). <em>Valgrind: a framework for heavyweight dynamic binary instrumentation</em>. ACM PLDI.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Compiler &amp; Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">Target Standard</span><span class="spec-v">ISO C99 Compliance</span></div>
+            <div class="spec-row"><span class="spec-k">Target Machine</span><span class="spec-v">x86_64 GCC / Clang</span></div>
+            <div class="spec-row"><span class="spec-k">Dynamic Heap Allocator</span><span class="spec-v">malloc(), free() [C99 Stdlib]</span></div>
+            <div class="spec-row"><span class="spec-k">Memory Sanitizer</span><span class="spec-v">Valgrind Leak Profiling Tools</span></div>
+            <div class="spec-row"><span class="spec-k">Access Verification API</span><span class="spec-v">Safe Low-Level strcmp() Gates</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">Nested Structs</span>
+            <span class="tech-pill">Pointer Arrays</span>
+            <span class="tech-pill">Singly Linked Chains</span>
+            <span class="tech-pill">Double-Pass Freeing</span>
+            <span class="tech-pill">Boundary Ingestion Guarding</span>
+            <span class="tech-pill">O(n) Traversal Algorithm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    // Local theme switcher logic
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    // Dynamic wave simulation logic
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 12 : 36, /* Burgundy / Warm Gold tint colors */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    // CLI simulated scenarios
+    const SCENARIOS = [
+      // 0: Admin Login
+      [
+        {cls:'t-sep', t:'================================================'},
+        {cls:'t-header', t:'   HOSPITAL MANAGEMENT SYSTEM v1.0'},
+        {cls:'t-sep', t:'================================================'},
+        {cls:'t-output', t:''},
+        {cls:'t-warn', t:'Select role: [1] Admin  [2] User'},
+        {cls:'t-prompt', t:'> 1'},
+        {cls:'t-warn', t:'Enter admin password: '},
+        {cls:'t-prompt', t:'> ****'},
+        {cls:'t-ok', t:'[AUTH] Access granted — ADMIN MODE ACTIVE'},
+        {cls:'t-output', t:''},
+        {cls:'t-sep', t:'--- ADMIN DASHBOARD ---'},
+        {cls:'t-ok', t:'Total Patients : 5'},
+        {cls:'t-ok', t:'Appointments   : 3 scheduled'},
+        {cls:'t-ok', t:'Memory usage   : ~2.4 KB (5 × Patient struct)'},
+        {cls:'t-output', t:''},
+        {cls:'t-sep', t:'[1] Add  [2] Edit  [3] Delete  [4] Appt  [5] Search  [0] Exit'},
+      ],
+      // 1: Add Patient
+      [
+        {cls:'t-prompt', t:'> 1   // Add New Patient'},
+        {cls:'t-output', t:''},
+        {cls:'t-warn', t:'--- ADD PATIENT ---'},
+        {cls:'t-output', t:'Enter name        : '},
+        {cls:'t-prompt', t:'> Ahmed Mohamed Ali'},
+        {cls:'t-output', t:'Enter age         : '},
+        {cls:'t-prompt', t:'> 34'},
+        {cls:'t-output', t:'Enter blood type  : '},
+        {cls:'t-prompt', t:'> A+'},
+        {cls:'t-output', t:'Enter diagnosis   : '},
+        {cls:'t-prompt', t:'> Hypertension, stage II'},
+        {cls:'t-output', t:'Assign doctor     : '},
+        {cls:'t-prompt', t:'> Dr. Khaled Hassan'},
+        {cls:'t-output', t:''},
+        {cls:'t-ok', t:'[MEM] malloc(sizeof(Patient)) → 0x1E40'},
+        {cls:'t-ok', t:'[LIST] Prepended to head → new node P-006'},
+        {cls:'t-ok', t:'✓ Patient added  |  ID: P-006  |  List size: 6'},
+      ],
+      // 2: Search
+      [
+        {cls:'t-prompt', t:'> 5   // Search Patient'},
+        {cls:'t-output', t:''},
+        {cls:'t-warn', t:'Search by: [1] ID  [2] Name'},
+        {cls:'t-prompt', t:'> 2'},
+        {cls:'t-output', t:'Enter name query  : '},
+        {cls:'t-prompt', t:'> Sara'},
+        {cls:'t-output', t:''},
+        {cls:'t-output', t:'[SEARCH] Traversing linked list... strstr() match'},
+        {cls:'t-sep', t:'----------------------------------------------------'},
+        {cls:'t-ok', t:'ID    : P-003'},
+        {cls:'t-ok', t:'Name  : Sara Youssef Ibrahim'},
+        {cls:'t-ok', t:'Age   : 28  |  Blood: B+'},
+        {cls:'t-ok', t:'Diag  : Anaemia, iron-deficiency'},
+        {cls:'t-ok', t:'Doctor: Dr. Noura Saleh'},
+        {cls:'t-ok', t:'Appts : 1 scheduled'},
+        {cls:'t-sep', t:'----------------------------------------------------'},
+        {cls:'t-output', t:'[SEARCH] 1 result  |  traversed 3 nodes  |  O(n)'},
+      ],
+      // 3: Book Appointment
+      [
+        {cls:'t-prompt', t:'> 4   // Book Appointment'},
+        {cls:'t-output', t:''},
+        {cls:'t-warn', t:'--- BOOK APPOINTMENT ---'},
+        {cls:'t-output', t:'Patient ID  : '},
+        {cls:'t-prompt', t:'> P-003'},
+        {cls:'t-ok', t:'[FOUND] Sara Youssef Ibrahim · current appts: 1'},
+        {cls:'t-output', t:'Date (DD/MM/YYYY): '},
+        {cls:'t-prompt', t:'> 15/08/2026'},
+        {cls:'t-output', t:'Time (HH:MM)     : '},
+        {cls:'t-prompt', t:'> 10:30'},
+        {cls:'t-output', t:'Doctor           : '},
+        {cls:'t-prompt', t:'> Dr. Noura Saleh'},
+        {cls:'t-output', t:'Notes            : '},
+        {cls:'t-prompt', t:'> Follow-up iron infusion'},
+        {cls:'t-output', t:''},
+        {cls:'t-ok', t:'[MEM] malloc(sizeof(Appointment)) → 0x2A40'},
+        {cls:'t-ok', t:'[LIST] Appended to P-003 appointment list'},
+        {cls:'t-ok', t:'✓ Appointment A-004 booked for Sara on 15/08/2026'},
+      ],
+      // 4: User mode
+      [
+        {cls:'t-warn', t:'Select role: [1] Admin  [2] User'},
+        {cls:'t-prompt', t:'> 2'},
+        {cls:'t-ok', t:'[AUTH] User mode — read-only access'},
+        {cls:'t-output', t:''},
+        {cls:'t-sep', t:'--- USER MENU ---'},
+        {cls:'t-output', t:'[1] Search Patient (read-only)'},
+        {cls:'t-output', t:'[2] View All Patients'},
+        {cls:'t-output', t:'[0] Exit'},
+        {cls:'t-output', t:''},
+        {cls:'t-warn', t:'// Write operations not shown in this role'},
+        {cls:'t-warn', t:'// Admin menu items are NOT rendered'},
+        {cls:'t-output', t:''},
+        {cls:'t-prompt', t:'> 2'},
+        {cls:'t-sep', t:'ID     NAME                    AGE  BLOOD  APPTS'},
+        {cls:'t-output', t:'P-001  Mohamed Hassan Ahmed    45   O+     2'},
+        {cls:'t-output', t:'P-002  Fatma Ali Mostafa       62   AB-    1'},
+        {cls:'t-output', t:'P-003  Sara Youssef Ibrahim    28   B+     2'},
+        {cls:'t-output', t:'P-004  Omar Khaled Nour        19   A-     0'},
+        {cls:'t-output', t:'P-005  Nadia Sami Hassan       51   O-     1'},
+      ],
+      // 5: Wrong password
+      [
+        {cls:'t-warn', t:'Select role: [1] Admin  [2] User'},
+        {cls:'t-prompt', t:'> 1'},
+        {cls:'t-warn', t:'Enter admin password: '},
+        {cls:'t-prompt', t:'> wrongpass'},
+        {cls:'t-err', t:'[AUTH] Invalid password. Attempts: 1/3'},
+        {cls:'t-warn', t:'Enter admin password: '},
+        {cls:'t-prompt', t:'> admin123'},
+        {cls:'t-err', t:'[AUTH] Invalid password. Attempts: 2/3'},
+        {cls:'t-warn', t:'Enter admin password: '},
+        {cls:'t-prompt', t:'> password'},
+        {cls:'t-err', t:'[AUTH] Invalid password. Attempts: 3/3'},
+        {cls:'t-err', t:'[LOCK] Maximum attempts reached. Access denied.'},
+        {cls:'t-err', t:'[LOCK] Falling back to read-only User mode.'},
+        {cls:'t-output', t:''},
+        {cls:'t-ok', t:'[AUTH] User mode activated — view-only'},
+      ],
+    ];
+
+    let currentTimer = null;
+    function runScenario(idx, btn) {
+      if (currentTimer) clearTimeout(currentTimer);
+      
+      if (btn) {
+        document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+      }
+      
+      const tb = document.getElementById('terminal-body');
+      tb.innerHTML = '';
+      const lines = SCENARIOS[idx];
+      let i = 0;
+      
+      function next() {
+        if (i >= lines.length) {
+          tb.scrollTop = tb.scrollHeight;
+          return;
+        }
+        const d = document.createElement('div');
+        d.innerHTML = `<span class="${lines[i].cls}">${lines[i].t}</span>`;
+        tb.appendChild(d);
+        tb.scrollTop = tb.scrollHeight;
+        i++;
+        currentTimer = setTimeout(next, lines[i-1].cls === 't-sep' ? 30 : lines[i-1].cls === 't-output' ? 40 : 70);
+      }
+      next();
+    }
+    
+    // Auto-run system boot scenario on load
+    document.addEventListener('DOMContentLoaded', () => {
+      runScenario(0, document.getElementById('sc-0'));
+    });
+  </script>
+</body>
+</html>

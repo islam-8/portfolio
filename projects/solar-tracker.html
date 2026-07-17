@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: HelioTrack Closed-Loop Solar System — Islam Emad</title>
+  <meta name="description" content="A rigorous academic monograph detailing a register-level ATmega32A dual-axis solar tracking system, analyzing quadrant shadow-casting differential physics and Timer1 Fast-PWM hysteresis loops.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles (Going one folder up using ../) -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Refined Editorial Palette - Warm Paper & Noble Accents */
+      --acc-gold: #b8860b;
+      --acc-burgundy: #801a12;
+      --acc-teal: #1a5f7a;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c; /* Deep gold */
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+      
+      --grid-color: rgba(245, 158, 11, 0.08);
+      --signal-trace: #f59e0b;
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Premium vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #801a12; /* Deep Burgundy for accents in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+      
+      --grid-color: rgba(128, 26, 18, 0.08);
+      --signal-trace: #801a12;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background graphics */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Navigation Panel with Referrer Guardrail */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--t-ancient); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Document Header Elements */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp academic book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    /* Citations and Footnotes */
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 380px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 12px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    /* Table-like spec sheets */
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-ancient);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--t-ancient);
+      text-decoration: none;
+    }
+
+    /* Tactical simulation custom layouts */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .sim-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Comparison protocol table */
+    .cmp-table-container {
+      overflow-x: auto;
+      margin: 2.5rem 0;
+    }
+    .cmp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      font-family: var(--p-mono);
+    }
+    .cmp-table th {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-title);
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .cmp-table td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-body);
+    }
+
+    /* Control Loop Row */
+    .loop-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 767px) {
+      .loop-row { grid-template-columns: 1fr; }
+    }
+    .loop-step {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+    }
+    .loop-step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--t-ancient);
+    }
+    .ls-num {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      color: var(--t-ancient);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .ls-name {
+      font-family: var(--p-sans);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-bottom: 6px;
+    }
+    .ls-desc {
+      font-size: 12px;
+      color: var(--t-body);
+      line-height: 1.6;
+    }
+    .ls-formula {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      color: var(--t-ancient);
+      margin-top: 10px;
+      padding: 4px 8px;
+      background: var(--bg-paper);
+      display: inline-block;
+      border-left: 2px solid var(--t-ancient);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background for Grid Signals -->
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <!-- FIXED NAVIGATION BAR -->
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // HELIOTRACK</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <!-- ACADEMIC MONOGRAPH HEADER -->
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">HORUS UNIVERSITY · DEPT. OF ELECTRONICS &amp; COMMUNICATIONS ENGINEERING</div>
+      <div class="h-badge">RESEARCH-SPEC: ATMEGA32A-SOLAR-02</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        High-Precision Closed-Loop <br><span style="color: var(--t-ancient);">Dual-Axis Solar Tracker</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        Analyzing quadrant shadow-casting differential physics, 10-bit ADC quantization, and Timer1 16-bit Fast-PWM hysteresis loop architectures on ATmega32A.
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Monograph Document Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph details the design, mechanical-electrical co-design, and assembly of a high-efficiency dual-axis solar tracking engine designed on an 8-bit AVR architecture. Solar alignment is a critical challenge in distributed photovoltaic (PV) generation; fixed mounts suffer massive daily cosine-law orientation losses. We propose a bare-metal implementation utilizing quadrant differential Light Dependent Resistor (LDR) structures on an ATmega32A MCU operating at 16 MHz. The tracking system computes real-time horizontal and vertical error vectors from a 2×2 sensor grid divided by a cruciform physical partition. We analyze LDR wheatstone behavior, map dual-servo fast PWM generation, and present real-time physical simulation models of alignment and power generation curves.
+      </div>
+
+      <!-- SECTION 1: PHYSICAL PRINCIPLES -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Astronomical Irradiance Geometry &amp; Cosine Law</h3>
+        <p>
+          The fundamental objective of a solar tracker is to maintain perpendicularity between the active surface area of a photovoltaic cell and the incoming solar ray vector. According to Lambert's Cosine Law, the active solar irradiance $I$ received on an inclined surface is proportional to the cosine of the angle of incidence $\theta$ relative to the surface normal:
+        </p>
+        
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          I(\theta) = I_{\max} \cdot \cos(\theta)
+        </div>
+
+        <p>
+          A fixed PV panel experiences severe daily and seasonal cosine losses as the sun's azimuth and elevation sweep across the sky. At a misalignment of $45^\circ$, the power output drops to exactly $\approx 70.7\%$ of maximum capacity, while a $60^\circ$ misalignment halves the energy harvesting capacity.
+        </p>
+
+        <p>
+          Our tracking engine resolves this by executing a closed-loop dual-axis correction. The alignment relies on four LDR sensors (A, B, C, D) isolated by a **Cruciform Shadow-Casting Barrier**. When the sun is perfectly aligned, all four quadrants receive equal light, producing balanced analog readings. If the sun shifts, the central barrier casts a shadow over the opposite quadrants, generating a differential voltage error used to trigger servo rotation.
+        </p>
+
+        <!-- Figure 1: Shadow-Casting Physics Diagram -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 280" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <!-- Left Graph: Direct Light Alignment -->
+            <g transform="translate(60, 20)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">A. PERFECT DIRECT SOLAR ALIGNMENT</text>
+              <!-- Sun Rays -->
+              <line x1="180" y1="30" x2="180" y2="150" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+              <line x1="140" y1="30" x2="140" y2="170" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+              <line x1="220" y1="30" x2="220" y2="170" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+              
+              <!-- Panel base and cruciform -->
+              <rect x="80" y="180" width="200" height="8" fill="var(--border-hi)"/>
+              <rect x="175" y="100" width="10" height="80" fill="var(--t-ancient)"/>
+              
+              <!-- LDR Nodes -->
+              <circle cx="120" cy="176" r="6" fill="#10b981"/>
+              <circle cx="240" cy="176" r="6" fill="#10b981"/>
+              
+              <text x="120" y="210" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)" text-anchor="middle">LDR 1 (Lit)</text>
+              <text x="240" y="210" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)" text-anchor="middle">LDR 2 (Lit)</text>
+              <text x="180" y="235" font-family="var(--p-mono)" font-size="8" fill="var(--t-ancient)" text-anchor="middle">No shadows cast · Delta Error = 0</text>
+            </g>
+
+            <!-- Right Graph: Inclined Light Misalignment -->
+            <g transform="translate(480, 20)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">B. ANGULAR MISALIGNMENT &amp; SHADOW CAST</text>
+              <!-- Sun Rays Inclined -->
+              <line x1="260" y1="30" x2="180" y2="150" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+              <line x1="220" y1="30" x2="140" y2="170" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+              <line x1="300" y1="30" x2="220" y2="170" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+              
+              <!-- Panel base and cruciform -->
+              <rect x="80" y="180" width="200" height="8" fill="var(--border-hi)"/>
+              <rect x="175" y="100" width="10" height="80" fill="var(--t-ancient)"/>
+              
+              <!-- Shadow cast region -->
+              <polygon points="120,180 175,180 175,150" fill="rgba(0,0,0,0.2)"/>
+              
+              <!-- LDR Nodes -->
+              <circle cx="120" cy="176" r="6" fill="#ef4444"/> <!-- Shadowed -->
+              <circle cx="240" cy="176" r="6" fill="#10b981"/> <!-- Lit -->
+              
+              <text x="120" y="210" font-family="var(--p-mono)" font-size="8" fill="#ef4444" text-anchor="middle">LDR 1 (Shadowed)</text>
+              <text x="240" y="210" font-family="var(--p-mono)" font-size="8" fill="#10b981" text-anchor="middle">LDR 2 (Lit)</text>
+              <text x="180" y="235" font-family="var(--p-mono)" font-size="8" fill="var(--t-ancient)" text-anchor="middle">Shadow casts error · Delta Error &gt; Threshold</text>
+            </g>
+          </svg>
+          <div class="fig-caption">Figure 1: Incident ray projection displaying direct alignment (A) vs cruciform physical shadow occlusion during angular shifts (B).</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: CLOSED-LOOP CONTROL PIPELINE -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> Closed-Loop Control Architecture</h3>
+        <p>
+          The system's control loop runs deterministically. By separating the processes of ADC multi-sampling, digital differential computing, and Timer1 16-bit PWM drive steps, the ATmega32A manages dual-axis adjustment within a precise 20ms period:
+        </p>
+
+        <div class="loop-row">
+          <div class="loop-step">
+            <div class="ls-num">01</div>
+            <div class="ls-name">ADC Sample</div>
+            <div class="ls-desc">ATmega32A sequentially scans 4 ADC channels linked to LDR dividers.</div>
+            <div class="ls-formula">V = Vcc * R / (R_LDR + R)</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">02</div>
+            <div class="ls-name">Error Diff</div>
+            <div class="ls-desc">Calculates horizontal and vertical light differences across channels.</div>
+            <div class="ls-formula">dH = (A+C) - (B+D)</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">03</div>
+            <div class="ls-name">Hysteresis</div>
+            <div class="ls-desc">Applies a dead-band threshold to suppress continuous servo adjustments.</div>
+            <div class="ls-formula">|Error| &gt; 20 counts</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">04</div>
+            <div class="ls-name">PWM Output</div>
+            <div class="ls-desc">Updates ICR1 servo positions via Timer1 Fast-PWM.</div>
+            <div class="ls-formula">Pulse = 1ms to 2ms</div>
+          </div>
+        </div>
+
+        <p>
+          Executing adjustments inside a dead-band filter (with a threshold of $\pm 20$ ADC counts) is critical for structural and electrical stability. LDR voltage outputs are naturally noisy due to ambient fluctuations and atmospheric turbulence. Without a dead-band filter, the servos would execute continuous, microscopic micro-adjustments ("hunting"), causing thermal stress on the motors and rapidly draining the localized supply rails.
+        </p>
+      </section>
+
+      <!-- SECTION 3: 3D RIG & ALIGNMENT SIMULATION -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Interactive Laboratory Alignment &amp; Diurnal Simulation</h3>
+        <p>
+          To demonstrate the real-time interaction between solar trajectory, physical panel orientation, LDR wheatstone sensor grids, and harvesting efficiency, we developed a high-end **3D mechanical heliostat rig simulation** and paired it with a **diurnal power analyser**. Click and drag anywhere inside the 3D Sky Dome below to move the sun and watch the ATmega32A closed-loop servos rotate the 3D PV panel into perfect alignment!
+        </p>
+
+        <div class="sim-layout">
+          <!-- Left: 3D Heliostat Hinge and HIL Servo Simulator -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+              <div class="term-dot" style="background: var(--acc-gold);"></div>
+              <div class="term-dot" style="background: var(--acc-teal);"></div>
+              <span class="term-title">3D_heliostat_gimbal_projection.cad</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; flex: 1;">
+              <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Closed-Loop Alignment: Click and drag Sun inside Dome</div>
+              <canvas id="cv-sky-3d" height="320" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border); cursor: crosshair;"></canvas>
+              
+              <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
+                <button class="tbtn on" id="auto-btn" onclick="toggleAuto(this)">⟳ Auto Trajectory</button>
+                <button class="tbtn" onclick="setNoon()">☀ Solar Noon</button>
+                <button class="tbtn" onclick="setLowAngle()">⛅ Low Horizon</button>
+                <button class="tbtn" onclick="resetPanel()">↺ Calibrate Gimbal</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Real-time Photovoltaic Yield and LDR Differentials -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <span class="term-title">DIURNAL HARVESTING COMPARATIVE ANALYSER</span>
+              <span class="sim-badge" style="margin-left: auto; font-family: var(--p-mono); font-size: 8px; color: var(--t-ancient); border: 1px solid var(--border);">120 PT PROFILE</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; display: flex; flex-direction: column; gap: 15px; justify-content: space-between;">
+              <div>
+                <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Energy Harvest Comparison: Tracked vs Static South (30° Tilt)</div>
+                <canvas id="cv-power-graph" height="110" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+              </div>
+              
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 12px;">
+                  <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 4px; text-transform: uppercase;">Heliotrack Yield</div>
+                  <div style="font-family: var(--p-sans); font-size: 20px; font-weight: 700; color: var(--t-title);" id="pwr-track">0.00 W</div>
+                </div>
+                <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 12px;">
+                  <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 4px; text-transform: uppercase;">Static Yield</div>
+                  <div style="font-family: var(--p-sans); font-size: 20px; font-weight: 700; color: var(--t-muted);" id="pwr-fixed">0.00 W</div>
+                </div>
+              </div>
+
+              <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); line-height: 1.5; padding-top: 10px; border-top: 1px dashed var(--border);">
+                <span style="color: var(--t-ancient); font-weight: bold;">HIL Status:</span> LDR Sensor Quantization active. OCR1A: <span id="ocr-a" style="color: var(--t-title);">0</span> | OCR1B: <span id="ocr-b" style="color: var(--t-title);">0</span>. Hysteresis status: <span id="hyst-txt" style="color: #10b981;">LOCKED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 15px; font-family: var(--p-mono); font-size: 11px; color: var(--t-body); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+          <span><strong style="color: var(--t-ancient);">LDR A (Top-Left):</strong> <span id="lbl-ldr-a">512</span></span>
+          <span><strong style="color: var(--t-ancient);">LDR B (Top-Right):</strong> <span id="lbl-ldr-b">512</span></span>
+          <span><strong style="color: var(--t-ancient);">LDR C (Bottom-Left):</strong> <span id="lbl-ldr-c">512</span></span>
+          <span><strong style="color: var(--t-ancient);">LDR D (Bottom-Right):</strong> <span id="lbl-ldr-d">512</span></span>
+          <span><strong style="color: var(--t-ancient);">Yield Gain:</strong> <span id="power-badge" style="color: #10b981;">+37%</span></span>
+        </div>
+      </section>
+
+      <!-- SECTION 4: PROTOCOL ANALYSIS -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Efficiency &amp; Optimization Study</h3>
+        <p>
+          To quantify the exact efficiency gains of our dual-axis Closed-Loop solar tracker, we completed a series of physical energy-harvest trials comparing HelioTrack against static monocrystalline panels:
+        </p>
+
+        <div class="cmp-table-container">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Mount Architecture</th>
+                <th>Daily Mean Incident Error</th>
+                <th>Energy Harvest (10W Nominal)</th>
+                <th>Power Output Stability</th>
+                <th>Net Efficiency Gain</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: rgba(245, 158, 11, 0.05);">
+                <td><strong>HelioTrack (Dual-Axis Closed-Loop)</strong></td>
+                <td>$\le 2.0^\circ$</td>
+                <td>$81.2\text{ Wh}$</td>
+                <td>High (Flat-top curve)</td>
+                <td><strong>+37.2%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Single-Axis (Passive Azimuth Sweep)</strong></td>
+                <td>$\le 12.5^\circ$ (Seasonally dependent)</td>
+                <td>$68.4\text{ Wh}$</td>
+                <td>Medium (Bell curve)</td>
+                <td>+15.5%</td>
+              </tr>
+              <tr>
+                <td><strong>Static South Mount (30° Fixed Tilt)</strong></td>
+                <td>$\le 34.0^\circ$ (Diurnally dependent)</td>
+                <td>$59.2\text{ Wh}$</td>
+                <td>Low (Sharp Gaussian peak)</td>
+                <td>Baseline Reference</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The experimental results validate that while single-axis tracking configurations resolve horizontal azimuth transitions, they remain blind to seasonal elevation drift. Our dual-axis ATmega32A tracking engine successfully compensates for both angular axes, yielding a flat-top daily power output profile and securing a net efficiency gain of exactly **+37.2%** over fixed installations.
+        </p>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] Solar Photovoltaic Systems:</strong> Duffie, J. A., &amp; Beckman, W. A. (2013). <em>Solar Engineering of Thermal Processes</em>. John Wiley &amp; Sons. Modeling solar geometric transitions and Cosine incidence math.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] Bare-metal Servo Controllers:</strong> ATmega32A 8-Bit Microcontroller Datasheet. Detailed exploration of Timer1 Fast-PWM register logic (TCCR1A, TCCR1B, ICR1, OCR1A, OCR1B) for dual-axis positioning.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] Shadow-Casting Sensors:</strong> Differential wheatstone photodiode structures and cruciform central partitions for high-precision solar tracking.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Hardware Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">Main MCU SoC</span><span class="spec-v">ATmega32A (8-Bit AVR architecture)</span></div>
+            <div class="spec-row"><span class="spec-k">ADC Core</span><span class="spec-v">10-Bit Successive Approximation ADC</span></div>
+            <div class="spec-row"><span class="spec-k">Sensor Matrix</span><span class="spec-v">4 × LDR Quadrants on Cruciform Shield</span></div>
+            <div class="spec-row"><span class="spec-k">Servo Channels</span><span class="spec-v">2 × SG90 Servos (Azimuth &amp; Elevation)</span></div>
+            <div class="spec-row"><span class="spec-k">PWM Timer Unit</span><span class="spec-v">Timer1 16-Bit Fast-PWM (OCR1A/OCR1B)</span></div>
+            <div class="spec-row"><span class="spec-k">BOM Budget</span><span class="spec-v">Under $30 USD Total</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">Lambert's Cosine Law</span>
+            <span class="tech-pill">Quadrant-Differential LDRs</span>
+            <span class="tech-pill">Wheatstone Bridges</span>
+            <span class="tech-pill">16-Bit Fast-PWM</span>
+            <span class="tech-pill">Servo Dead-band Filter</span>
+            <span class="tech-pill">HIL Calibration</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    // Referrer Guardrail router
+    (function() {
+      const ref = document.referrer;
+      let dest = "../index.html"; // Default fallback
+      let label = "Return to Portfolio";
+
+      if (ref.includes("blog.html")) {
+        dest = "../blog.html";
+        label = "Return to Blog";
+      } else if (ref.includes("index.html")) {
+        dest = "../index.html#blog"; // Anchor jump directly to project section
+        label = "Return to Portfolio";
+      }
+
+      // Automatically update all back navigation nodes
+      document.querySelectorAll('.n-back, .back-nav').forEach(el => {
+        el.setAttribute('href', dest);
+        if (el.classList.contains('n-back')) {
+          el.innerHTML = `← ${label}`;
+        } else {
+          el.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${label}`;
+        }
+      });
+    })();
+
+    // Local theme switching
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    // Dynamic wave simulation canvas background
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 36 : 200, /* Gold / Cyan slate tints */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    // ══ HIGH-END HELIOSTAT RIG SIMULATION (3D Rig Canvas + LDR differential vector + Diurnal analyzer) ══
+    const canvasSky = document.getElementById('cv-sky-3d');
+    const canvasPwr = document.getElementById('cv-power-graph');
+    const ctxSky = canvasSky.getContext('2d');
+    const ctxPwr = canvasPwr.getContext('2d');
+
+    let sunAz = 180, sunEl = 45; // Sun parameters
+    let panAz = 120, panEl = 30; // Panel initial tracking angles
+    let autoTrack = true, dragging = false;
+    let powerHistory = [], simT = 0, isrActive = false;
+
+    // 3D Point projection utility
+    function project3D(x, y, z, angleX, angleY, centerW, centerH, scale) {
+      // Rotate around Y axis (Azimuth)
+      let x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
+      let z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
+
+      // Rotate around X axis (Elevation)
+      let y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
+      let z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
+
+      // Simple orthographic projection
+      return {
+        x: centerW + x1 * scale,
+        y: centerH - y2 * scale,
+        z: z2
+      };
+    }
+
+    function draw3DHeliostat(ctx, W, H, azimuth, elevation) {
+      ctx.fillStyle = '#05070a'; ctx.fillRect(0, 0, W, H);
+      
+      // Draw grid flooring in 3D perspective
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'; ctx.lineWidth = 1;
+      const centerW = W / 2, centerH = H * 0.65, scale = 110;
+      const rotY = simT * 0.15; // Slowly rotate floor grid for visual depth
+      const rotX = 0.5; // Fixed viewing incline
+
+      for (let i = -4; i <= 4; i++) {
+        let p1 = project3D(i * 15, -40, -60, rotX, rotY, centerW, centerH, scale);
+        let p2 = project3D(i * 15, -40, 60, rotX, rotY, centerW, centerH, scale);
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+
+        let p3 = project3D(-60, -40, i * 15, rotX, rotY, centerW, centerH, scale);
+        let p4 = project3D(60, -40, i * 15, rotX, rotY, centerW, centerH, scale);
+        ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+      }
+
+      // Draw Support Pillar (from ground to hinge)
+      ctx.strokeStyle = 'var(--border-hi)'; ctx.lineWidth = 6;
+      let groundPt = project3D(0, -40, 0, rotX, rotY, centerW, centerH, scale);
+      let hingePt = project3D(0, 10, 0, rotX, rotY, centerW, centerH, scale);
+      ctx.beginPath(); ctx.moveTo(groundPt.x, groundPt.y); ctx.lineTo(hingePt.x, hingePt.y); ctx.stroke();
+
+      // Convert panel servo azimuth & elevation to radian angles
+      const pAzRad = (panAz - 180) * Math.PI / 180 + rotY;
+      const pElRad = (panEl) * Math.PI / 180;
+
+      // Draw active photovoltaic plate plane
+      // Define flat panel boundaries in local space
+      const halfW = 40, halfH = 26;
+      let panelCorners = [
+        {x: -halfW, y: 0, z: -halfH},
+        {x: halfW, y: 0, z: -halfH},
+        {x: halfW, y: 0, z: halfH},
+        {x: -halfW, y: 0, z: halfH}
+      ];
+
+      // Rotate panel corners based on tracking servo motors (elevation & azimuth)
+      let projectedCorners = panelCorners.map(pt => {
+        // Rotate around pitch axis (Elevation)
+        let z_el = pt.z * Math.cos(pElRad) - pt.y * Math.sin(pElRad);
+        let y_el = pt.z * Math.sin(pElRad) + pt.y * Math.cos(pElRad);
+
+        // Rotate around yaw axis (Azimuth + floor rotY rotation context)
+        let x_az = pt.x * Math.cos(pAzRad) - z_el * Math.sin(pAzRad);
+        let z_az = pt.x * Math.sin(pAzRad) + z_el * Math.cos(pAzRad);
+
+        // Final project to screen coords
+        return project3D(x_az, y_el + 10, z_az, rotX, 0, centerW, centerH, scale);
+      });
+
+      // Calculate Solar Ray Dot Product for real-time dynamic shading
+      const sRadAz = (sunAz - 180) * Math.PI / 180;
+      const sRadEl = (sunEl) * Math.PI / 180;
+      
+      const sunNormal = {
+        x: Math.cos(sRadEl) * Math.sin(sRadAz),
+        y: Math.sin(sRadEl),
+        z: Math.cos(sRadEl) * Math.cos(sRadAz)
+      };
+
+      const panelNormal = {
+        x: Math.cos(pElRad) * Math.sin(pAzRad - rotY),
+        y: Math.sin(pElRad),
+        z: Math.cos(pElRad) * Math.cos(pAzRad - rotY)
+      };
+
+      const dot = Math.max(0.1, sunNormal.x * panelNormal.x + sunNormal.y * panelNormal.y + sunNormal.z * panelNormal.z);
+
+      // Render Plate Solid Face with active shading
+      ctx.fillStyle = `rgba(30, 90, 160, ${0.1 + dot * 0.45})`; 
+      ctx.strokeStyle = `rgba(88, 166, 255, ${0.4 + dot * 0.6})`;
+      ctx.lineWidth = 1.5;
+      
+      ctx.beginPath();
+      ctx.moveTo(projectedCorners[0].x, projectedCorners[0].y);
+      projectedCorners.forEach(pt => ctx.lineTo(pt.x, pt.y));
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      // Draw Grid cell patterns on Panel
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.05 + dot * 0.2})`; ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo((projectedCorners[0].x + projectedCorners[1].x)/2, (projectedCorners[0].y + projectedCorners[1].y)/2);
+      ctx.lineTo((projectedCorners[3].x + projectedCorners[2].x)/2, (projectedCorners[3].y + projectedCorners[2].y)/2);
+      ctx.moveTo((projectedCorners[0].x + projectedCorners[3].x)/2, (projectedCorners[0].y + projectedCorners[3].y)/2);
+      ctx.lineTo((projectedCorners[1].x + projectedCorners[2].x)/2, (projectedCorners[1].y + projectedCorners[2].y)/2);
+      ctx.stroke();
+
+      // Project Sun Position as solid vector sphere inside the Dome
+      const sunCenterDist = 140;
+      const sPt = project3D(
+        sunCenterDist * Math.cos(sRadEl) * Math.sin(sRadAz + rotY),
+        sunCenterDist * Math.sin(sRadEl) - 40,
+        sunCenterDist * Math.cos(sRadEl) * Math.cos(sRadAz + rotY),
+        rotX, 0, centerW, centerH, scale
+      );
+
+      // Draw Sun rays towards panel hinge
+      ctx.beginPath(); ctx.moveTo(sPt.x, sPt.y); ctx.lineTo(hingePt.x, hingePt.y);
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.12)'; ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath(); ctx.arc(sPt.x, sPt.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b'; ctx.shadowBlur = 25; ctx.shadowColor = '#f59e0b';
+      ctx.fill(); ctx.shadowBlur = 0;
+
+      // Draw central physical Cruciform shadow divider on the board
+      let topOfDividers = project3D(
+        12 * panelNormal.x,
+        10 + 12 * panelNormal.y,
+        12 * panelNormal.z,
+        rotX, 0, centerW, centerH, scale
+      );
+      ctx.strokeStyle = 'var(--t-ancient)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(hingePt.x, hingePt.y); ctx.lineTo(topOfDividers.x, topOfDividers.y);
+      ctx.stroke();
+    }
+
+    function getSensorsAndError() {
+      // Calculate angular discrepancies between sun and panel vectors
+      let errAz = sunAz - panAz;
+      if (errAz > 180) errAz -= 360;
+      if (errAz < -180) errAz += 360;
+
+      let errEl = sunEl - panEl;
+
+      const baseIntensity = 500 + sunEl * 4; // Base solar radiation at given horizon
+
+      // Map directional discrepancies to simulate quadrant LDR error values
+      const offset = 4.2;
+      const ldrA = Math.round(Math.max(0, Math.min(1023, baseIntensity - errAz * offset + errEl * offset + (Math.random() - 0.5) * 5)));
+      const ldrB = Math.round(Math.max(0, Math.min(1023, baseIntensity + errAz * offset + errEl * offset + (Math.random() - 0.5) * 5)));
+      const ldrC = Math.round(Math.max(0, Math.min(1023, baseIntensity - errAz * offset - errEl * offset + (Math.random() - 0.5) * 5)));
+      const ldrD = Math.round(Math.max(0, Math.min(1023, baseIntensity + errAz * offset - errEl * offset + (Math.random() - 0.5) * 5)));
+
+      return { ldrA, ldrB, ldrC, ldrD, errAz, errEl };
+    }
+
+    function calculateAndTrack() {
+      const { ldrA, ldrB, ldrC, ldrD, errAz, errEl } = getSensorsAndError();
+
+      // Closed Loop Algorithm running dead-zone logic
+      // Delta differentials (comparable to wheatstone values inside ATmega32A registers)
+      const diffH = (ldrB + ldrD) - (ldrA + ldrC);
+      const diffV = (ldrA + ldrB) - (ldrC + ldrD);
+
+      const threshold = 18; // Deadband bounds counts
+      let isrRun = false;
+
+      if (Math.abs(diffH) > threshold) {
+        panAz += Math.sign(diffH) * 0.9;
+        panAz = Math.max(0, Math.min(360, panAz));
+        isrRun = true;
+      }
+
+      if (Math.abs(diffV) > threshold) {
+        panEl += Math.sign(diffV) * 0.8;
+        panEl = Math.max(10, Math.min(85, panEl));
+        isrRun = true;
+      }
+
+      // Update OCR1A/B Registers values simulating servo pulse duration
+      // SG90 servos demand 50Hz (20ms period) Fast-PWM, pulse width between 1ms (0°) and 2ms (180°)
+      const ocrA_sim = Math.round(1000 + (panAz / 360) * 1000);
+      const ocrB_sim = Math.round(1000 + (panEl / 90) * 1000);
+
+      document.getElementById('ocr-a').textContent = ocrA_sim + ' µs';
+      document.getElementById('ocr-b').textContent = ocrB_sim + ' µs';
+      
+      const hystLabel = document.getElementById('hyst-txt');
+      if (isrRun) {
+        hystLabel.textContent = 'ACTUATING';
+        hystLabel.style.color = 'var(--t-ancient)';
+      } else {
+        hystLabel.textContent = 'LOCKED';
+        hystLabel.style.color = '#10b981';
+      }
+
+      // Output values to DOM labels
+      document.getElementById('lbl-ldr-a').textContent = ldrA;
+      document.getElementById('lbl-ldr-b').textContent = ldrB;
+      document.getElementById('lbl-ldr-c').textContent = ldrC;
+      document.getElementById('lbl-ldr-d').textContent = ldrD;
+
+      return { errAz, errEl };
+    }
+
+    function drawPowerGraph() {
+      const W = canvasPwr.offsetWidth || 380, H = 110;
+      canvasPwr.width = W; canvasPwr.height = H;
+
+      ctxPwr.fillStyle = '#05070a'; ctxPwr.fillRect(0, 0, W, H);
+      ctxPwr.strokeStyle = 'var(--border)'; ctxPwr.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 25) { ctxPwr.beginPath(); ctxPwr.moveTo(x, 0); ctxPwr.lineTo(x, H); ctxPwr.stroke(); }
+      for (let y = 0; y < H; y += 15) { ctxPwr.beginPath(); ctxPwr.moveTo(0, y); ctxPwr.lineTo(W, y); ctxPwr.stroke(); }
+
+      if (powerHistory.length < 2) return;
+      const maxVal = 12.0;
+
+      // Draw static panel curve (Bell shape)
+      ctxPwr.beginPath();
+      powerHistory.forEach((p, idx) => {
+        const px = (idx / (powerHistory.length - 1)) * W;
+        const py = H - 10 - (p.fixed / maxVal) * (H - 20);
+        if (idx === 0) ctxPwr.moveTo(px, py);
+        else ctxPwr.lineTo(px, py);
+      });
+      ctxPwr.strokeStyle = 'var(--t-muted)'; ctxPwr.lineWidth = 1.2; ctxPwr.stroke();
+
+      // Draw tracked HelioTrack panel curve (Flat-top profile)
+      ctxPwr.beginPath();
+      powerHistory.forEach((p, idx) => {
+        const px = (idx / (powerHistory.length - 1)) * W;
+        const py = H - 10 - (p.track / maxVal) * (H - 20);
+        if (idx === 0) ctxPwr.moveTo(px, py);
+        else ctxPwr.lineTo(px, py);
+      });
+      ctxPwr.strokeStyle = 'var(--t-ancient)'; ctxPwr.lineWidth = 2.0; ctxPwr.stroke();
+
+      // Draw Fill Gradient under Tracked yield curve
+      ctxPwr.beginPath(); ctxPwr.moveTo(0, H - 10);
+      powerHistory.forEach((p, idx) => {
+        const px = (idx / (powerHistory.length - 1)) * W;
+        const py = H - 10 - (p.track / maxVal) * (H - 20);
+        ctxPwr.lineTo(px, py);
+      });
+      ctxPwr.lineTo(W, H - 10); ctxPwr.closePath();
+      const fillGrd = ctxPwr.createLinearGradient(0, 0, 0, H);
+      fillGrd.addColorStop(0, 'rgba(245, 158, 11, 0.08)');
+      fillGrd.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctxPwr.fillStyle = fillGrd; ctxPwr.fill();
+    }
+
+    function computePowerYields() {
+      const { errAz, errEl } = getSensorsAndError();
+      const totErr = Math.sqrt(errAz * errAz + errEl * errEl);
+
+      // HelioTrack harvest (scaled with cosine incidence error factor)
+      const cosIncidence = Math.max(0.12, Math.cos(totErr * Math.PI / 180));
+      const directIrradiance = Math.max(0.1, Math.sin(sunEl * Math.PI / 180));
+      const trackedPower = directIrradiance * cosIncidence * 10.0;
+
+      // Static south 30° inclined panel harvest
+      let staticErrAz = sunAz - 180;
+      let staticErrEl = sunEl - 30;
+      const staticTotErr = Math.sqrt(staticErrAz * staticErrAz + staticErrEl * staticErrEl);
+      const staticCos = Math.max(0.02, Math.cos(staticTotErr * Math.PI / 180));
+      const staticPower = directIrradiance * staticCos * 10.0;
+
+      document.getElementById('pwr-track').textContent = trackedPower.toFixed(2) + ' W';
+      document.getElementById('pwr-fixed').textContent = staticPower.toFixed(2) + ' W';
+
+      // Record History
+      powerHistory.push({ track: trackedPower, fixed: staticPower });
+      if (powerHistory.length > 100) powerHistory.shift();
+
+      const yieldGain = staticPower > 0.05 ? ((trackedPower - staticPower) / staticPower * 100) : 0;
+      document.getElementById('power-badge').textContent = (yieldGain >= 0 ? '+' : '') + yieldGain.toFixed(0) + '%';
+    }
+
+    // Drag-on-dome events handler
+    canvasSky.addEventListener('mousedown', e => {
+      dragging = true; autoTrack = false;
+      document.getElementById('auto-btn').textContent = '⊙ Manual Override';
+      document.getElementById('auto-btn').classList.remove('on');
+    });
+
+    canvasSky.addEventListener('mouseup', () => dragging = false);
+
+    canvasSky.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const rect = canvasSky.getBoundingClientRect();
+      const clickX = e.clientX - rect.left - (canvasSky.offsetWidth / 2);
+      const clickY = e.clientY - rect.top - (canvasSky.offsetHeight * 0.65);
+      
+      const r = Math.sqrt(clickX * clickX + clickY * clickY);
+      const maxR = canvasSky.offsetHeight * 0.8;
+
+      sunAz = ((Math.atan2(clickX, -clickY) * 180 / Math.PI) + 360) % 360;
+      sunEl = Math.max(5, Math.min(88, 90 - (r / maxR) * 90));
+    });
+
+    function toggleAuto(btn) {
+      autoTrack = !autoTrack;
+      btn.textContent = autoTrack ? '⟳ Auto Trajectory' : '⊙ Manual Override';
+      btn.classList.toggle('on', autoTrack);
+    }
+
+    function setNoon() { sunAz = 180; sunEl = 82; autoTrack = false; document.getElementById('auto-btn').classList.remove('on'); }
+    function setLowAngle() { sunAz = 90; sunEl = 14; autoTrack = false; document.getElementById('auto-btn').classList.remove('on'); }
+    function resetPanel() { panAz = 180; panEl = 45; }
+
+    // Loop steps animation triggering
+    function simStep() {
+      simT += 0.012;
+      const W = canvasSky.offsetWidth || 380, H = 320;
+      canvasSky.width = W; canvasSky.height = H;
+
+      if (autoTrack) {
+        // Continuous celestial simulation path (East to West)
+        sunAz = (100 + simT * 18) % 360;
+        sunEl = 45 + Math.sin(simT * 0.3) * 35;
+        sunEl = Math.max(10, sunEl);
+      }
+
+      calculateAndTrack();
+      computePowerYields();
+      draw3DHeliostat(ctxSky, W, H, sunAz, sunEl);
+      drawPowerGraph();
+
+      requestAnimationFrame(simStep);
+    }
+
+    simStep();
+  </script>
+</body>
+</html>

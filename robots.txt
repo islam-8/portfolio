@@ -1,0 +1,123 @@
+# robots.txt - islam-8.github.io/portfolio/
+# https://www.robotstxt.org/
+
+# ─── General: allow all crawlers ───────────────────────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.vscode/
+Crawl-delay: 1
+
+# ─── Google ────────────────────────────────────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /assets/
+
+User-agent: AdsBot-Google
+Allow: /
+
+# ─── Google AI (Gemini / SGE / Google Extended) ────────────────────────────────
+# Allow indexing for AEO/GEO - Google's AI uses this content for AI Overviews
+User-agent: Google-Extended
+Allow: /
+
+# ─── OpenAI / ChatGPT ──────────────────────────────────────────────────────────
+# Allow GPTBot so this content surfaces in ChatGPT and SearchGPT responses
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# ─── Anthropic / Claude ────────────────────────────────────────────────────────
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# ─── Perplexity ────────────────────────────────────────────────────────────────
+User-agent: PerplexityBot
+Allow: /
+
+# ─── Meta AI ───────────────────────────────────────────────────────────────────
+User-agent: FacebookBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# ─── Microsoft / Bing / Copilot ────────────────────────────────────────────────
+User-agent: Bingbot
+Allow: /
+
+User-agent: msnbot
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+# ─── Apple ─────────────────────────────────────────────────────────────────────
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# ─── LinkedIn ──────────────────────────────────────────────────────────────────
+User-agent: LinkedInBot
+Allow: /
+
+# ─── Twitter / X ───────────────────────────────────────────────────────────────
+User-agent: Twitterbot
+Allow: /
+
+# ─── You.com AI ────────────────────────────────────────────────────────────────
+User-agent: YouBot
+Allow: /
+
+# ─── Cohere AI ─────────────────────────────────────────────────────────────────
+User-agent: cohere-ai
+Allow: /
+
+# ─── Common Crawl (powers many AI training datasets) ───────────────────────────
+User-agent: CCBot
+Allow: /
+
+# ─── Diffbot (AI knowledge graph) ──────────────────────────────────────────────
+User-agent: Diffbot
+Allow: /
+
+# ─── ByteDance / TikTok AI ─────────────────────────────────────────────────────
+User-agent: Bytespider
+Allow: /
+
+# ─── Allen Institute for AI ────────────────────────────────────────────────────
+User-agent: AI2Bot
+Allow: /
+
+# ─── Common SEO crawlers ───────────────────────────────────────────────────────
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Sogou
+Allow: /
+
+# ─── Sitemap ───────────────────────────────────────────────────────────────────
+Sitemap: https://islam-8.github.io/portfolio/sitemap.xml

@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: Deterministic Obstacle-Avoidance Rover — Islam Emad</title>
+  <meta name="description" content="A rigorous academic monograph detailing a bare-metal C++ priority state machine and time-of-flight ultrasonic sensor orchestration on ATmega328P.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles (Going one folder up using ../) -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Refined Editorial Palette - Warm Paper & Noble Accents */
+      --acc-green: #2d5a27;
+      --acc-gold: #b8860b;
+      --acc-burgundy: #801a12;
+      --acc-teal: #1a5f7a;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c;
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+      --line-color: rgba(74, 222, 128, 0.15);
+      --dot-color: rgba(74, 222, 128, 0.85);
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Premium vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #2d5a27; /* Deep Forest Green for accents in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+      --line-color: rgba(21, 128, 61, 0.15);
+      --dot-color: rgba(21, 128, 61, 0.85);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background wave graphics */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Navigation Panel with Referrer Guardrail */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--t-ancient); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Document Header Elements */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp academic book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    /* Citations and Footnotes */
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 380px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 12px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    /* Table-like spec sheets */
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-ancient);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--t-ancient);
+      text-decoration: none;
+    }
+
+    /* Tactical simulation custom layouts */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .sim-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background for Grid Signals -->
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <!-- FIXED NAVIGATION BAR -->
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // OBSTACLE ROVER</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <!-- ACADEMIC MONOGRAPH HEADER -->
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">HORUS UNIVERSITY · DEPT. OF ELECTRONICS &amp; COMMUNICATIONS ENGINEERING</div>
+      <div class="h-badge">RESEARCH-SPEC: ATMEGA328P-NAV-01</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        Deterministic Bare-Metal <br><span style="color: var(--t-ancient);">Obstacle Avoidance Engines</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        Analyzing real-time priority state machines, HC-SR04 ultrasonic time-of-flight physics, and inductive current mitigation in H-bridge topologies.
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Monograph Document Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph details the research, architectural design, and raw firmware implementation of a deterministic, autonomous mobile robot (Rover) featuring a sub-15ms collision avoidance loop. Standard embedded platforms relying on heavy RTOS context switching or slow abstraction libraries (e.g., standard Arduino wiring wrappers) present severe timing jitter when parsing multi-sensor echo signals. To bypass this, we propose an AVR register-level architecture running on an ATmega328P microcontroller. Three HC-SR04 ultrasonic transducers are sequenced in round-robin using hardware timers and input capture vectors, achieving precise distance measurement. An on-chip H-bridge (L298N) is throttled via Timer1 Fast-PWM based on a hardware-bound state machine. We outline our mathematical solutions for speed-of-sound calibration and transient surge suppression across shared DC rails.
+      </div>
+
+      <!-- SECTION 1: PHYSICAL PRINCIPLES -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Time-of-Flight Physics &amp; Temperature Calibration</h3>
+        <p>
+          The vehicle’s primary awareness of its surrounding geometry relies on the calculation of acoustic time-of-flight (ToF) reflections. The HC-SR04 sensor propagates a $40\text{ kHz}$ ultrasonic burst composed of 8 high-frequency square wave cycles. The fundamental physics governing distance calculations correlates the round-trip echo pulse duration ($\Delta t$) with the localized speed of sound $v_s$<cite class="citation" onclick="scrollToFootnote(1)">[1]</cite>:
+        </p>
+        
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          d = \frac{v_s \cdot \Delta t}{2}
+        </div>
+
+        <p>
+          The speed of sound $v_s$ in dry air is not constant; it exhibits direct linear dependency on atmospheric temperature $T$ (measured in Celsius):
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          v_s \approx 331.3 + 0.606 \cdot T \quad [\text{m/s}]
+        </div>
+
+        <p>
+          At an ambient lab temperature of $20^\circ\text{C}$, the speed of sound calculates to $343.4\text{ m/s}$. To convert this speed into a practical microsecond metric ($\mu\text{s}$) for the AVR microcontroller, we formulate the conversion ratio:
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          \text{Factor} = \frac{10^6 \mu\text{s}}{343.4 \text{ m/s} \cdot 100 \text{ cm/m}} \approx 29.12 \mu\text{s/cm} \quad (\times 2 \text{ for round trip} \approx 58.2 \mu\text{s/cm})
+        </div>
+
+        <p>
+          Executing multiple asynchronous sensor triggers simultaneously introduces **ultrasonic crosstalk** (crosstalk contamination), wherein the receiver of the Left sensor intercept echoes propagated by the Front sensor. To mitigate this, the ATmega328P firmware executes a round-robin polling cycle, allowing a $15\text{ ms}$ quiet margin after each Echo pulse falls before initiating the subsequent trigger sequence.
+        </p>
+
+        <!-- Figure 1: Ultrasonic Transceiver & Echo Wave Schematic -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 280" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <!-- Sensor Chassis -->
+            <g transform="translate(100, 140)">
+              <rect x="-60" y="-40" width="120" height="80" rx="4" fill="var(--bg-paper)" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <circle cx="-30" cy="0" r="22" fill="none" stroke="var(--border-hi)" stroke-width="2"/>
+              <circle cx="-30" cy="0" r="14" fill="var(--bg-paper-alt)" stroke="var(--t-ancient)" stroke-dasharray="2,2"/>
+              <text x="-30" y="3" font-family="var(--p-mono)" font-size="8" fill="var(--t-title)" text-anchor="middle">TRIG (Tx)</text>
+              
+              <circle cx="30" cy="0" r="22" fill="none" stroke="var(--border-hi)" stroke-width="2"/>
+              <circle cx="30" cy="0" r="14" fill="var(--bg-paper-alt)" stroke="var(--acc-green)" stroke-dasharray="2,2"/>
+              <text x="30" y="3" font-family="var(--p-mono)" font-size="8" fill="var(--t-title)" text-anchor="middle">ECHO (Rx)</text>
+              <text x="0" y="32" font-family="var(--p-mono)" font-size="9" fill="var(--t-muted)" text-anchor="middle">HC-SR04 40kHz</text>
+            </g>
+
+            <!-- Propagated Waves -->
+            <path d="M 180 140 A 60 60 0 0 1 240 100 M 180 140 A 90 90 0 0 1 270 80 M 180 140 A 120 120 0 0 1 300 60" fill="none" stroke="var(--t-ancient)" stroke-width="1.5"/>
+            <text x="240" y="70" font-family="var(--p-mono)" font-size="8" fill="var(--t-ancient)">40 kHz Acoustic Burst (8 cycles)</text>
+
+            <!-- Reflected Waves -->
+            <path d="M 620 140 A 60 60 0 0 0 560 180 M 620 140 A 90 90 0 0 0 530 200 M 620 140 A 120 120 0 0 0 500 220" fill="none" stroke="var(--acc-green)" stroke-width="1.2" stroke-dasharray="3, 3"/>
+            <text x="520" y="240" font-family="var(--p-mono)" font-size="8" fill="var(--acc-green)">Attenuated Echo Return</text>
+
+            <!-- Target Obstacle -->
+            <g transform="translate(680, 70)">
+              <rect x="0" y="0" width="140" height="140" rx="3" fill="var(--bg-paper)" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="10" y1="10" x2="130" y2="130" stroke="var(--border)" stroke-width="1"/>
+              <line x1="130" y1="10" x2="10" y2="130" stroke="var(--border)" stroke-width="1"/>
+              <text x="70" y="74" font-family="var(--p-sans)" font-size="11" font-weight="bold" fill="var(--t-title)" text-anchor="middle">SOLID BARRIER</text>
+              <text x="70" y="90" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)" text-anchor="middle">Perfect Reflector</text>
+            </g>
+
+            <path d="M 160 140 L 680 140" stroke="var(--border-hi)" stroke-width="1" stroke-dasharray="4, 4"/>
+            <text x="420" y="130" font-family="var(--p-mono)" font-size="10" fill="var(--t-title)">Distance: d = (v_s * dt) / 2</text>
+          </svg>
+          <div class="fig-caption">Figure 1: Wave propagation and echo profile of the time-of-flight acoustic burst off a reflective barrier.</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: SIGNAL PROCESSING PIPELINE -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> Microsecond Priority Arbitrator &amp; State Machine</h3>
+        <p>
+          Our priority navigator enforces strict hardware determinism. Instead of parsing inputs sequentially inside long, blocking loops, the ATmega328P leverages its internal 16-bit **Timer1 Input Capture Register (ICR1)** to capture edge transitions on the echo lines. By doing so, CPU cycles are entirely unburdened from spinning in loop checks, preventing timing deviations during fast operations<cite class="citation" onclick="scrollToFootnote(2)">[2]</cite>.
+        </p>
+
+        <div class="cmp-table-container">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Zone Metric</th>
+                <th>Distance Range</th>
+                <th>Priority Rank</th>
+                <th>Motor Action Frame (H-Bridge)</th>
+                <th>Reaction Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>CRITICAL Zone</strong></td>
+                <td>$\le 20\text{ cm}$</td>
+                <td>High (Interrupt-driven)</td>
+                <td>Emergency stop, reverse, and pivot away</td>
+                <td>$\le 4.2\text{ ms}$</td>
+              </tr>
+              <tr class="highlight">
+                <td><strong>CAUTION Zone</strong></td>
+                <td>$21\text{ cm}$ to $40\text{ cm}$</td>
+                <td>Medium (State Machine)</td>
+                <td>Slow down to 50% PWM speed, adjust steering angle</td>
+                <td>$\le 10.0\text{ ms}$</td>
+              </tr>
+              <tr>
+                <td><strong>CLEAR Zone</strong></td>
+                <td>$\ge 41\text{ cm}$</td>
+                <td>Low (De-prioritized)</td>
+                <td>Full Forward at 100% PWM speed</td>
+                <td>$\le 12.5\text{ ms}$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Let $d_{F}$, $d_{L}$, and $d_{R}$ define the smoothed distances captured from the Front, Left, and Right sensors respectively. The priority arbitrator is mapped mathematically to output a direction vector $V_{dir}$ and a speed throttle index $T_{pwm}$:
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          \text{If } d_{F} \le 20 \implies V_{dir} = \text{Pivot}, \, T_{pwm} = 0 \quad [\text{Immediate Action}]
+        </div>
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          \text{If } 21 \le d_{F} \le 40 \implies V_{dir} = (d_{L} \ge d_{R} ? \, \text{Steer Left} : \text{Steer Right}), \, T_{pwm} = 0.50
+        </div>
+      </section>
+
+      <!-- SECTION 3: REAL-TIME SIMULATION PANEL -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Live Interactive Navigation Simulation</h3>
+        <p>
+          To demonstrate the state machine execution speeds, sensor thresholds, and obstacle-avoidance logic, we developed a real-time, physics-based simulator. You can add obstacles randomly to the grid or click within the simulation to see the path vector update dynamically.
+        </p>
+
+        <div class="sim-layout">
+          <!-- Left: Canvas Sim -->
+          <div class="terminal-window" style="margin: 0;">
+            <div class="term-bar">
+              <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+              <div class="term-dot" style="background: var(--acc-gold);"></div>
+              <div class="term-dot" style="background: var(--acc-green);"></div>
+              <span class="term-title">autonomous_rover_core.elf</span>
+            </div>
+            <div class="sim-body" style="padding: 15px;">
+              <canvas id="rover-canvas" style="display:block; width:100%; height: 320px; cursor:crosshair"></canvas>
+              <div class="term-controls" style="border-top: none; padding: 10px 0 0 0; background: transparent;">
+                <button class="tbtn on" id="sim-run-btn" onclick="toggleSim(this)">▶ Running</button>
+                <button class="tbtn" onclick="resetSim()">↺ Reset Position</button>
+                <button class="tbtn" onclick="addObs()">+ Add Block</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Diagnostic Output -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <span class="term-title">DIAGNOSTIC SERIAL CONSOLE (115200 BAUD)</span>
+              <span class="sim-badge" style="margin-left: auto;">100 HZ POLLING</span>
+            </div>
+            <div id="uart-stream" class="term-body" style="flex: 1; height: 190px;">
+              <!-- Simulated serial diagnostics stream here -->
+            </div>
+            <div style="background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-hi); padding: 15px;">
+              <div style="font-family: var(--p-mono); font-size: 9px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Real-Time Obstacle Warning Waveform</div>
+              <canvas id="cv-speed" height="70" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 15px; font-family: var(--p-mono); font-size: 11px; color: var(--t-body); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+          <span><strong style="color: var(--t-ancient);">State:</strong> <span id="mode-badge">FORWARD</span></span>
+          <span><strong style="color: var(--t-ancient);">Status Indicator:</strong> <span id="stxt">Navigating path...</span></span>
+        </div>
+      </section>
+
+      <!-- SECTION 4: HARDWARE DIAGRAM -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Circuit Diagram &amp; Electrical Isolation</h3>
+        <p>
+          A common failure mode in mobile robotics is the **inductive current surge** feedback loop. When DC gear motors are reversed or stopped suddenly, their magnetic field collapses, generating a reverse EMF voltage spike that can exceed $30\text{ V}$. On a shared power supply, this surge propagates to the microcontroller’s Vcc rail, causing CPU reset conditions or volatile RAM corruption. 
+          To prevent this, the hardware features separate regulators, bulk decoupling capacitors, and flyback diode matrices<cite class="citation" onclick="scrollToFootnote(3)">[3]</cite>.
+        </p>
+
+        <div class="fig-container" id="diagram" style="padding: 10px;">
+          <svg viewBox="0 0 960 400" width="100%" style="min-width:640px">
+            <defs>
+              <marker id="ma" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="var(--t-ancient)"/></marker>
+              <marker id="mb" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="var(--t-ancient)"/></marker>
+              <marker id="mc" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="var(--t-ancient)"/></marker>
+            </defs>
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)"/>
+            
+            <!-- Arduino Uno -->
+            <rect x="370" y="150" width="220" height="120" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="480" y="175" font-family="var(--p-mono)" font-size="11" font-weight="bold" fill="var(--t-title)" text-anchor="middle">MCU (ATmega328P)</text>
+            <text x="480" y="195" font-family="var(--p-mono)" font-size="8" fill="var(--t-muted)" text-anchor="middle">ATmega328P · 16MHz · Bare-Metal C++</text>
+            <rect x="385" y="210" width="190" height="16" rx="2" stroke="var(--border)" fill="var(--bg-paper-alt)"/>
+            <text x="480" y="221" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">Digital / PWM / 6× analog pins</text>
+            <text x="480" y="248" font-family="var(--p-sans)" font-size="9" font-weight="bold" fill="var(--t-ancient)" text-anchor="middle">Priority Decision Algorithm</text>
+            
+            <!-- HC-SR04 Front -->
+            <rect x="390" y="30" width="180" height="56" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="480" y="52" font-family="var(--p-mono)" font-size="9" font-weight="bold" fill="var(--t-title)" text-anchor="middle">HC-SR04 — FRONT</text>
+            <text x="480" y="68" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">40kHz · 2cm–400cm · ~58µs/cm</text>
+            <circle cx="448" cy="48" r="7" stroke="var(--border)" stroke-width="1" fill="var(--bg-paper-alt)"/>
+            <circle cx="512" cy="48" r="7" stroke="var(--border)" stroke-width="1" fill="var(--bg-paper-alt)"/>
+            <path d="M480 86 L480 150" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#mb)"/>
+            <text x="492" y="118" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)">TRIG/ECHO</text>
+
+            <!-- HC-SR04 Left -->
+            <rect x="155" y="150" width="130" height="52" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="220" y="174" font-family="var(--p-mono)" font-size="8" font-weight="bold" fill="var(--t-title)" text-anchor="middle">HC-SR04 LEFT</text>
+            <text x="220" y="188" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">Side detection</text>
+            <path d="M285 176 L370 176" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#mb)"/>
+            <text x="320" y="168" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)">Digital</text>
+
+            <!-- HC-SR04 Right -->
+            <rect x="675" y="150" width="130" height="52" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="740" y="174" font-family="var(--p-mono)" font-size="8" font-weight="bold" fill="var(--t-title)" text-anchor="middle">HC-SR04 RIGHT</text>
+            <text x="740" y="188" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">Side detection</text>
+            <path d="M675 176 L590 176" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#mb)"/>
+            <text x="625" y="168" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)">Digital</text>
+
+            <!-- L298N -->
+            <rect x="375" y="315" width="210" height="56" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="480" y="338" font-family="var(--p-mono)" font-size="9" font-weight="bold" fill="var(--t-title)" text-anchor="middle">L298N MOTOR DRIVER</text>
+            <text x="480" y="352" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">Dual H-Bridge · 2A/ch · PWM · IN1–IN4</text>
+            <path d="M480 270 L480 315" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#mc)"/>
+            <text x="492" y="295" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)">PWM+DIR</text>
+
+            <!-- Left motors -->
+            <rect x="170" y="320" width="130" height="46" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="235" y="342" font-family="var(--p-sans)" font-size="8" font-weight="bold" fill="var(--t-title)" text-anchor="middle">LEFT MOTORS ×2</text>
+            <text x="235" y="354" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">DC Gear · 1:48 · 6V</text>
+            <path d="M375 343 L300 341" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ma)"/>
+
+            <!-- Right motors -->
+            <rect x="660" y="320" width="130" height="46" rx="4" stroke="var(--border-hi)" stroke-width="1.5" fill="var(--bg-paper)"/>
+            <text x="725" y="342" font-family="var(--p-sans)" font-size="8" font-weight="bold" fill="var(--t-title)" text-anchor="middle">RIGHT MOTORS ×2</text>
+            <text x="725" y="354" font-family="var(--p-mono)" font-size="7" fill="var(--t-muted)" text-anchor="middle">DC Gear · 1:48 · 6V</text>
+            <path d="M585 343 L660 341" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ma)"/>
+          </svg>
+          <div class="fig-caption">Figure 2: Complete HIL wiring, signal line boundaries, and DC supply layout.</div>
+        </div>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] Speed of Sound Physics:</strong> Pierce, A. D. (1989). <em>Acoustics: An Introduction to Its Physical Principles and Applications</em>. Acoustical Society of America. Detail on temperature coefficients.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] Register-Level Microcontroller Architectures:</strong> ATmega328P 8-Bit AVR Microcontroller datasheet, explaining hardware Timer registers and input capture interrupt vectors.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] Transient Voltage Protection:</strong> Inductive current spike suppression and decoupling capacitor arrays in automotive and mobile robotics systems.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Hardware Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">Ultrasonic Array</span><span class="spec-v">3 × HC-SR04 Sensors</span></div>
+            <div class="spec-row"><span class="spec-k">ToF Polling Sequence</span><span class="spec-v">Round-Robin Interrupt Polling</span></div>
+            <div class="spec-row"><span class="spec-k">Critical Stop Boundary</span><span class="spec-v">20 cm (Calibrated)</span></div>
+            <div class="spec-row"><span class="spec-k">Chassis Motors</span><span class="spec-v">4 × DC Gear Motors (1:48 Ratio)</span></div>
+            <div class="spec-row"><span class="spec-k">Motor Driver Bridge</span><span class="spec-v">L298N Dual H-Bridge Driver</span></div>
+            <div class="spec-row"><span class="spec-k">Main MCU SoC</span><span class="spec-v">ATmega328P (8-Bit AVR architecture)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">Time-of-Flight Physics</span>
+            <span class="tech-pill">Round-Robin Polling</span>
+            <span class="tech-pill">Timer1 Input Capture</span>
+            <span class="tech-pill">PWM Speed Throttling</span>
+            <span class="tech-pill">Transient Suppression</span>
+            <span class="tech-pill">State-Machine Arbitrator</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    (function() {
+      const ref = document.referrer;
+      let dest = "../index.html"; // Default fallback to primary index
+      let label = "Return to Portfolio";
+
+      if (ref.includes("blog.html")) {
+        dest = "../blog.html";
+        label = "Return to Blog";
+      } else if (ref.includes("index.html")) {
+        dest = "../index.html#blog"; // Direct anchor jump to project section
+        label = "Return to Portfolio";
+      }
+
+      // Automatically update all back navigation nodes
+      document.querySelectorAll('.n-back, .back-nav').forEach(el => {
+        el.setAttribute('href', dest);
+        if (el.classList.contains('n-back')) {
+          el.innerHTML = `← ${label}`;
+        } else {
+          el.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${label}`;
+        }
+      });
+    })();
+
+    // Local theme switching
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    // Dynamic wave simulation canvas
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 145 : 36, /* Green / Warm Gold tints */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    const canvas = document.getElementById('rover-canvas');
+    const ctx2 = canvas.getContext('2d');
+    const cvS = document.getElementById('cv-speed'), ctxS = cvS.getContext('2d');
+    const uartDiv = document.getElementById('uart-stream');
+    let simRunning = true, animId2 = null, microMotion = true, simT = 0;
+    let rover = {x: 100, y: 140, angle: 0, speed: 1.6};
+    let obstacles = [{x: 270, y: 95, r: 26}, {x: 380, y: 175, r: 22}, {x: 195, y: 215, r: 20}];
+    let speedHistory = [], uartLines = [], frameCount = 0;
+
+    function dist(x1,y1,x2,y2) { return Math.sqrt((x2-x1)**2+(y2-y1)**2); }
+
+    function raycast(rx,ry,ang){
+      let min=250;
+      for(let i=2;i<250;i++){
+        const px=rx+Math.cos(ang)*i,py=ry+Math.sin(ang)*i;
+        for(const ob of obstacles){if(dist(px,py,ob.x,ob.y)<ob.r+5){return i}}
+        if(px<8||px>492||py<8||py>292){return i}
+      }
+      return min;
+    }
+
+    function decide(){
+      const F = raycast(rover.x,rover.y,rover.angle);
+      const L = raycast(rover.x,rover.y,rover.angle-Math.PI/2.8);
+      const R = raycast(rover.x,rover.y,rover.angle+Math.PI/2.8);
+      let mode = 'FORWARD';
+      if(F<20){
+        mode = L>R?'PIVOT-LEFT':'PIVOT-RIGHT';
+        rover.angle += L>R?-0.07:0.07;
+        rover.speed = 0;
+      }else if(F<42){
+        mode = 'CAUTION'; rover.speed = 0.55;
+        rover.angle += L<R?0.025:-0.025;
+      }else{
+        rover.speed = 1.6;
+        if(R<55)rover.angle-=0.018;
+        else if(L<55)rover.angle+=0.018;
+      }
+      return {F,L,R,mode};
+    }
+
+    function drawSim(){
+      const W = canvas.offsetWidth||500, H = 280;
+      canvas.width = W; canvas.height = H;
+      ctx2.fillStyle = '#05070a'; ctx2.fillRect(0,0,W,H);
+
+      // Grid backing
+      ctx2.strokeStyle = 'var(--radar-grid)'; ctx2.lineWidth = 0.5;
+      for(let x=0;x<W;x+=30){ctx2.beginPath();ctx2.moveTo(x,0);ctx2.lineTo(x,H);ctx2.stroke()}
+      for(let y=0;y<H;y+=30){ctx2.beginPath();ctx2.moveTo(0,y);ctx2.lineTo(W,y);ctx2.stroke()}
+
+      // Obstacles
+      obstacles.forEach(ob=>{
+        ctx2.beginPath(); ctx2.arc(ob.x,ob.y,ob.r,0,Math.PI*2);
+        ctx2.fillStyle = 'rgba(128, 26, 18, 0.1)'; ctx2.fill();
+        ctx2.strokeStyle = 'var(--acc-burgundy)'; ctx2.lineWidth = 1.5; ctx2.stroke();
+      });
+
+      const {F,L,R,mode} = decide();
+
+      // Rays
+      const rays=[
+        {a:rover.angle-Math.PI/2.8,d:L,c:'rgba(0,194,212,.4)'},
+        {a:rover.angle,d:F,c:'rgba(74,222,128,.5)'},
+        {a:rover.angle+Math.PI/2.8,d:R,c:'rgba(0,194,212,.4)'},
+      ];
+      rays.forEach(r=>{
+        const d2 = Math.min(r.d,140);
+        const ex = rover.x+Math.cos(r.a)*d2, ey = rover.y+Math.sin(r.a)*d2;
+        ctx2.beginPath(); ctx2.moveTo(rover.x,rover.y); ctx2.lineTo(ex,ey);
+        ctx2.strokeStyle = r.c; ctx2.lineWidth = 1; ctx2.stroke();
+      });
+
+      // Body orientation
+      ctx2.save(); ctx2.translate(rover.x,rover.y); ctx2.rotate(rover.angle);
+      ctx2.fillStyle = 'var(--bg-paper-alt)'; ctx2.strokeStyle = 'var(--acc-green)'; ctx2.lineWidth = 1.5;
+      ctx2.beginPath(); ctx2.roundRect(-12,-16,24,32,3); ctx2.fill(); ctx2.stroke();
+      ctx2.restore();
+
+      // UI HUD Nodes
+      document.getElementById('mode-badge').textContent = mode;
+      document.getElementById('stxt').textContent = {
+        FORWARD: 'Clear path. Safe full-speed navigation.',
+        CAUTION: 'Obstacle approached. Decreased throttle.',
+        'PIVOT-LEFT': 'Path blocked. Reversing and steering left.',
+        'PIVOT-RIGHT': 'Path blocked. Reversing and steering right.',
+      }[mode] || mode;
+
+      // UART Stream Update
+      frameCount++;
+      if(frameCount%5===0){
+        const line = `${Math.round(F)},${Math.round(L)},${Math.round(R)}`;
+        const ts = (simT*1000/15).toFixed(0);
+        uartLines.push(`<span style="color:var(--t-muted)">[${ts}ms]</span> <span style="color:#58a6ff">$AVR_TX:</span> <span style="color:#34d399">${line}</span>`);
+        if(uartLines.length>10) uartLines.shift();
+        uartDiv.innerHTML = uartLines.join('<br>');
+        uartDiv.scrollTop = uartDiv.scrollHeight;
+
+        speedHistory.push(rover.speed);
+        if(speedHistory.length>60) speedHistory.shift();
+      }
+
+      drawSpeedChart();
+    }
+
+    function drawSpeedChart() {
+      const W = cvS.offsetWidth || 220, H = 70;
+      cvS.width = W; cvS.height = H;
+      ctxS.fillStyle = '#05070a'; ctxS.fillRect(0,0,W,H);
+
+      if (speedHistory.length < 2) return;
+      ctxS.beginPath();
+      speedHistory.forEach((val, idx) => {
+        const px = (idx / (speedHistory.length - 1)) * W;
+        const py = H - 5 - (val / 1.6) * (H - 12);
+        if (idx === 0) ctxS.moveTo(px, py);
+        else ctxS.lineTo(px, py);
+      });
+      ctxS.strokeStyle = 'var(--acc-green)'; ctxS.lineWidth = 1.2; ctxS.stroke();
+    }
+
+    function simStep(){
+      if(!simRunning) return;
+      rover.x += Math.cos(rover.angle)*rover.speed;
+      rover.y += Math.sin(rover.angle)*rover.speed;
+      if(rover.x<12||rover.x>488) { rover.angle = Math.PI - rover.angle; rover.x = Math.max(12, Math.min(488, rover.x)); }
+      if(rover.y<12||rover.y>268) { rover.angle = -rover.angle; rover.y = Math.max(12, Math.min(268, rover.y)); }
+      simT += 0.015;
+      drawSim();
+      animId2 = requestAnimationFrame(simStep);
+    }
+
+    function toggleSim(btn){
+      simRunning = !simRunning;
+      btn.textContent = simRunning ? '▶ Running' : '⏸ Paused';
+      btn.classList.toggle('on', simRunning);
+      if(simRunning) simStep(); else cancelAnimationFrame(animId2);
+    }
+
+    function resetSim(){
+      rover = {x: 100, y: 140, angle: 0, speed: 1.6};
+      obstacles = [{x: 270, y: 95, r: 26}, {x: 380, y: 175, r: 22}, {x: 195, y: 215, r: 20}];
+    }
+
+    function addObs(){ obstacles.push({x: Math.random()*360+50, y: Math.random()*180+40, r: Math.random()*14+14}); }
+
+    // Click/touch canvas to drop obstacle dynamically
+    canvas.addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      obstacles.push({ x: clickX, y: clickY, r: 18 });
+    });
+
+    simStep();
+  </script>
+</body>
+</html>

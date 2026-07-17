@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Logs &amp; Articles - Islam Emad</title>
+  <meta name="description"
+    content="Technical deep-dives, hardware logs, and digital signal processing write-ups by Islam Emad - Embedded C, Real-time DSP, Edge AI, and RF Systems.">
+  <link rel="canonical" href="https://github.com/islam-8/blog">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Engineering Logs &amp; Articles - Islam Emad">
+  <meta property="og:description" content="Technical deep-dives and research logs by Islam Emad - Embedded Systems, DSP, Edge AI, and Defensive Countermeasures.">
+  <meta property="og:url" content="https://github.com/islam-8/blog">
+  <meta property="og:image" content="images/resume.jpg">
+  <meta property="og:site_name" content="Islam Emad">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Engineering Logs &amp; Articles - Islam Emad">
+  <meta name="twitter:description" content="Embedded Systems design, RF countermeasure analysis, and low-latency DSP write-ups.">
+  <meta name="twitter:image" content="images/resume.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "index.html" },
+          { "@type": "ListItem", "position": 2, "name": "Blog", "item": "blog.html" }
+        ]
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "https://github.com/islam-8/blog",
+        "url": "https://github.com/islam-8/blog",
+        "name": "Engineering Logs & Articles - Islam Emad",
+        "description": "Technical deep-dives and research logs by Islam Emad - Embedded Systems, DSP, Edge AI, and Defensive Countermeasures.",
+        "author": { "@id": "https://github.com/islam-8/#person" },
+        "creator": { "@id": "https://github.com/islam-8/#person" },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://github.com/islam-8/#website",
+          "url": "index.html"
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://github.com/islam-8/#person",
+        "name": "Islam Emad",
+        "url": "index.html",
+        "sameAs": ["https://github.com/islam-8", "https://www.linkedin.com/in/islam-ismail-18a88b381"]
+      }
+    ]
+  }
+  </script>
+
+  <!-- Google Analytics & Microsoft Clarity Tracking -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WD6E8Q4V9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0WD6E8Q4V9', { 'anonymize_ip': true });
+  </script>
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "wwkwx7htcv");
+  </script>
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/vendor.css">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+  <link rel="stylesheet" href="css/islam.css">
+  <link rel="stylesheet" href="css/custom.css">
+
+  <style>
+    /* ── Hero ─────────────────────────────────────────────────── */
+    .blog-hero {
+      padding: 130px 0 64px;
+      background: #12131C;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .blog-hero .section-head { margin-bottom: 0; }
+    .blog-hero__sub {
+      color: #9ca3af; font-size: 0.95rem;
+      margin-top: 0.9rem;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .blog-hero__link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      color: #FF3366; font-size: 0.84rem; font-weight: 600;
+      text-decoration: none; margin-top: 1rem; transition: color 0.2s;
+    }
+    .blog-hero__link:hover { color: #ff5e8c; }
+
+    /* ── Grid section ─────────────────────────────────────────── */
+    .blog-grid-section {
+      padding: 60px 0 90px;
+      background: #12131C;
+      background-image:
+        radial-gradient(ellipse at 18% 40%, rgba(255,51,102,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 82% 70%, rgba(0,180,216,0.04) 0%, transparent 45%);
+    }
+
+    /* ── Bento grid ───────────────────────────────────────────── */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    /* span helpers */
+    .bento--w2 { grid-column: span 2; }
+    .bento--w3 { grid-column: span 3; }
+
+    /* ── Card base - glassmorphism ────────────────────────────── */
+    .blog-card {
+      border: 1px solid rgba(255,51,102,0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: rgba(26,28,41,0.6);
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .blog-card:hover {
+      border-color: rgba(255,51,102,0.32);
+      box-shadow: 0 8px 36px rgba(0,0,0,0.55), 0 0 22px rgba(255,51,102,0.08);
+      transform: translateY(-4px);
+    }
+
+    /* ── Cover image ──────────────────────────────────────────── */
+    .blog-card__cover {
+      position: relative; overflow: hidden;
+      aspect-ratio: 16/9; flex-shrink: 0;
+      background: #111;
+    }
+    /* panoramic crop for wide (span-2) cards */
+    .bento--w2 .blog-card__cover { aspect-ratio: 21/9; }
+
+    .blog-card__cover svg {
+      width: 100%; height: 100%;
+      display: block;
+      transition: transform 0.45s ease;
+    }
+    .blog-card:hover .blog-card__cover svg { transform: scale(1.03); }
+    /* gradient overlay so tag pill stays readable */
+    .blog-card__cover::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    /* ── Tag pill on cover ────────────────────────────────────── */
+    .blog-card__tag {
+      position: absolute; top: 11px; left: 12px; z-index: 1;
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      padding: 3px 11px; border-radius: 20px;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      backdrop-filter: blur(8px) saturate(1.4);
+      -webkit-backdrop-filter: blur(8px) saturate(1.4);
+    }
+    .tag-personal { background: rgba(139,124,248,0.6); color: #f0eeff; }
+    .tag-k8s      { background: rgba(66,165,245,0.6);  color: #e3f2fd; }
+    .tag-security { background: rgba(248,113,113,0.6); color: #ffe5e5; }
+    .tag-cloud    { background: rgba(74,222,128,0.6);  color: #e0fff0; }
+    .tag-nlp      { background: rgba(251,191,36,0.6);  color: #fff8e1; }
+    .tag-linux    { background: rgba(251,146,60,0.6);  color: #fff3e0; }
+
+    /* ── Card body - glass panel ──────────────────────────────── */
+    .blog-card__body {
+      padding: 1.3rem 1.5rem 1.5rem;
+      display: flex; flex-direction: column; flex: 1;
+      background: rgba(255,51,102,0.03);
+      backdrop-filter: blur(14px) saturate(1.3);
+      -webkit-backdrop-filter: blur(14px) saturate(1.3);
+      border-top: 1px solid rgba(255,51,102,0.07);
+    }
+    .blog-card__title {
+      font-size: 15px; font-weight: 600;
+      color: #fff; margin-bottom: 5px; line-height: 1.45;
+    }
+    .blog-card__title a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .blog-card__title a:hover { color: #FF3366; }
+    .blog-card__date { font-size: 11px; color: #555; margin-bottom: 10px; font-family: 'Courier New', monospace; }
+    .blog-card__excerpt {
+      font-size: 13.5px; color: #9ca3af; line-height: 1.65;
+      flex: 1; margin-bottom: 1.1rem;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .blog-card__read {
+      display: inline-flex; align-items: center; gap: 4px;
+      color: #FF3366; font-size: 12px; font-weight: 700;
+      text-decoration: none; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-top: auto; transition: color 0.2s;
+    }
+    .blog-card__read:hover { color: #ff5e8c; }
+
+    /* ── Full-width (bento--w3) horizontal card ───────────────── */
+    .bento--w3 .blog-card          { flex-direction: row; }
+    .bento--w3 .blog-card__cover   { width: 38%; aspect-ratio: auto; min-height: 220px; flex-shrink: 0; }
+    .bento--w3 .blog-card__cover::after { background: linear-gradient(90deg, rgba(0,0,0,0.2) 0%, transparent 60%); }
+    .bento--w3 .blog-card__body    { flex: 1; border-top: none; border-left: 1px solid rgba(255,51,102,0.07); }
+    .bento--w3 .blog-card__excerpt { -webkit-line-clamp: 4; line-clamp: 4; }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    .blog-footer {
+      background: #1A1C29;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      text-align: center; padding: 2rem;
+      color: #555; font-size: 0.82rem;
+    }
+    .blog-footer a { color: #777; text-decoration: none; transition: color 0.2s; }
+    .blog-footer a:hover { color: #aaa; }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 991px) {
+      .bento-grid { grid-template-columns: repeat(2, 1fr); }
+      .bento--w2  { grid-column: span 2; }
+      .bento--w3  { grid-column: span 2; }
+      .bento--w3 .blog-card { flex-direction: column; }
+      .bento--w3 .blog-card__cover { width: 100%; aspect-ratio: 21/9; min-height: unset; }
+      .bento--w3 .blog-card__body { border-left: none; border-top: 1px solid rgba(255,51,102,0.07); }
+      .bento--w2 .blog-card__cover { aspect-ratio: 16/9; }
+    }
+    @media (max-width: 575px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento--w2, .bento--w3 { grid-column: span 1; }
+      .bento--w2 .blog-card__cover { aspect-ratio: 16/9; }
+    }
+    .navbar.fixed-top { background: rgba(18, 19, 28, 0.97) !important; display: flex !important; opacity: 1 !important; }
+  </style>
+  <link rel="shortcut icon" href="images/resume.jpg" type="image/x-icon">
+  <link rel="icon" href="images/resume.jpg" type="image/x-icon">
+  <link rel="apple-touch-icon" href="images/resume.jpg">
+</head>
+
+<body>
+
+  <!-- ── STREAMING_CHUNK: Designing the Main Navigation Header... ── -->
+  <nav class="navbar navbar-expand-lg navbar-custom navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand mr-auto" href="index.html">Islam Emad</a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarBlog"
+        aria-controls="navbarBlog" aria-expanded="false" aria-label="Toggle navigation">
+        <svg class="ham hamRotate ham1" viewBox="0 0 100 100" width="60">
+          <path class="line top"
+            d="m 30,33 h 40 c 0,0 9.044436,-0.654587 9.044436,-8.508902 0,-7.854315 -8.024349,-11.958003 -14.89975,-10.85914 -6.875401,1.098863 -13.637059,4.171617 -13.637059,16.368042 v 40" />
+          <path class="line middle" d="m 30,50 h 40" />
+          <path class="line bottom"
+            d="m 30,67 h 40 c 12.796276,0 15.357889,-11.717785 15.357889,-26.851538 0,-15.133752 -4.786586,-27.274118 -16.667516,-27.274118 -11.88093,0 -18.499247,6.994427 -18.435284,17.125656 l 0.252538,40" />
+        </svg>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarBlog">
+        <ul class="navbar-nav ml-auto">
+          <li><a class="nav-link" href="index.html#home">Home</a></li>
+          <li><a class="nav-link" href="index.html#services">Skills</a></li>
+          <li><a class="nav-link" href="index.html#resume">Experience</a></li>
+          <li><a class="nav-link" href="index.html#blog">Projects</a></li>
+          <li><a class="nav-link active" href="blog.html">Blogs</a></li>
+          <li><a class="nav-link" href="index.html#testimony">Recommendations</a></li>
+          <li><a class="nav-link" href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── STREAMING_CHUNK: Setting up the Blog Hero Banner... ── -->
+  <div class="blog-hero text-center">
+    <div class="container">
+      <div class="section-head">
+        <span>Writing</span>
+        <h2>Blog &amp; Articles</h2>
+      </div>
+      <p class="blog-hero__sub">Technical deep-dives, embedded systems logs, and signal processing write-ups — published on Hashnode.</p>
+      <a href="https://github.com/islam-8" target="_blank" rel="noopener" class="blog-hero__link">
+        Visit GitHub Profile &nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.73rem;"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── STREAMING_CHUNK: Constructing the Bento Grid with Detailed SVGs... ── -->
+  <div class="blog-grid-section">
+    <div class="container">
+      <div class="bento-grid">
+
+        <!-- ① Advanced Drone Detection, Tracking, and Neutralization System - WIDE -->
+        <div class="bento--w2 wow fadeInUp" data-wow-duration="1.2s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 800 342" style="background: linear-gradient(135deg, #0d0e15 0%, #171821 100%); width: 100%; height: 100%;">
+                <defs>
+                  <radialGradient id="drone-radar" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#FF3366" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#FF3366" stop-opacity="0"/>
+                  </radialGradient>
+                  <pattern id="grid-pattern" width="30" height="30" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255, 255, 255, 0.025)" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid-pattern)"/>
+                <!-- Radar sweeps -->
+                <circle cx="400" cy="171" r="130" stroke="#FF3366" stroke-width="1" stroke-opacity="0.3" fill="url(#drone-radar)" stroke-dasharray="8,4"/>
+                <circle cx="400" cy="171" r="70" stroke="#FF3366" stroke-width="0.5" fill="none" stroke-opacity="0.4"/>
+                <line x1="400" y1="20" x2="400" y2="322" stroke="#FF3366" stroke-width="0.5" stroke-opacity="0.3"/>
+                <line x1="150" y1="171" x2="650" y2="171" stroke="#FF3366" stroke-width="0.5" stroke-opacity="0.3"/>
+                <!-- Target Lock-on representation -->
+                <g transform="translate(460, 100)">
+                  <circle cx="0" cy="0" r="16" stroke="#FF3366" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                  <line x1="-25" y1="0" x2="25" y2="0" stroke="#FF3366" stroke-width="1.5"/>
+                  <line x1="0" y1="-25" x2="0" y2="25" stroke="#FF3366" stroke-width="1.5"/>
+                  <text x="30" y="-12" fill="#FF3366" font-family="Courier New" font-size="11" font-weight="bold">TARGET ACQUIRED</text>
+                  <text x="30" y="2" fill="#FFF" font-family="Courier New" font-size="10" font-weight="bold" fill-opacity="0.7">YOLOv8 INT8: 99.4%</text>
+                  <text x="30" y="14" fill="#FFF" font-family="Courier New" font-size="10" font-weight="bold" fill-opacity="0.7">LATENCY: 1.84ms</text>
+                </g>
+                <!-- Stylized Drone Wireframe -->
+                <g transform="translate(400,171) scale(0.8)" stroke="#FF3366" stroke-width="2" fill="none">
+                  <line x1="-40" y1="-20" x2="40" y2="20" />
+                  <line x1="-40" y1="20" x2="40" y2="-20" />
+                  <circle cx="-40" cy="-20" r="10"/>
+                  <circle cx="40" cy="20" r="10"/>
+                  <circle cx="-40" cy="20" r="10"/>
+                  <circle cx="40" cy="-20" r="10"/>
+                  <rect x="-12" y="-12" width="24" height="24" rx="3" fill="#171821" stroke="#FF3366"/>
+                </g>
+                <!-- RF Jammer Wave Sweep -->
+                <path d="M 150 171 C 200 130, 250 210, 300 171 S 400 130, 450 171" stroke="#00B4D8" stroke-width="1.5" stroke-opacity="0.8" fill="none" stroke-dasharray="3,3"/>
+                <text x="20" y="35" fill="#FFF" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill-opacity="0.9">DRONE COUNTERMEASURES DETECT-TRACK-BLOCK</text>
+                <text x="20" y="320" fill="#FF3366" font-family="Courier New" font-size="10" font-weight="bold" letter-spacing="1.5">SCHED_FIFO REAL-TIME CORE PREEMPT PREDICTION</text>
+              </svg>
+              <span class="blog-card__tag tag-security">Edge AI</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="https://islam-8.github.io/graduation-project/" target="_blank" rel="noopener">
+                  Advanced System for Drone Detection, Tracking, and Neutralization
+                </a>
+              </h4>
+              <div class="blog-card__date">MARCH 14, 2026</div>
+              <p class="blog-card__excerpt">Exploring the absolute limits of real-time edge processing on the Raspberry Pi 5. Implements optimized NEON SIMD intrinsics and NCNN quantized INT8 YOLOv8 inference, combined with dedicated SCHED_FIFO scheduling to resolve kernel preempt latency and secure sub-2ms predictability.</p>
+              <a href="https://islam-8.github.io/graduation-project/" target="_blank" rel="noopener" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ② VoxLink Low-Latency Mesh Audio -->
+        <div class="wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".1s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 400 225" style="background: linear-gradient(135deg, #0b111e 0%, #121c2f 100%); width: 100%; height: 100%;">
+                <circle cx="200" cy="112" r="50" fill="none" stroke="#00B4D8" stroke-width="1" stroke-dasharray="4,4" stroke-opacity="0.3"/>
+                <circle cx="200" cy="112" r="75" fill="none" stroke="#00B4D8" stroke-width="0.5" stroke-opacity="0.2"/>
+                <!-- DMA Ring Buffer representation -->
+                <g transform="translate(200, 112)">
+                  <circle cx="0" cy="0" r="30" fill="none" stroke="#FFF" stroke-opacity="0.15" stroke-width="8"/>
+                  <circle cx="0" cy="0" r="30" fill="none" stroke="#00B4D8" stroke-width="8" stroke-dasharray="40,160"/>
+                  <text x="0" y="4" fill="#00B4D8" font-family="Courier New" font-size="8" font-weight="bold" text-anchor="middle">DMA</text>
+                </g>
+                <!-- Nodes connected via mesh dotted lines -->
+                <g stroke="#00B4D8" stroke-width="1.5">
+                  <line x1="80" y1="60" x2="160" y2="100" stroke-dasharray="4,4"/>
+                  <line x1="320" y1="60" x2="240" y2="100" stroke-dasharray="4,4"/>
+                  <line x1="80" y1="165" x2="160" y2="125" stroke-dasharray="4,4"/>
+                  <line x1="320" y1="165" x2="240" y2="125" stroke-dasharray="4,4"/>
+                </g>
+                <!-- Nodes -->
+                <circle cx="80" cy="60" r="6" fill="#00B4D8"/>
+                <circle cx="320" cy="60" r="6" fill="#00B4D8"/>
+                <circle cx="80" cy="165" r="6" fill="#00B4D8"/>
+                <circle cx="320" cy="165" r="6" fill="#00B4D8"/>
+                <!-- Audio Wave Compression Detail -->
+                <path d="M 30 112 C 40 90, 45 134, 55 112 S 65 90, 80 112" stroke="#FFF" stroke-width="1.5" stroke-opacity="0.7" fill="none"/>
+                <path d="M 80 112 Q 95 102, 110 112 T 140 112" stroke="#00B4D8" stroke-width="1.5" fill="none"/>
+                <text x="100" y="125" fill="#00B4D8" font-family="Courier New" font-size="8">4:1 ADPCM</text>
+                <text x="20" y="30" fill="#FFF" font-family="'Inter', sans-serif" font-size="12" font-weight="bold">VOXLINK DMA MESH</text>
+                <text x="20" y="205" fill="#00B4D8" font-family="Courier New" font-size="8">LwIP SERVERLESS UDP BROADCAST</text>
+              </svg>
+              <span class="blog-card__tag tag-k8s">DSP</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/voxlink.html">
+                  VoxLink — Low-Latency Serverless Mesh Voice over ESP8266
+                </a>
+              </h4>
+              <div class="blog-card__date">FEBRUARY 20, 2026</div>
+              <p class="blog-card__excerpt">Eliminating dynamic memory allocation inside deep interrupt contexts on raw Xtensa architectures. Building a high-performance audio pipeline using static global buffers, IMA ADPCM compression, and raw UDP broadcasts.</p>
+              <a href="projects/voxlink.html" class="blog-card__read">Read Log <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ③ Dual-Axis Solar Tracker -->
+        <div class="wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".15s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 400 225" style="background: linear-gradient(135deg, #151109 0%, #291f10 100%); width: 100%; height: 100%;">
+                <!-- Quadrant divider represent LDR sensors -->
+                <rect x="150" y="62" width="100" height="100" fill="none" stroke="#FF9900" stroke-width="1.5" stroke-dasharray="4,4"/>
+                <line x1="200" y1="62" x2="200" y2="162" stroke="#FF9900" stroke-width="2"/>
+                <line x1="150" y1="112" x2="250" y2="112" stroke="#FF9900" stroke-width="2"/>
+                <!-- Sensor points LDR -->
+                <circle cx="175" cy="87" r="8" fill="#FF9900" fill-opacity="0.3" stroke="#FF9900" stroke-width="1.5"/>
+                <circle cx="225" cy="87" r="8" fill="#FF9900" fill-opacity="0.3" stroke="#FF9900" stroke-width="1.5"/>
+                <circle cx="175" cy="137" r="8" fill="#FF9900" fill-opacity="0.3" stroke="#FF9900" stroke-width="1.5"/>
+                <circle cx="225" cy="137" r="8" fill="#FF9900" fill-opacity="0.3" stroke="#FF9900" stroke-width="1.5"/>
+                <!-- Vectors showing Solar Angle Tracking -->
+                <path d="M 200 112 L 280 42" stroke="#FFF" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="280" cy="42" r="16" fill="none" stroke="#FF9900" stroke-width="1" stroke-dasharray="2,2"/>
+                <text x="290" y="32" fill="#FF9900" font-family="Courier New" font-size="9" font-weight="bold">θx, θy</text>
+                <!-- Sun vector radiating -->
+                <g transform="translate(340, 50) scale(0.6)">
+                  <circle cx="0" cy="0" r="20" fill="#FF9900"/>
+                  <line x1="0" y1="-30" x2="0" y2="30" stroke="#FF9900" stroke-width="2"/>
+                  <line x1="-30" y1="0" x2="30" y2="0" stroke="#FF9900" stroke-width="2"/>
+                </g>
+                <!-- PWM signal details -->
+                <path d="M 30 180 L 70 180 L 70 160 L 110 160 L 110 180 L 150 180 L 150 160 L 190 160 L 190 180" fill="none" stroke="#FF9900" stroke-width="1.5" stroke-linejoin="miter"/>
+                <text x="35" y="195" fill="#FF9900" font-family="Courier New" font-size="8">Timer1 Fast-PWM Active</text>
+                <text x="20" y="30" fill="#FFF" font-family="'Inter', sans-serif" font-size="12" font-weight="bold">DUAL-AXIS SOLAR Blueprints</text>
+                <text x="20" y="210" fill="#FF9900" font-family="Courier New" font-size="8">10-BIT INTEGRATED ADC SAMPLING</text>
+              </svg>
+              <span class="blog-card__tag tag-linux">Analog</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/solar-tracker.html">
+                  Dual-Axis Solar Tracker — Register-Level ATmega32A Design
+                </a>
+              </h4>
+              <div class="blog-card__date">JANUARY 05, 2026</div>
+              <p class="blog-card__excerpt">Solving inductive servo feedback loops on shared 5V rails. Design steps covering standalone regulators, bulk capacitor conditioning, multi-sample ADC averaging, and precise proportional servo positioning via Timer1 Fast-PWM.</p>
+              <a href="projects/solar-tracker.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ④ ESP32 Walkie-Talkie with Adaptive Noise Cancellation - WIDE -->
+        <div class="bento--w2 wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".2s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 800 342" style="background: linear-gradient(135deg, #0b1520 0%, #122234 100%); width: 100%; height: 100%;">
+                <defs>
+                  <linearGradient id="noisy-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#FF3366"/>
+                    <stop offset="45%" stop-color="#FFC72C"/>
+                    <stop offset="55%" stop-color="#2ECC71"/>
+                    <stop offset="100%" stop-color="#00B4D8"/>
+                  </linearGradient>
+                </defs>
+                <!-- Speech Signal Transformation Scheme -->
+                <!-- Noisy Input Wave -->
+                <path d="M 50 171 Q 70 100, 90 171 T 130 171 Q 150 240, 170 171 T 210 171 Q 230 100, 250 171 T 290 171" fill="none" stroke="#FF3366" stroke-width="2" stroke-opacity="0.8"/>
+                <path d="M 50 171 L 60 180 L 70 150 L 80 190 L 90 160 L 100 200 L 110 155 L 120 185 L 130 160 L 140 195 L 150 150 L 160 210 L 170 140 L 180 190 L 190 160 L 200 180 L 210 165 L 220 190 L 230 145 L 240 205 L 250 160 L 260 185 L 270 150 L 280 195 L 290 171" fill="none" stroke="#FF3366" stroke-width="1.5" stroke-opacity="0.4"/>
+                <text x="50" y="110" fill="#FF3366" font-family="Courier New" font-size="11" font-weight="bold">NOISY SPEECH f(t) + n(t)</text>
+                
+                <!-- NLMS Core Filter Block -->
+                <g transform="translate(330, 101)">
+                  <rect x="0" y="0" width="140" height="140" rx="10" fill="#122234" stroke="#FFC72C" stroke-width="2"/>
+                  <text x="70" y="40" fill="#FFC72C" font-family="'Inter', sans-serif" font-weight="bold" font-size="14" text-anchor="middle">NLMS FILTER</text>
+                  <text x="70" y="65" fill="#FFF" font-family="Courier New" font-size="9" text-anchor="middle" fill-opacity="0.7">32-Tap Adaptive</text>
+                  <text x="70" y="85" fill="#FFF" font-family="Courier New" font-size="9" text-anchor="middle" fill-opacity="0.7">FFT Subtraction</text>
+                  <path d="M 20 110 Q 70 130, 120 110" fill="none" stroke="#FFC72C" stroke-dasharray="4,4"/>
+                </g>
+                <line x1="290" y1="171" x2="330" y2="171" stroke="#FFC72C" stroke-width="2"/>
+
+                <!-- Clean Output Wave -->
+                <line x1="470" y1="171" x2="510" y2="171" stroke="#2ECC71" stroke-width="2"/>
+                <path d="M 510 171 Q 540 120, 570 171 T 630 171 T 690 171 T 750 171" fill="none" stroke="#2ECC71" stroke-width="3" stroke-linecap="round"/>
+                <text x="530" y="110" fill="#2ECC71" font-family="Courier New" font-size="11" font-weight="bold">CLEAN SPEECH OUTPUT</text>
+
+                <!-- Signal Spectrum Graphics -->
+                <rect x="50" y="270" width="200" height="40" fill="none" stroke="#FFF" stroke-width="0.5" stroke-opacity="0.1"/>
+                <path d="M 50 310 L 70 290 L 90 275 L 110 305 L 130 280 L 150 295 L 170 270 L 190 305 L 210 285 L 230 300 L 250 310" fill="none" stroke="#FF3366" stroke-width="1.5" stroke-opacity="0.6"/>
+                <rect x="550" y="270" width="200" height="40" fill="none" stroke="#FFF" stroke-width="0.5" stroke-opacity="0.1"/>
+                <path d="M 550 310 L 570 305 L 590 310 L 610 302 L 630 285 L 650 305 L 670 310 L 690 310 L 710 310 L 730 310 L 750 310" fill="none" stroke="#2ECC71" stroke-width="2" stroke-opacity="0.8"/>
+                <text x="50" y="260" fill="#FFF" font-family="Courier New" font-size="9" fill-opacity="0.5">INPUT SPECTRUM (FFT)</text>
+                <text x="550" y="260" fill="#FFF" font-family="Courier New" font-size="9" fill-opacity="0.5">OUTPUT DAMPENED SPECTRUM</text>
+
+                <text x="20" y="35" fill="#FFF" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill-opacity="0.9">ADAPTIVE SIGNAL DSP PIPELINE</text>
+                <text x="20" y="325" fill="#FFC72C" font-family="Courier New" font-size="10" font-weight="bold" letter-spacing="1">LOCK-FREE TRIPLE AUDIO BUFFER OVER ESP-NOW</text>
+              </svg>
+              <span class="blog-card__tag tag-personal">DSP Filters</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/walkie-talkie.html">
+                  ESP32 Walkie-Talkie: Real-Time NLMS and FFT Spectral Subtraction
+                </a>
+              </h4>
+              <div class="blog-card__date">DECEMBER 12, 2025</div>
+              <p class="blog-card__excerpt">Eliminating frame tearing inside full-duplex ESP-NOW transmission. Designing a lock-free atomic triple-buffer system combined with normalized adaptive filtering to eliminate background noise without introducing signal jitter.</p>
+              <a href="projects/walkie-talkie.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑤ Autonomous Vulnerability Scanner with AI Triage - WIDE -->
+        <div class="bento--w2 wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".25s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 800 342" style="background: linear-gradient(135deg, #100518 0%, #1f0b2f 100%); width: 100%; height: 100%;">
+                <defs>
+                  <linearGradient id="shield-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#BD93F9" stop-opacity="0.4"/>
+                    <stop offset="100%" stop-color="#BD93F9" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- System Scanning Nodes -->
+                <g stroke="#BD93F9" stroke-width="1.5" stroke-opacity="0.5">
+                  <line x1="150" y1="120" x2="300" y2="171"/>
+                  <line x1="150" y1="171" x2="300" y2="171"/>
+                  <line x1="150" y1="222" x2="300" y2="171"/>
+                </g>
+                <!-- Scanning Source Nodes -->
+                <rect x="70" y="100" width="80" height="35" rx="5" fill="#1f0b2f" stroke="#BD93F9" stroke-width="1.5"/>
+                <text x="110" y="122" fill="#BD93F9" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">Nmap</text>
+
+                <rect x="70" y="153" width="80" height="35" rx="5" fill="#1f0b2f" stroke="#BD93F9" stroke-width="1.5"/>
+                <text x="110" y="175" fill="#BD93F9" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">OWASP ZAP</text>
+
+                <rect x="70" y="205" width="80" height="35" rx="5" fill="#1f0b2f" stroke="#BD93F9" stroke-width="1.5"/>
+                <text x="110" y="227" fill="#BD93F9" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">Semgrep</text>
+
+                <!-- Safe Guard Shield Shield -->
+                <path d="M 300 171 L 360 120 L 440 120 L 500 171 L 440 240 L 360 240 Z" fill="url(#shield-glow)" stroke="#BD93F9" stroke-width="2"/>
+                <text x="400" y="165" fill="#FFF" font-family="'Inter', sans-serif" font-weight="bold" font-size="12" text-anchor="middle">GEMINI AI</text>
+                <text x="400" y="185" fill="#BD93F9" font-family="Courier New" font-weight="bold" font-size="10" text-anchor="middle">TRIAGE CORE</text>
+                <text x="400" y="200" fill="#FFF" fill-opacity="0.7" font-family="Courier New" font-size="8" text-anchor="middle">Few-Shot / CoT</text>
+
+                <!-- Outflow of clean data schema -->
+                <g stroke="#BD93F9" stroke-width="1.5" stroke-opacity="0.6" stroke-dasharray="4,4">
+                  <line x1="500" y1="171" x2="580" y2="171"/>
+                </g>
+                <rect x="580" y="100" width="160" height="142" rx="8" fill="#1f0b2f" stroke="#BD93F9" stroke-width="1.5"/>
+                <text x="595" y="125" fill="#FFF" font-family="Courier New" font-size="9" font-weight="bold" fill-opacity="0.9">REPORT EXPORT (.pdf)</text>
+                <text x="595" y="145" fill="#BD93F9" font-family="Courier New" font-size="9">CWE Mapping: YES</text>
+                <text x="595" y="165" fill="#BD93F9" font-family="Courier New" font-size="9">CVSS Matrix: YES</text>
+                <text x="595" y="185" fill="#FFF" font-family="Courier New" font-size="8" fill-opacity="0.4">"status": "triaged"</text>
+                <text x="595" y="200" fill="#FFF" font-family="Courier New" font-size="8" fill-opacity="0.4">"severity": "CRITICAL"</text>
+
+                <text x="20" y="35" fill="#FFF" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill-opacity="0.9">AUTONOMOUS SECURITY THREAT SCANNERS</text>
+                <text x="20" y="320" fill="#BD93F9" font-family="Courier New" font-size="10" font-weight="bold" letter-spacing="1">REDIS STREAMS &amp; MULTI-THREADED ASYNCIO COROUTINES</text>
+              </svg>
+              <span class="blog-card__tag tag-security">Security</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/vuln-scanner.html">
+                  Autonomous Vulnerability Scanner with Few-Shot Gemini AI Triage
+                </a>
+              </h4>
+              <div class="blog-card__date">NOVEMBER 18, 2025</div>
+              <p class="blog-card__excerpt">Coordinating multi-threaded security scanners (Nmap, ZAP, Semgrep) inside Python asyncio. Handled startup timeouts via TCP health probes and structured raw alerts into clean CVSS-rated schemas using few-shot LLM prompting.</p>
+              <a href="projects/vuln-scanner.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑥ Autonomous Obstacle-Avoidance Rover -->
+        <div class="wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".3s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 400 225" style="background: linear-gradient(135deg, #091220 0%, #11213b 100%); width: 100%; height: 100%;">
+                <!-- Rover Frame -->
+                <rect x="150" y="80" width="100" height="80" rx="8" fill="#11213b" stroke="#FCA311" stroke-width="2"/>
+                <circle cx="150" cy="100" r="12" fill="#000" stroke="#FCA311" stroke-width="1.5"/>
+                <circle cx="150" cy="140" r="12" fill="#000" stroke="#FCA311" stroke-width="1.5"/>
+                <circle cx="250" cy="100" r="12" fill="#000" stroke="#FCA311" stroke-width="1.5"/>
+                <circle cx="250" cy="140" r="12" fill="#000" stroke="#FCA311" stroke-width="1.5"/>
+                
+                <!-- Center Echo Waves Casting -->
+                <path d="M 250 120 A 40 40 0 0 0 290 90" fill="none" stroke="#FCA311" stroke-width="1.5" stroke-dasharray="2,2"/>
+                <path d="M 250 120 A 60 60 0 0 0 310 75" fill="none" stroke="#FCA311" stroke-width="1.5" stroke-dasharray="2,2"/>
+                <path d="M 250 120 A 80 80 0 0 0 330 60" fill="none" stroke="#FCA311" stroke-width="1.5" stroke-dasharray="2,2"/>
+                
+                <!-- Avoidance Vector turning -->
+                <path d="M 250 120 Q 290 120, 310 160" fill="none" stroke="#2ECC71" stroke-width="2" stroke-linecap="round"/>
+                <polygon points="310,160 305,152 315,154" fill="#2ECC71"/>
+
+                <!-- Ultrasonic sensor visual dots -->
+                <circle cx="245" cy="110" r="4" fill="#FF3366"/>
+                <circle cx="245" cy="130" r="4" fill="#FF3366"/>
+                
+                <text x="20" y="30" fill="#FFF" font-family="'Inter', sans-serif" font-size="12" font-weight="bold">AVR OBSTACLE AVOIDANCE</text>
+                <text x="20" y="205" fill="#FCA311" font-family="Courier New" font-size="8">Timer1 Input-Capture Register Monitoring</text>
+              </svg>
+              <span class="blog-card__tag tag-linux">Embedded</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/rover.html">
+                  Deterministic Obstacle-Avoidance Rover: Register-Level AVR C++
+                </a>
+              </h4>
+              <div class="blog-card__date">OCTOBER 02, 2025</div>
+              <p class="blog-card__excerpt">Why direct hardware register PORT bit-wise writes are essential to bypass framework lookup overheads, ensuring sub-5ms motor directions and removing inductive current threats.</p>
+              <a href="projects/rover.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑦ 24 GHz mmWave Presence & Motion Tracker -->
+        <div class="wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".35s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 400 225" style="background: linear-gradient(135deg, #091511 0%, #112821 100%); width: 100%; height: 100%;">
+                <!-- Polar coordinate circles -->
+                <circle cx="200" cy="200" r="160" fill="none" stroke="#2ECC71" stroke-width="0.7" stroke-opacity="0.2"/>
+                <circle cx="200" cy="200" r="110" fill="none" stroke="#2ECC71" stroke-width="0.7" stroke-opacity="0.4"/>
+                <circle cx="200" cy="200" r="60" fill="none" stroke="#2ECC71" stroke-width="0.7" stroke-opacity="0.6"/>
+                <line x1="200" y1="40" x2="200" y2="200" stroke="#2ECC71" stroke-width="0.7" stroke-opacity="0.4"/>
+                <line x1="40" y1="200" x2="360" y2="200" stroke="#2ECC71" stroke-width="0.7" stroke-opacity="0.4"/>
+                <!-- Radar scanning sweep arm -->
+                <line x1="200" y1="200" x2="310" y2="90" stroke="#2ECC71" stroke-width="2" stroke-linecap="round"/>
+                
+                <!-- Radar targeted tracked coordinates -->
+                <circle cx="280" cy="120" r="6" fill="#FF3366"/>
+                <circle cx="280" cy="120" r="14" fill="none" stroke="#FF3366" stroke-width="1" stroke-opacity="0.5"/>
+                
+                <!-- Real-time Breathing Wave extraction details -->
+                <path d="M 40 70 Q 55 60, 70 70 T 100 70 T 130 70 T 160 70" fill="none" stroke="#2ECC71" stroke-width="1.5"/>
+                <text x="40" y="55" fill="#2ECC71" font-family="Courier New" font-size="8">Breathing Micro-displacement</text>
+                <text x="20" y="30" fill="#FFF" font-family="'Inter', sans-serif" font-size="12" font-weight="bold">24GHz Doppler mmWave Radar</text>
+                <text x="200" y="215" fill="#2ECC71" font-family="Courier New" font-size="8" text-anchor="middle">HAMMING WINDOW SERIAL DEMODULATION</text>
+              </svg>
+              <span class="blog-card__tag tag-nlp">Radar</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/mmwave-tracker.html">
+                  Parsing 24 GHz Doppler Radar UART Streams for Breathing Detection
+                </a>
+              </h4>
+              <div class="blog-card__date">AUGUST 15, 2025</div>
+              <p class="blog-card__excerpt">Decoding high-speed 256000-baud asynchronous radar packages. Applying Hamming window digital smoothing filters to identify completely static humans purely by breathing displacement.</p>
+              <a href="projects/mmwave-tracker.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑧ Bare-Metal Hospital Management System — C99 -->
+        <div class="bento--w2 wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".4s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 800 342" style="background: linear-gradient(135deg, #09151a 0%, #112a34 100%); width: 100%; height: 100%;">
+                <!-- Data Structure mapping: Singly Linked lists schematic -->
+                <!-- Node 1 -->
+                <g transform="translate(100, 140)">
+                  <rect x="0" y="0" width="120" height="60" rx="4" fill="#112a34" stroke="#38BDF8" stroke-width="2"/>
+                  <text x="60" y="25" fill="#FFF" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">PATIENT RECORD 1</text>
+                  <text x="60" y="45" fill="#38BDF8" font-family="Courier New" font-size="9" text-anchor="middle">ptr->data</text>
+                  <circle cx="105" cy="30" r="4" fill="#38BDF8"/>
+                </g>
+                <!-- Arrow link 1 -->
+                <g stroke="#38BDF8" stroke-width="2">
+                  <line x1="220" y1="170" x2="290" y2="170"/>
+                  <polygon points="290,170 282,165 282,175" fill="#38BDF8"/>
+                </g>
+
+                <!-- Node 2 -->
+                <g transform="translate(290, 140)">
+                  <rect x="0" y="0" width="120" height="60" rx="4" fill="#112a34" stroke="#38BDF8" stroke-width="2"/>
+                  <text x="60" y="25" fill="#FFF" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">PATIENT RECORD 2</text>
+                  <text x="60" y="45" fill="#38BDF8" font-family="Courier New" font-size="9" text-anchor="middle">ptr->next</text>
+                  <circle cx="105" cy="30" r="4" fill="#38BDF8"/>
+                </g>
+                <!-- Arrow link 2 -->
+                <g stroke="#38BDF8" stroke-width="2">
+                  <line x1="410" y1="170" x2="480" y2="170"/>
+                  <polygon points="480,170 472,165 472,175" fill="#38BDF8"/>
+                </g>
+
+                <!-- Node 3 -->
+                <g transform="translate(480, 140)">
+                  <rect x="0" y="0" width="120" height="60" rx="4" fill="#112a34" stroke="#38BDF8" stroke-width="2"/>
+                  <text x="60" y="25" fill="#FFF" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">PATIENT RECORD 3</text>
+                  <text x="60" y="45" fill="#FF3366" font-family="Courier New" font-size="9" text-anchor="middle">NULL POINTER</text>
+                  <circle cx="105" cy="30" r="4" fill="#FF3366"/>
+                </g>
+
+                <!-- Dynamic Memory Heap Allocation Representation -->
+                <rect x="100" y="250" width="500" height="35" rx="5" fill="#09151a" stroke="#FFF" stroke-width="0.5" stroke-opacity="0.2"/>
+                <rect x="105" y="255" width="90" height="25" rx="3" fill="#38BDF8" fill-opacity="0.3"/>
+                <text x="150" y="271" fill="#38BDF8" font-family="Courier New" font-size="9" font-weight="bold" text-anchor="middle">malloc: Block 1</text>
+                
+                <rect x="210" y="255" width="150" height="25" rx="3" fill="#FF3366" fill-opacity="0.2"/>
+                <text x="285" y="271" fill="#FF3366" font-family="Courier New" font-size="9" font-weight="bold" text-anchor="middle">FREE SWEEP ACTIVE</text>
+                
+                <rect x="380" y="255" width="120" height="25" rx="3" fill="#38BDF8" fill-opacity="0.3"/>
+                <text x="440" y="271" fill="#38BDF8" font-family="Courier New" font-size="9" font-weight="bold" text-anchor="middle">malloc: Block 3</text>
+
+                <text x="20" y="35" fill="#FFF" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill-opacity="0.9">C99 MANUALLY MANAGED MEMORY PIPELINE</text>
+                <text x="20" y="315" fill="#38BDF8" font-family="Courier New" font-size="10" font-weight="bold" letter-spacing="1">PREVENTING LEAKS WITH DOUBLE-PASS CLEAN DEALLOCATION SWEEPS</text>
+              </svg>
+              <span class="blog-card__tag tag-personal">C Programming</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/hospital-mgmt.html">
+                  Memory Leak Prevention: Walking Nested Singly-Linked Structures
+                </a>
+              </h4>
+              <div class="blog-card__date">JUNE 28, 2025</div>
+              <p class="blog-card__excerpt">An algorithmic log explaining how dynamic allocations can orphan nested heap records, and the correct double-pass walking pattern required to clean multi-level nodes cleanly.</p>
+              <a href="projects/hospital-mgmt.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑨ Bluetooth Smart Home Relay Controller — ATmega32 -->
+        <div class="bento--w3 wow fadeInUp" data-wow-duration="1.2s" data-wow-delay=".5s">
+          <div class="blog-card">
+            <div class="blog-card__cover">
+              <svg viewBox="0 0 800 342" style="background: linear-gradient(135deg, #150903 0%, #291307 100%); width: 100%; height: 100%;">
+                <!-- Circuit isolation divider diagram -->
+                <line x1="400" y1="20" x2="400" y2="322" stroke="#FF9900" stroke-width="1.5" stroke-dasharray="10,5" stroke-opacity="0.5"/>
+                <text x="390" y="100" fill="#FF9900" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="end">5V LOW-LOGIC REGION</text>
+                <text x="410" y="100" fill="#FF3366" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="start">220V POWER MAINS DANGER</text>
+                
+                <!-- Microcontroller Logic side (Left) -->
+                <!-- MCU Relay Pins -->
+                <rect x="50" y="112" width="120" height="110" rx="5" fill="#150903" stroke="#FF9900" stroke-width="2"/>
+                <text x="110" y="140" fill="#FF9900" font-family="'Inter', sans-serif" font-weight="bold" font-size="12" text-anchor="middle">ATMEGA32</text>
+                <text x="110" y="165" fill="#FFF" font-family="Courier New" font-size="9" text-anchor="middle" fill-opacity="0.6">USART Active</text>
+                <text x="110" y="180" fill="#FFF" font-family="Courier New" font-size="8" text-anchor="middle" fill-opacity="0.4">8-Bit PortC Relay Ctrl</text>
+
+                <!-- Darlington Isolation (ULN2003) -->
+                <rect x="230" y="132" width="110" height="70" rx="5" fill="#150903" stroke="#FFF" stroke-width="1.5" stroke-opacity="0.5"/>
+                <text x="285" y="165" fill="#FFF" font-family="'Inter', sans-serif" font-weight="bold" font-size="11" text-anchor="middle" fill-opacity="0.8">ULN2003 DRIVER</text>
+                <text x="285" y="180" fill="#FF9900" font-family="Courier New" font-size="8" text-anchor="middle">Darlington Loop</text>
+                
+                <line x1="170" y1="165" x2="230" y2="165" stroke="#FF9900" stroke-width="1.5"/>
+
+                <!-- Relays High Mains Power Side (Right) -->
+                <g transform="translate(480, 122)">
+                  <rect x="0" y="0" width="110" height="90" rx="5" fill="#291307" stroke="#FF3366" stroke-width="2"/>
+                  <text x="55" y="30" fill="#FF3366" font-family="'Inter', sans-serif" font-weight="bold" font-size="12" text-anchor="middle">MAINS RELAY</text>
+                  <!-- Coil Schematic -->
+                  <path d="M 25 50 Q 30 40, 35 50 T 45 50 T 55 50 T 65 50 T 75 50 Q 80 40, 85 50" fill="none" stroke="#FF3366" stroke-width="1.5"/>
+                  <text x="55" y="75" fill="#FFF" font-family="Courier New" font-size="8" text-anchor="middle" fill-opacity="0.6">Isolate safe: OK</text>
+                </g>
+                <line x1="340" y1="165" x2="480" y2="165" stroke="#FF3366" stroke-width="1.5"/>
+
+                <g transform="translate(640, 112)">
+                  <path d="M 10 50 Q 30 10, 50 50 T 90 50" fill="none" stroke="#FF3366" stroke-width="2" stroke-opacity="0.7"/>
+                  <text x="50" y="90" fill="#FF3366" font-family="Courier New" font-size="10" font-weight="bold" text-anchor="middle">220V AC WAVE</text>
+                </g>
+                <line x1="590" y1="165" x2="650" y2="165" stroke="#FF3366" stroke-width="1.5"/>
+
+                <!-- Bluetooth Interface visual waves -->
+                <g transform="translate(110, 50)" fill="#FF9900">
+                  <path d="M -15 -10 L 0 -25 L 0 5 L -15 -10 L 15 -10 L 0 -25 L 0 5" fill="none" stroke="#FF9900" stroke-width="2" stroke-linejoin="round"/>
+                </g>
+                <text x="140" y="45" fill="#FF9900" font-family="Courier New" font-size="10" font-weight="bold">HC-05 RX INTERRUPTS</text>
+
+                <text x="20" y="35" fill="#FFF" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill-opacity="0.9">SAFE HIGH-VOLTAGE ELECTRICAL ISOLATION MATRIX</text>
+                <text x="20" y="315" fill="#FF9900" font-family="Courier New" font-size="10" font-weight="bold" letter-spacing="1">USART RACE-CONDITION HANDSHAKE HANDLED WITHOUT INTERRUPT TIMING JITTER</text>
+              </svg>
+              <span class="blog-card__tag tag-linux">Hardware</span>
+            </div>
+            <div class="blog-card__body">
+              <h4 class="blog-card__title">
+                <a href="projects/smart-home.html">
+                  Safe High-Voltage Isolation: ATmega32 ULN2003 Relay Interface
+                </a>
+              </h4>
+              <div class="blog-card__date">MAY 12, 2025</div>
+              <p class="blog-card__excerpt">Designing hardware isolations and flyback diode arrays using ULN2003 drivers to divide 5V logic from 220V AC mains. Addresses resolving race conditions over USART interrupts without disrupting main program timing.</p>
+              <a href="projects/smart-home.html" class="blog-card__read">Read Article <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /bento-grid -->
+    </div><!-- /container -->
+  </div>
+
+  <!-- ── STREAMING_CHUNK: Setting up Footer and Intelligent Navigation Overrides... ── -->
+  <!-- ── FOOTER ──────────────────────────────────────────────── -->
+  <footer class="blog-footer">
+    &copy; 2026 <a href="index.html">Islam Emad</a> &nbsp;&mdash;&nbsp;
+    <a href="https://github.com/islam-8" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="js/vendor.js"></script>
+  <script src="js/custom.js"></script>
+  
+  <!-- استدعاء المكتبة بشكل آمن ومباشر لحل مشكلة عدم التعريف في بيئات العرض -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    // ReferenceError
+    if (typeof WOW !== 'undefined') {
+      new WOW().init();
+    } else {
+      console.warn("WOW.js could not be loaded. Page animations will fall back gracefully.");
+    }
+  </script>
+  
+  <script>
+    document.querySelectorAll('.blog-card').forEach(function(card) {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('a')) return;
+        var link = card.querySelector('.blog-card__title a');
+        if (link) {
+          if (link.getAttribute('target') === '_blank') {
+            window.open(link.href, '_blank', 'noopener');
+          } else {
+            window.location.href = link.getAttribute('href');
+          }
+        }
+      });
+    });
+
+    // NAVIGATION REDIRECTION GUARDRAIL: Force absolute redirection on index anchors to prevent smooth scroll blocking
+    document.querySelectorAll('.navbar-nav a').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var href = this.getAttribute('href');
+        if (href && href.includes('index.html#')) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = href;
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

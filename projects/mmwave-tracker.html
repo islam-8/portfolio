@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: 24 GHz mmWave Radar Presence Engine — Islam Emad</title>
+  <meta name="description" content="A rigorous academic monograph on real-time micro-motion presence sensing using 24 GHz Doppler radar and digital signal processing.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles (Going one folder up using ../) -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Refined Editorial Palette - Warm Paper & Noble Accents */
+      --acc-teal: #1a5f7a;
+      --acc-gold: #b8860b;
+      --acc-burgundy: #801a12;
+      --acc-green: #2d5a27;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c;
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+      --radar-grid: rgba(0, 194, 212, 0.12);
+      --radar-glow: rgba(0, 194, 212, 0.8);
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Premium vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #801a12; /* Burgundy in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+      --radar-grid: rgba(26, 95, 122, 0.15);
+      --radar-glow: rgba(26, 95, 122, 0.95);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background aesthetic grid waves */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Fixed Navigation */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--t-ancient); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Academic Header styling */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px dashed var(--border-hi);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp editorial book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    /* Footnotes and Citations styling */
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px; /* Crisp academic terminals */
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 280px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 12px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    /* Table-like spec sheets */
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-ancient);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--t-ancient);
+      text-decoration: none;
+    }
+
+    /* Sprint/Timeline custom grid */
+    .sprint-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 25px 0;
+    }
+    @media (max-width: 767px) {
+      .sprint-row { grid-template-columns: 1fr; }
+    }
+    .sprint-day {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+    }
+    .sd-num {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      color: var(--t-ancient);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .sd-title {
+      font-family: var(--p-sans);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-bottom: 6px;
+    }
+    .sd-desc {
+      font-size: 12px;
+      color: var(--t-body);
+      line-height: 1.6;
+    }
+
+    /* System layout comparison tables */
+    .cmp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 25px 0;
+    }
+    .cmp-table th {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--p-sans);
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--t-title);
+      letter-spacing: 0.5px;
+    }
+    .cmp-table td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-body);
+    }
+    .cmp-table tr.highlight td {
+      background: rgba(26, 95, 122, 0.04);
+      font-weight: 600;
+      color: var(--t-title);
+    }
+    .yes { color: var(--acc-green); font-weight: bold; }
+    .no { color: var(--acc-burgundy); font-weight: bold; }
+
+    /* Custom tactical visualization panels */
+    .radar-container {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .radar-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // 24 GHz mmWave</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">HORUS UNIVERSITY · DEPT. OF ELECTRONICS &amp; COMMUNICATIONS ENGINEERING</div>
+      <div class="h-badge">RESEARCH-SPEC: 24GHZ-DOPPLER-03D</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        Decoupled 24 GHz mmWave <br><span style="color: var(--t-ancient);">Presence Sensing Engines</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        Analyzing real-time Doppler micro-displacements, clutter mitigation, and decoupled UART processing frames on 8-bit MCU topologies.
+      </p>
+    </div>
+  </header>
+
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Academic Paper Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph details the research, development, and implementation of a low-complexity, privacy-preserving human presence tracking system utilizing an integrated 24 GHz millimetre-wave (mmWave) FMCW and Doppler radar module (RD-03D). Standard surveillance paradigms relying on computer vision architectures incur substantial processing overhead and compromise individual privacy. To bypass this, we propose a decoupled architecture that delegates primary electromagnetic signal processing to an on-chip Digital Signal Processor (DSP), returning clean target vectors ([distance, angle, velocity]) over a high-speed 256,000-baud UART interface to a Renesas RA4M1 32-bit MCU. We detail a three-point digital smoothing filter to reject multipath anomalies and map azimuth scans onto a custom real-time polar visualization. The system achieves complete environmental immunity under zero light conditions.
+      </div>
+
+      <!-- SECTION 1: PHYSICAL PRINCIPLES -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Electromagnetic Principles &amp; Phase Shift</h3>
+        <p>
+          Classical passive infrared (PIR) sensors operate as simple differential thermal detectors, remaining fundamentally blind to stationary human targets due to their reliance on high-frequency thermal transitions across discrete detection quadrants. To resolve this sensing deficit without introducing high-bandwidth video surveillance channels, we employ millimetre-wave radar operating within the 24.00 GHz to 24.25 GHz industrial, scientific, and medical (ISM) band<cite class="citation" onclick="scrollToFootnote(1)">[1]</cite>.
+        </p>
+        <p>
+          The fundamental physics of our presence sensing engine rests on the <strong>Doppler Effect</strong> and frequency-modulated continuous wave (FMCW) radar equations. When an electromagnetic wave of frequency $f_c$ is radiated towards a target, the reflected wave's frequency shift $f_d$ correlates directly to the target's relative radial velocity $v$:
+        </p>
+        
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          f_d = \frac{2 \cdot v \cdot f_c}{c} \cdot \cos(\theta)
+        </div>
+
+        <p>
+          Where $c$ represents the speed of light, and $\theta$ is the angle of approach relative to the transceiver's major coordinate axis. For static human presence detection, the engine targets <strong>micro-Doppler signatures</strong>. The chest wall displacement during quiet respiration exhibits an amplitude range of $0.3\text{ mm}$ to $1.0\text{ mm}$ at a frequency range of $0.15\text{ Hz}$ to $0.4\text{ Hz}$. Operating at $24\text{ GHz}$, the wavelength ($\lambda$) is approximately $12.5\text{ mm}$. A $0.5\text{ mm}$ chest displacement yields a noticeable phase shift $\Delta\Phi$:
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          \Delta\Phi = \frac{4\pi \cdot \Delta d}{\lambda} \approx 0.50 \text{ radians}
+        </div>
+
+        <p>
+          This phase variation is detected by the RD-03D's dual-channel quadrature receiver and parsed internally, outputting verified target parameters without demanding raw Fourier transforms (FFT) from the primary microcontroller.
+        </p>
+
+        <!-- Figure 1: Antenna Pattern Schema -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 300" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <g transform="translate(100, 150)">
+              <!-- Transmitter / Receiver chips -->
+              <rect x="-60" y="-40" width="120" height="80" rx="3" fill="var(--bg-paper)" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <rect x="-50" y="-30" width="40" height="30" fill="var(--t-ancient)" fill-opacity="0.2" stroke="var(--t-ancient)"/>
+              <text x="-30" y="-12" font-family="var(--p-mono)" font-size="8" fill="var(--t-title)" text-anchor="middle">TX</text>
+              <rect x="10" y="-30" width="40" height="30" fill="var(--acc-teal)" fill-opacity="0.2" stroke="var(--acc-teal)"/>
+              <text x="30" y="-12" font-family="var(--p-mono)" font-size="8" fill="var(--t-title)" text-anchor="middle">RX</text>
+              <text x="0" y="25" font-family="var(--p-mono)" font-size="9" fill="var(--t-muted)" text-anchor="middle">RD-03D 24GHz</text>
+            </g>
+
+            <!-- Wave Propagation -->
+            <path d="M 180 150 Q 280 90, 400 150 T 620 150" fill="none" stroke="var(--t-ancient)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 180 150 Q 280 210, 400 150 T 620 150" fill="none" stroke="var(--t-ancient)" stroke-width="1" stroke-dasharray="3, 3"/>
+
+            <!-- Human Target -->
+            <g transform="translate(640, 90)">
+              <circle cx="30" cy="20" r="15" fill="var(--bg-paper)" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="30" y1="35" x2="30" y2="100" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="30" y1="50" x2="10" y2="70" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="30" y1="50" x2="50" y2="70" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="30" y1="100" x2="15" y2="150" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <line x1="30" y1="100" x2="45" y2="150" stroke="var(--border-hi)" stroke-width="1.5"/>
+              <!-- Chest displacement indicator -->
+              <path d="M 12 50 C 5 50, 5 60, 12 60" fill="none" stroke="var(--t-ancient)" stroke-width="1.5"/>
+              <text x="-50" y="58" font-family="var(--p-mono)" font-size="8" fill="var(--t-ancient)">Respiration Phase Shift (~0.5 rad)</text>
+            </g>
+
+            <!-- Angle of approach indicator -->
+            <path d="M 160 150 L 640 150" stroke="var(--border-hi)" stroke-width="1" stroke-dasharray="4, 4"/>
+            <path d="M 160 150 L 670 120" stroke="var(--border-hi)" stroke-width="1"/>
+            <path d="M 230 150 A 70 70 0 0 0 228 142" fill="none" stroke="var(--t-ancient)" stroke-width="1.5"/>
+            <text x="240" y="140" font-family="var(--p-mono)" font-size="9" fill="var(--t-ancient)">θ (Azimuth Angle)</text>
+          </svg>
+          <div class="fig-caption">Figure 1: Electromagnetic propagation showing transmitter (TX) and receiver (RX) phase variation across a standing human target.</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: SIGNAL PROCESSING PIPELINE -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> Real-Time Multi-Layer Data Pipeline</h3>
+        <p>
+          To maintain highly responsive, low-latency target tracking under low processing budgets, the hardware leverages a strict 4-layer decoupled signal processing pipeline. By abstracting raw electromagnetic calculations into discrete stages, we bypass memory and scheduling congestion:
+        </p>
+
+        <div class="cmp-table-container">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Responsibility</th>
+                <th>Hardware/Software</th>
+                <th>Processing Bound</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>L1: Sensing</strong></td>
+                <td>Continuous FMCW sweep, signal collection, Phase extraction</td>
+                <td>On-chip RD-03D DSP</td>
+                <td>Hardware Bound (Real-time)</td>
+              </tr>
+              <tr>
+                <td><strong>L2: Communication</strong></td>
+                <td>de-packetization, checksum validation, 256,000-baud frame streaming</td>
+                <td>High-speed UART interrupt</td>
+                <td>~0.1ms per frame</td>
+              </tr>
+              <tr class="highlight">
+                <td><strong>L3: Processing</strong></td>
+                <td>Moving-average smoothing, outlier rejection, formatting to CSV</td>
+                <td>Arduino Uno R4 (RA4M1)</td>
+                <td>~2.0ms per frame</td>
+              </tr>
+              <tr>
+                <td><strong>L4: Visualization</strong></td>
+                <td>Polar coordinate rendering, target drawing, trajectory trail logging</td>
+                <td>Processing IDE (Host PC)</td>
+                <td>30 FPS (Fluid)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A critical challenge in indoor radar processing is <strong>multipath clutter</strong> — reflections from walls, metallic server enclosures, and door frames which produce static "ghost" targets. 
+          To mitigate this, Layer 3 applies a rolling three-point moving average filter. Let $x[n]$ represent the raw incoming parameter frame at index $n$. The filtered output $y[n]$ is formulated as:
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          y[n] = \frac{x[n] + x[n-1] + x[n-2]}{3}
+        </div>
+
+        <p>
+          This sliding digital filter suppresses high-frequency noise and sudden signal loss, producing smooth tracking coordinates without inducing significant phase delay.
+        </p>
+      </section>
+
+      <!-- SECTION 3: REAL-TIME RADAR INTERACTIVE DEMO -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Live Tactical Radar Simulation</h3>
+        <p>
+          To demonstrate the real-time angular resolution, range limits, and Doppler micro-motion capabilities of this system, we developed an interactive polar tracking grid. Click anywhere inside the polar coordinate scan view below to introduce a mock target and view the filtered UART stream.
+        </p>
+
+        <div class="radar-container">
+          <!-- Left: Canvas Radar -->
+          <div class="terminal-window" style="margin: 0;">
+            <div class="term-bar">
+              <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+              <div class="term-dot" style="background: var(--acc-gold);"></div>
+              <div class="term-dot" style="background: var(--acc-green);"></div>
+              <span class="term-title">polar_scope_renderer.elf</span>
+            </div>
+            <div class="sim-body" style="padding: 15px;">
+              <canvas id="cv-radar" style="background:#040608; display:block; width:100%; height: 320px; cursor:crosshair"></canvas>
+              <div class="term-controls" style="border-top: none; padding: 10px 0 0 0; background: transparent;">
+                <button class="tbtn on" id="sim-run" onclick="toggleSim(this)">▶ Sweep Active</button>
+                <button class="tbtn" onclick="addTarget()">+ Add Target</button>
+                <button class="tbtn" onclick="clearTargets()">↺ Reset Field</button>
+                <button class="tbtn on" id="micro-btn" onclick="toggleMicro(this)">⟳ Micro-motion ON</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: UART Logs -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <span class="term-title">UART SERIAL FEED (256000 BAUD)</span>
+              <span class="sim-badge" style="margin-left: auto; font-family: var(--p-mono); font-size: 8px; color: var(--t-ancient); border: 1px solid var(--border);">10 HZ STREAM</span>
+            </div>
+            <div id="uart-stream" class="term-body" style="flex: 1; height: 190px;">
+              <!-- Simulated UART streams here -->
+            </div>
+            <div style="background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-hi); padding: 15px;">
+              <div style="font-family: var(--p-mono); font-size: 9px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Chest-Wall Breathing Waveform</div>
+              <canvas id="cv-speed" height="70" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 15px; font-family: var(--p-mono); font-size: 11px; color: var(--t-body); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+          <span><strong style="color: var(--t-ancient);">Total Targets:</strong> <span id="tgt-count">1</span></span>
+          <span><strong style="color: var(--t-ancient);">Dominant Distance:</strong> <span id="tgt-dist">—</span></span>
+          <span><strong style="color: var(--t-ancient);">Azimuth:</strong> <span id="tgt-angle">—</span></span>
+          <span><strong style="color: var(--t-ancient);">Speed:</strong> <span id="tgt-speed">—</span></span>
+        </div>
+      </section>
+
+      <!-- SECTION 4: RAPID SPRINT METHODOLOGY -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Rapid Prototyping &amp; Development Timeline</h3>
+        <p>
+          The construction, integration, and code refinement for this radar package was completed across a highly focused 6-day rapid engineering cycle. This approach prioritized early hardware validation followed by aggressive DSP iteration:
+        </p>
+
+        <!-- Sprint Timeline Grid -->
+        <div class="sprint-row">
+          <div class="sprint-day">
+            <div class="sd-num">Day 01 - Specification</div>
+            <div class="sd-title">Protocol Mapping</div>
+            <div class="sd-desc">Analyzed the RD-03D UART command architecture and payload formatting. Documented target tracking register structures.</div>
+          </div>
+          <div class="sprint-day">
+            <div class="sd-num">Day 02 - Assembly</div>
+            <div class="sd-title">HIL Wiring</div>
+            <div class="sd-desc">Assembled circuit boards. Added dual-rail decoupling capacitors on 5V supply line to eliminate servo induction hazards.</div>
+          </div>
+          <div class="sprint-day">
+            <div class="sd-num">Day 03 - Firmware</div>
+            <div class="sd-title">Interrupt Parsing</div>
+            <div class="sd-desc">Developed the circular ring-buffer UART parser for the Renesas RA4M1 32-bit controller, achieving zero frame drops.</div>
+          </div>
+          <div class="sprint-day">
+            <div class="sd-num">Day 04 - Visualizer</div>
+            <div class="sd-title">Polar Projection</div>
+            <div class="sd-desc">Constructed the host-PC visualization scope in Processing, transforming raw angular coordinates to cartesian space.</div>
+          </div>
+          <div class="sprint-day">
+            <div class="sd-num">Day 05 - Verification</div>
+            <div class="sd-title">Clutter Profiling</div>
+            <div class="sd-desc">Mapped classroom and lab physical spaces. Documented multipath signals from wall and window reflections.</div>
+          </div>
+          <div class="sprint-day">
+            <div class="sd-num">Day 06 - Calibration</div>
+            <div class="sd-title">Firmware Tweaking</div>
+            <div class="sd-desc">Optimized clutter thresholds and finalized moving average coefficient parameters inside the microcontroller source.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] ISM Band Spectrum Regulations:</strong> Federal Communications Commission (FCC) provisions for low-power, non-licensed microwave sweeps within the 24.00–24.25 GHz band.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] Phase Demodulation in FMCW:</strong> Skolnik, M. I. (2001). <em>Introduction to Radar Systems</em>. McGraw-Hill Education. Detail on phase extraction and micro-motion target profiling.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] Human Radar Cross-Section:</strong> Analysis of human body electromagnetic properties at millimetre wavelengths, yielding average RCS bounds between $0.5\text{ m}^2$ to $1.2\text{ m}^2$.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Hardware Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">RF Frontend</span><span class="spec-v">RD-03D FMCW &amp; Doppler Module</span></div>
+            <div class="spec-row"><span class="spec-k">FMCW Sweep Band</span><span class="spec-v">24.00 GHz — 24.25 GHz (ISM)</span></div>
+            <div class="spec-row"><span class="spec-k">Angular Field of View</span><span class="spec-v">~120° Horizontal Azimuth</span></div>
+            <div class="spec-row"><span class="spec-k">Max Detection Range</span><span class="spec-v">5.0 Meters (Calibrated)</span></div>
+            <div class="spec-row"><span class="spec-k">Host Microcontroller</span><span class="spec-v">Arduino Uno R4 (Renesas RA4M1)</span></div>
+            <div class="spec-row"><span class="spec-k">Data Baud Rate</span><span class="spec-v">256,000 Baud over Serial UART</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">24 GHz mmWave Radar</span>
+            <span class="tech-pill">Doppler Phase Shift</span>
+            <span class="tech-pill">Moving Average Filter</span>
+            <span class="tech-pill">UART Circular Buffer</span>
+            <span class="tech-pill">Polar Projection Mapping</span>
+            <span class="tech-pill">Micro-Doppler Tracking</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    // Local theme switcher logic
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 185 : 36, /* Cyan / Warm Gold tints */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    let simRunning = true, simId = null, microMotion = true, simT = 0;
+    const cvR = document.getElementById('cv-radar'), ctxR = cvR.getContext('2d');
+    const cvS = document.getElementById('cv-speed'), ctxS = cvS.getContext('2d');
+    const uartDiv = document.getElementById('uart-stream');
+    let simTargets = [{dist: 2.34, angle: 45, speed: 0.12, vd: 0.015, va: 0.8}];
+    let speedHistory = [], uartLines = [], frameCount = 0;
+
+    function addTarget() {
+      simTargets.push({
+        dist: 0.5 + Math.random() * 3.2,
+        angle: 15 + Math.random() * 150,
+        speed: Math.random() * 0.6,
+        vd: (Math.random() - 0.5) * 0.03,
+        va: (Math.random() - 0.5) * 1.8
+      });
+    }
+
+    function clearTargets() {
+      simTargets = [{dist: 2.34, angle: 45, speed: 0.12, vd: 0.015, va: 0.8}];
+      speedHistory = [];
+      uartLines = [];
+    }
+
+    function toggleMicro(btn) {
+      microMotion = !microMotion;
+      btn.textContent = microMotion ? '⟳ Micro-motion ON' : '⟳ Micro-motion OFF';
+      btn.classList.toggle('on', microMotion);
+    }
+
+    // Tactical Radar Sweep Drawing Function
+    function drawRadarBase(ctx, W, H, cx, cy, maxR) {
+      ctx.fillStyle = '#05070a';
+      ctx.fillRect(0, 0, W, H);
+
+      // Grid arches
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, maxR, Math.PI, 0);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(0, 194, 212, 0.01)';
+      ctx.fill();
+      ctx.strokeStyle = 'var(--radar-grid)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Range rings (1m to 4m)
+      [1, 2, 3, 4].forEach(m => {
+        const r = (m / 4) * maxR;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, Math.PI, 0);
+        ctx.strokeStyle = 'var(--radar-grid)';
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+        ctx.font = '8px JetBrains Mono';
+        ctx.fillStyle = 'var(--t-muted)';
+        ctx.fillText(m + 'm', cx - 4, cy - r - 4);
+      });
+
+      // Angular lines
+      [30, 60, 90, 120, 150].forEach(deg => {
+        const rad = deg * Math.PI / 180;
+        const tx = cx + Math.cos(Math.PI - rad) * maxR;
+        const ty = cy - Math.sin(rad) * maxR;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(tx, ty);
+        ctx.strokeStyle = 'var(--radar-grid)';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+
+        ctx.fillStyle = 'var(--t-muted)';
+        ctx.font = '7px JetBrains Mono';
+        ctx.fillText(deg + '°', cx + Math.cos(Math.PI - rad) * (maxR + 10) - 8, cy - Math.sin(rad) * (maxR + 10) + 3);
+      });
+    }
+
+    function targetToXY(dist, angle, cx, cy, maxR) {
+      const r = (dist / 4.0) * maxR;
+      const rad = angle * Math.PI / 180;
+      return {
+        x: cx + Math.cos(Math.PI - rad) * r,
+        y: cy - Math.sin(rad) * r
+      };
+    }
+
+    // Render loop for polar simulation
+    function drawSimRadar() {
+      const W = cvR.offsetWidth || 480, H = 320;
+      cvR.width = W;
+      cvR.height = H;
+      const cx = W / 2, cy = H * 0.9, maxR = H * 0.8;
+
+      drawRadarBase(ctxR, W, H, cx, cy, maxR);
+      simT += 0.015;
+
+      // Sweep Beam Indicator
+      const sweepAngle = (simT * 25) % 180;
+      const srad = sweepAngle * Math.PI / 180;
+      ctxR.beginPath();
+      ctxR.moveTo(cx, cy);
+      ctxR.lineTo(cx + Math.cos(Math.PI - srad) * maxR, cy - Math.sin(srad) * maxR);
+      ctxR.strokeStyle = 'rgba(0, 194, 212, 0.45)';
+      ctxR.lineWidth = 1.8;
+      ctxR.stroke();
+
+      let topTgt = null, topSpd = 0;
+
+      simTargets.forEach((tgt, i) => {
+        tgt.dist = Math.max(0.3, Math.min(3.9, tgt.dist + tgt.vd + (microMotion ? (Math.random() - 0.5) * 0.005 : 0)));
+        tgt.angle = Math.max(5, Math.min(175, tgt.angle + tgt.va * 0.04 + (microMotion ? (Math.random() - 0.5) * 0.08 : 0)));
+
+        if(tgt.dist <= 0.4 || tgt.dist >= 3.8) tgt.vd *= -1;
+        if(tgt.angle <= 10 || tgt.angle >= 170) tgt.va *= -1;
+
+        tgt.speed = Math.abs(tgt.vd) * 6 + (microMotion ? 0.02 + Math.sin(simT * 3) * 0.015 : 0);
+
+        const pos = targetToXY(tgt.dist, tgt.angle, cx, cy, maxR);
+        const active = tgt.speed > 0.06;
+
+        // Draw Target Glowing Circle
+        ctxR.shadowBlur = 12;
+        ctxR.shadowColor = active ? 'rgba(245, 158, 11, 0.6)' : 'rgba(0, 194, 212, 0.5)';
+        ctxR.fillStyle = active ? 'rgba(245, 158, 11, 0.9)' : 'rgba(0, 194, 212, 0.9)';
+        ctxR.beginPath();
+        ctxR.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+        ctxR.fill();
+        ctxR.shadowBlur = 0;
+
+        // Label tooltip
+        ctxR.fillStyle = 'rgba(15, 20, 25, 0.9)';
+        ctxR.fillRect(pos.x + 8, pos.y - 10, 115, 18);
+        ctxR.strokeStyle = 'var(--border)';
+        ctxR.lineWidth = 0.5;
+        ctxR.strokeRect(pos.x + 8, pos.y - 10, 115, 18);
+
+        ctxR.fillStyle = '#f0f6fc';
+        ctxR.font = '8px JetBrains Mono';
+        ctxR.textAlign = 'left';
+        ctxR.fillText(`D: ${tgt.dist.toFixed(2)}m | S: ${tgt.speed.toFixed(2)}m/s`, pos.x + 12, pos.y + 2);
+
+        if(tgt.speed > topSpd) {
+          topSpd = tgt.speed;
+          topTgt = tgt;
+        }
+      });
+
+      // Update HUD Values
+      document.getElementById('tgt-count').textContent = simTargets.length;
+      if (topTgt) {
+        document.getElementById('tgt-dist').textContent = topTgt.dist.toFixed(2) + ' m';
+        document.getElementById('tgt-angle').textContent = topTgt.angle.toFixed(0) + '°';
+        document.getElementById('tgt-speed').textContent = topTgt.speed.toFixed(2) + ' m/s';
+      }
+
+      frameCount++;
+      if (frameCount % 6 === 0 && topTgt) {
+        const payload = `${topTgt.dist.toFixed(2)},${topTgt.angle.toFixed(1)},${topTgt.speed.toFixed(2)}`;
+        const microTimestamp = (simT * 1000).toFixed(0);
+        uartLines.push(`<span style="color:var(--t-muted)">[${microTimestamp}ms]</span> <span style="color:#58a6ff">$UART_RX:</span> <span style="color:#34d399">${payload}</span>`);
+        
+        if (uartLines.length > 10) uartLines.shift();
+        uartDiv.innerHTML = uartLines.join('<br>');
+        uartDiv.scrollTop = uartDiv.scrollHeight;
+
+        speedHistory.push(topTgt.speed);
+        if (speedHistory.length > 60) speedHistory.shift();
+      }
+
+      drawSpeedChart();
+    }
+
+    function drawSpeedChart() {
+      const W = cvS.offsetWidth || 220, H = 70;
+      cvS.width = W;
+      cvS.height = H;
+      ctxS.fillStyle = '#05070a';
+      ctxS.fillRect(0, 0, W, H);
+
+      if (speedHistory.length < 2) return;
+      const maxVal = Math.max(...speedHistory, 0.1);
+
+      ctxS.beginPath();
+      speedHistory.forEach((val, idx) => {
+        const px = (idx / (speedHistory.length - 1)) * W;
+        const py = H - 5 - (val / maxVal) * (H - 12);
+        if (idx === 0) ctxS.moveTo(px, py);
+        else ctxS.lineTo(px, py);
+      });
+      ctxS.strokeStyle = 'var(--radar-glow)';
+      ctxS.lineWidth = 1.2;
+      ctxS.stroke();
+
+      // Signal Grid Reference Line
+      ctxS.beginPath();
+      ctxS.moveTo(0, H / 2);
+      ctxS.lineTo(W, H / 2);
+      ctxS.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctxS.lineWidth = 0.5;
+      ctxS.stroke();
+    }
+
+    function simStep() {
+      drawSimRadar();
+      simId = requestAnimationFrame(simStep);
+    }
+
+    function toggleSim(btn) {
+      simRunning = !simRunning;
+      btn.textContent = simRunning ? '▶ Sweep Active' : '⏸ Paused';
+      btn.classList.toggle('on', simRunning);
+      if (simRunning) simStep();
+      else cancelAnimationFrame(simId);
+    }
+
+    // Grid coordinates interception on click/touch
+    cvR.addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      const W = this.offsetWidth, H = 320;
+      const cx = W / 2, cy = H * 0.9, maxR = H * 0.8;
+      const dx = e.clientX - rect.left - cx;
+      const dy = e.clientY - rect.top - cy;
+      const rangeRadius = Math.sqrt(dx * dx + dy * dy);
+
+      if (rangeRadius > maxR) return;
+      const targetDist = (rangeRadius / maxR) * 4.0;
+      const rawRad = Math.atan2(-dy, dx);
+      let targetAngle = (Math.PI - rawRad) * 180 / Math.PI;
+
+      if (targetAngle < 0 || targetAngle > 180) return;
+      simTargets = [{
+        dist: Math.max(0.3, Math.min(3.8, targetDist)),
+        angle: Math.max(5, Math.min(175, targetAngle)),
+        speed: 0.1,
+        vd: 0.01,
+        va: 0.8
+      }];
+    });
+
+    // Start Simulation
+    simStep();
+  </script>
+</body>
+</html>

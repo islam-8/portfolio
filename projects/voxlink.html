@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Monograph: VoxLink WiFi Audio Mesh — Islam Emad</title>
+  <meta name="description" content="A rigorous academic monograph detailing the development of VoxLink, a software-defined, full-duplex walkie-talkie platform built on ESP8266 architectures using IMA ADPCM compression and connectionless UDP broadcast meshes.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/43e5b1ec09.js" crossorigin="anonymous" defer></script>
+
+  <!-- Core Styles (Going one folder up using ../) -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/vendor.css">
+  <link rel="stylesheet" href="../css/islam.css">
+  <link rel="stylesheet" href="../css/settings.css">
+  <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../css/medal.css">
+
+  <style>
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      
+      /* Refined Editorial Palette - Warm Paper & Noble Accents */
+      --acc-cyan: #0284c7;
+      --acc-gold: #b8860b;
+      --acc-burgundy: #801a12;
+      --acc-teal: #0d9488;
+      
+      --p-mono: 'JetBrains Mono', monospace;
+      --p-serif: 'Lora', Georgia, serif;
+      --p-sans: 'Inter', sans-serif;
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0d0e11;
+      --bg-paper: #13151a;
+      --bg-paper-alt: #1a1c23;
+      --border: #262a35;
+      --border-hi: #3a4152;
+      
+      --t-title: #f5f6f8;
+      --t-body: #c1c8d6;
+      --t-muted: #838e9e;
+      --t-ancient: #9f845c; /* Deep gold */
+      --glass: rgba(13, 14, 17, 0.95);
+      --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --term-bg: #07090d;
+      
+      --grid-color: rgba(56, 189, 248, 0.08);
+      --signal-trace: #38bdf8;
+    }
+    
+    [data-theme="light"] {
+      --bg: #faf7f2; /* Premium vintage book paper */
+      --bg-paper: #ffffff;
+      --bg-paper-alt: #f5f0e6;
+      --border: #e3ded5;
+      --border-hi: #cfc7b9;
+      
+      --t-title: #1c1d1f;
+      --t-body: #2d3135;
+      --t-muted: #6e757d;
+      --t-ancient: #801a12; /* Deep Burgundy for accents in light paper mode */
+      --glass: rgba(250, 247, 242, 0.96);
+      --box-shadow: 0 8px 30px rgba(112, 98, 79, 0.08);
+      --term-bg: #141619;
+      
+      --grid-color: rgba(3, 105, 161, 0.08);
+      --signal-trace: #0369a1;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--t-body);
+      font-family: var(--p-serif);
+      font-size: 1.08rem;
+      line-height: 1.85;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      padding-top: 70px;
+      transition: background .4s var(--ease), color .4s var(--ease);
+    }
+
+    /* Background graphics */
+    .sig-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.45;
+    }
+    .sig-bg canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Navigation Panel with Referrer Guardrail */
+    nav.project-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .n-back {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--t-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color .2s;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .n-back:hover { color: var(--t-ancient); text-decoration: none; }
+    .n-id {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--t-ancient);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.1em;
+    }
+    .n-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--t-ancient);
+      animation: blink 2.2s ease infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .2 } }
+    
+    /* Document Header Elements */
+    .project-header {
+      padding: 90px 0 50px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .p-metadata {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: var(--t-muted);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .h-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      color: var(--t-ancient);
+      border: 1px solid var(--border-hi);
+      padding: 6px 18px;
+      background: var(--bg-paper-alt);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      border-radius: 20px;
+    }
+
+    /* Monograph Document Container Style */
+    .academic-paper {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 0px; /* Sharp academic book edges */
+      box-shadow: var(--box-shadow);
+      padding: 4.5rem;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    @media (max-width: 767px) {
+      .academic-paper { padding: 2rem 1.5rem; }
+    }
+
+    .paper-abstract {
+      font-style: italic;
+      background: var(--bg-paper-alt);
+      border-top: 2px solid var(--border-hi);
+      border-bottom: 2px solid var(--border-hi);
+      padding: 2rem;
+      margin-bottom: 3.5rem;
+      font-size: 1rem;
+      color: var(--t-body);
+    }
+    .abstract-title {
+      font-family: var(--p-sans);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--t-title);
+      margin-bottom: 10px;
+    }
+
+    .section-headline {
+      font-family: var(--p-sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .section-headline span {
+      color: var(--t-ancient);
+      font-family: var(--p-mono);
+      margin-right: 12px;
+      font-size: 1.4rem;
+    }
+
+    /* Citations and Footnotes */
+    .citation {
+      color: var(--t-ancient);
+      font-size: 0.75rem;
+      vertical-align: super;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footnotes-section {
+      margin-top: 5rem;
+      border-top: 2px solid var(--border-hi);
+      padding-top: 2rem;
+      font-size: 0.88rem;
+      color: var(--t-muted);
+      font-family: var(--p-serif);
+    }
+    .footnote-item {
+      margin-bottom: 12px;
+    }
+
+    /* Technical Figure Containers */
+    .fig-container {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 25px;
+      margin: 2.5rem 0;
+      text-align: center;
+    }
+    .fig-caption {
+      font-family: var(--p-sans);
+      font-size: 0.82rem;
+      color: var(--t-muted);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* KPIs Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .kpi {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s var(--ease);
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-n {
+      font-family: var(--p-sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--t-title);
+    }
+    .kpi-l {
+      font-family: var(--p-mono);
+      font-size: 9px;
+      letter-spacing: .08em;
+      color: var(--t-muted);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* Tech Stack Pills */
+    .tech-pill {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      font-family: var(--p-mono);
+      font-size: 0.78rem;
+      color: var(--t-body);
+      display: inline-block;
+      margin: 4px;
+      transition: all 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-title);
+    }
+
+    /* Interactive Terminal Emulator styling */
+    .terminal-window {
+      background: var(--term-bg);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      margin: 2.5rem 0;
+    }
+    .term-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .term-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .term-title {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-left: 8px;
+    }
+    .term-body {
+      padding: 24px;
+      height: 380px;
+      overflow-y: auto;
+      font-family: var(--p-mono);
+      font-size: 12px;
+      line-height: 1.8;
+      background: var(--term-bg);
+    }
+    .term-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .term-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+    }
+    .t-prompt { color: #58a6ff; }
+    .t-input { color: #f0f6fc; }
+    .t-output { color: #8b949e; }
+    .t-ok { color: #34d399; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-header { color: #58a6ff; font-weight: bold; }
+    .t-sep { color: rgba(255,255,255,0.15); }
+
+    .term-controls {
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .tbtn {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      padding: 7px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .tbtn:hover, .tbtn.on {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    /* Table-like spec sheets */
+    .spec-table {
+      font-family: var(--p-mono);
+      font-size: 11.5px;
+    }
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .spec-row:last-child {
+      border-bottom: none;
+    }
+    .spec-k { color: var(--t-muted); }
+    .spec-v { color: var(--t-title); font-weight: 500; }
+
+    /* Theme Switcher Button */
+    #tbtn {
+      font-family: var(--p-mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--t-body);
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    #tbtn:hover {
+      border-color: var(--t-ancient);
+      color: var(--t-ancient);
+    }
+    .back-nav {
+      color: var(--t-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-family: var(--p-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s;
+    }
+    .back-nav:hover {
+      color: var(--t-ancient);
+      text-decoration: none;
+    }
+
+    /* Tactical simulation custom layouts */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .sim-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Comparison protocol table */
+    .cmp-table-container {
+      overflow-x: auto;
+      margin: 2.5rem 0;
+    }
+    .cmp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      font-family: var(--p-mono);
+    }
+    .cmp-table th {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-title);
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .cmp-table td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      color: var(--t-body);
+    }
+
+    /* Control Loop Row */
+    .loop-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin: 2.5rem 0;
+    }
+    @media (max-width: 991px) {
+      .loop-row { grid-template-columns: 1fr; }
+    }
+    .loop-step {
+      background: var(--bg-paper-alt);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+    }
+    .loop-step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--t-ancient);
+    }
+    .ls-num {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      color: var(--t-ancient);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .ls-name {
+      font-family: var(--p-sans);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--t-title);
+      margin-bottom: 6px;
+    }
+    .ls-desc {
+      font-size: 12px;
+      color: var(--t-body);
+      line-height: 1.6;
+    }
+    .ls-formula {
+      font-family: var(--p-mono);
+      font-size: 10px;
+      color: var(--t-ancient);
+      margin-top: 10px;
+      padding: 4px 8px;
+      background: var(--bg-paper);
+      display: inline-block;
+      border-left: 2px solid var(--t-ancient);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background for Grid Signals -->
+  <div class="sig-bg" aria-hidden="true">
+    <canvas id="sigCanvas"></canvas>
+  </div>
+
+  <!-- FIXED NAVIGATION BAR -->
+  <nav class="project-nav">
+    <a class="n-back" href="../index.html">← Return to Portfolio</a>
+    <div class="n-id"><div class="n-dot"></div>TECHNICAL MONOGRAPH // VOXLINK</div>
+    <div>
+      <button id="tbtn" onclick="toggleLocalTheme()">◐ TOGGLE ARCHIVE EYE-CARE</button>
+    </div>
+  </nav>
+
+  <!-- ACADEMIC MONOGRAPH HEADER -->
+  <header class="project-header text-center">
+    <div class="container">
+      <div class="p-metadata">HORUS UNIVERSITY · DEPT. OF ELECTRONICS &amp; COMMUNICATIONS ENGINEERING</div>
+      <div class="h-badge">RESEARCH-SPEC: ESP8266-ADPCM-05</div>
+      <h1 class="font-weight-bold text-white" style="font-family: var(--p-sans); font-size: clamp(2.3rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; color: var(--t-title) !important;">
+        High-Performance Serverless <br><span style="color: var(--t-ancient);">Mesh Walkie-Talkies</span>
+      </h1>
+      <p class="text-muted mt-3 max-width-700 mx-auto" style="font-size: 1.15rem; line-height: 1.75; font-family: var(--p-serif); font-style: italic; color: var(--t-muted) !important;">
+        Analyzing real-time Xtensa I2S DMA, 4:1 IMA ADPCM compression calculus, and 802.11 serverless connectionless UDP broadcast buffering.
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container my-5" style="position: relative; z-index: 10;">
+    
+    <a href="../index.html#blog" class="back-nav">
+      <i class="fa-solid fa-arrow-left"></i> Back to Primary Index
+    </a>
+
+    <!-- Monograph Document Structure -->
+    <article class="academic-paper">
+      
+      <!-- ABSTRACT -->
+      <div class="paper-abstract">
+        <div class="abstract-title">Abstract</div>
+        This monograph details the research, firmware architectures, and hardware-software co-design of a software-defined, low-latency, full-duplex walkie-talkie platform (VoxLink) built on the 32-bit Xtensa LX106 microcontroller (ESP8266). Wireless voice transmission in low-cost distributed environments often suffers from major packet timing jitter, router bottlenecks, and high bandwidth consumption. We propose a serverless, peer-to-peer network utilizing raw connectionless UDP broadcasts on a localized 802.11 mesh. PCM voice signals are acquired via direct I2S DMA to bypass CPU polling. On-device compression is performed using a 4:1 IMA ADPCM quantization encoder, dropping the data requirement from 128kbps to 32kbps. We evaluate the mathematical step-size adaptation, design a 40ms jitter buffer, and present real-time packet loss simulations.
+      </div>
+
+      <!-- SECTION 1: SIGNAL ACQUISITION & NYQUIST-SHANNON -->
+      <section>
+        <h3 class="section-headline"><span>I.</span> Audio Signal Acquisition &amp; Nyquist-Shannon Sampling</h3>
+        <p>
+          The fundamental foundation of digital speech transmission begins with the digitisation of analog acoustic waves. According to the Nyquist-Shannon sampling theorem, to prevent aliasing, the sampling frequency $f_s$ must be greater than twice the highest frequency component of the analog signal ($f_{max}$):
+        </p>
+        
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          f_s &gt; 2 \cdot f_{\max}
+        </div>
+
+        <p>
+          For human speech, the essential intelligibility bandwidth is contained below $4\text{ kHz}$. We select an industry-standard sampling rate of $f_s = 8\text{ kHz}$ with 16-bit PCM resolution, yielding a raw uncompressed serial stream bandwidth of:
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          \text{Bandwidth} = 8000 \text{ Hz} \cdot 16 \text{ bits/sample} = 128\text{ kbps}
+        </div>
+
+        <p>
+          To maintain real-time execution without timing jitter, the Xtensa LX106 CPU cannot spend cycles polling the ADC. We configure the INMP441 MEMS microphone to stream directly to the MCU's internal **I2S (Inter-IC Sound) controller**. The controller utilizes **Direct Memory Access (DMA)**, transferring raw audio samples directly into SRAM ring buffers in the background. Once a 20ms block (exactly 160 samples) is filled, an interrupt fires to hand the buffer over to the DSP compressor.
+        </p>
+
+        <!-- Figure 1: Audio Signal Acquisition Diagram -->
+        <div class="fig-container">
+          <svg viewBox="0 0 920 280" width="100%" style="min-width:680px">
+            <rect width="100%" height="100%" fill="var(--bg-paper-alt)" rx="4"/>
+            <path d="M 0 50 L 920 50 M 0 100 L 920 100 M 0 150 L 920 150 M 0 200 L 920 200 M 0 250 L 920 250" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2, 6"/>
+            
+            <!-- Analog Stage -->
+            <g transform="translate(60, 40)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">A. ANALOG ACQUISITION</text>
+              <rect x="20" y="40" width="160" height="60" rx="4" fill="var(--bg-paper)" stroke="var(--border-hi)"/>
+              <text x="100" y="68" font-family="var(--p-serif)" font-size="12" fill="var(--t-title)" text-anchor="middle">INMP441 MEMS</text>
+              <text x="100" y="84" font-family="var(--p-mono)" font-size="9" fill="var(--t-muted)" text-anchor="middle">Analog Mic Node</text>
+              <path d="M 180 70 L 230 70" stroke="var(--t-ancient)" stroke-width="1.5" stroke-dasharray="4,4"/>
+            </g>
+
+            <!-- I2S DMA Stage -->
+            <g transform="translate(290, 40)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">B. HARDWARE DIRECT MEMORY ACCESS</text>
+              <rect x="20" y="40" width="200" height="60" rx="4" fill="var(--bg-paper)" stroke="var(--t-ancient)"/>
+              <text x="120" y="68" font-family="var(--p-mono)" font-size="11" fill="var(--t-title)" text-anchor="middle">Xtensa I2S DMA Controller</text>
+              <text x="120" y="84" font-family="var(--p-mono)" font-size="9" fill="var(--t-ancient)" text-anchor="middle">Bypasses CPU polling</text>
+              <path d="M 220 70 L 270 70" stroke="var(--t-ancient)" stroke-width="1.5"/>
+            </g>
+
+            <!-- DSP Codec Stage -->
+            <g transform="translate(590, 40)">
+              <text x="10" y="20" font-family="var(--p-sans)" font-size="10" font-weight="bold" fill="var(--t-title)">C. QUANTIZATION COMPRESSION</text>
+              <rect x="20" y="40" width="180" height="60" rx="4" fill="var(--bg-paper)" stroke="var(--border-hi)"/>
+              <text x="110" y="68" font-family="var(--p-sans)" font-size="12" fill="var(--t-title)" text-anchor="middle">IMA ADPCM Encoder</text>
+              <text x="110" y="84" font-family="var(--p-mono)" font-size="9" fill="var(--t-muted)" text-anchor="middle">4:1 Compression Step</text>
+            </g>
+
+            <text x="460" y="210" font-family="var(--p-mono)" font-size="10" fill="var(--t-muted)" text-anchor="middle">DMA Ring Buffer Interrupt (every 20ms) → CPU processes 160 PCM samples (320 Bytes)</text>
+          </svg>
+          <div class="fig-caption">Figure 1: Hardware-accelerated audio ingest pipeline showing DMA buffer routing.</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: ADPCM MATHEMATICS -->
+      <section>
+        <h3 class="section-headline"><span>II.</span> IMA ADPCM 4:1 Compression Calculus</h3>
+        <p>
+          Uncompressed audio streaming imposes heavy overhead on wireless nodes. To prevent mesh channel congestion, we implement the **Interactive Multimedia Association Adaptive Differential Pulse Code Modulation (IMA ADPCM)** algorithm. 
+        </p>
+        <p>
+          Rather than transmitting absolute 16-bit values, ADPCM transmits the difference (residual) $d(n)$ between the current sample $x(n)$ and a predicted value $\hat{x}(n)$. This difference is quantized into a 4-bit nibble using a variable quantization step-size $ss(n)$.
+        </p>
+
+        <div style="font-family: var(--p-mono); font-size: 13px; text-align: center; margin: 25px 0; color: var(--t-ancient); font-weight: bold; background: var(--bg-paper-alt); padding: 15px; border-left: 3px solid var(--t-ancient);">
+          d(n) = x(n) - \hat{x}(n) \quad \rightarrow \quad c(n) = \text{quantize}\left(\frac{d(n)}{ss(n)}\right)
+        </div>
+
+        <p>
+          The step-size $ss(n)$ adapts after each sample using a lookup table containing 89 step coefficients (ranging from 7 to 32767). If the predicted error is high, the step size increases exponentially to track high-frequency transits. If the error is small, the step size collapses to maximize resolution in quiet periods. This adaptive approach avoids the quantization clipping associated with static delta modulation.
+        </p>
+
+        <p>
+          By converting each 16-bit sample into a 4-bit nibble, VoxLink achieves a flat **4:1 compression ratio**, bringing the required voice stream bandwidth down from **128kbps to exactly 32kbps**, easily fitting inside the localized 802.11 transport budget.
+        </p>
+      </section>
+
+      <!-- SECTION 3: SYSTEM CONTROL LOOP -->
+      <section>
+        <h3 class="section-headline"><span>III.</span> Full-Duplex Codec Pipeline Steps</h3>
+        <p>
+          The entire real-time pipeline executes sequentially with sub-1ms CPU overhead per block, ensuring the remaining cycles are fully dedicated to packet transmission and reception:
+        </p>
+
+        <div class="loop-row">
+          <div class="loop-step">
+            <div class="ls-num">01</div>
+            <div class="ls-name">Capture</div>
+            <div class="ls-desc">DMA fetches 160 PCM samples from INMP441 MEMS microphone.</div>
+            <div class="ls-formula">t = 20ms</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">02</div>
+            <div class="ls-name">Encode</div>
+            <div class="ls-desc">C-based ADPCM encodes samples into 4-bit nibbles (80 Bytes total).</div>
+            <div class="ls-formula">Compression = 4:1</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">03</div>
+            <div class="ls-name">Packetize</div>
+            <div class="ls-desc">Prepends 4-byte sequence header; transmits 84B over connectionless UDP.</div>
+            <div class="ls-formula">Air Time ≈ 0.7ms</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">04</div>
+            <div class="ls-name">Queue</div>
+            <div class="ls-desc">Jitter buffer holds 40ms of packet streams to absorb arrival jitter.</div>
+            <div class="ls-formula">Depth = 2 frames</div>
+          </div>
+          <div class="loop-step">
+            <div class="ls-num">05</div>
+            <div class="ls-name">Decode</div>
+            <div class="ls-desc">Reconstructs 16-bit PCM; plays over I2S to MAX98357A.</div>
+            <div class="ls-formula">Total E2E &lt; 50ms</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: REAL-TIME INTERACTIVE SIMULATION -->
+      <section>
+        <h3 class="section-headline"><span>IV.</span> Live Network &amp; Codec DSP Simulator</h3>
+        <p>
+          To demonstrate the physical real-time behavior of VoxLink under variable network packet loss, we developed a responsive packet mesh analyzer coupled with a **Double-Trace DSP Oscilloscope**. Adjust the loss parameters below to see the jitter buffer queue packets and apply Packet Loss Concealment (PLC) during packet drops.
+        </p>
+
+        <div class="sim-layout">
+          <!-- Left: Packet Mesh and Jitter Buffer Analyzer -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <div class="term-dot" style="background: var(--acc-burgundy);"></div>
+              <div class="term-dot" style="background: var(--acc-gold);"></div>
+              <div class="term-dot" style="background: var(--acc-teal);"></div>
+              <span class="term-title">packet_mesh_network_scope.elf</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; flex: 1;">
+              <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Node A to Node B: Click and set drop rate</div>
+              <canvas id="cv-net" height="240" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+              
+              <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
+                <button class="tbtn on" id="net-run" onclick="toggleNet(this)">▶ Sweep Active</button>
+                <button class="tbtn" onclick="setLoss(0)">0% Loss</button>
+                <button class="tbtn" onclick="setLoss(0.08)">8% Loss</button>
+                <button class="tbtn" onclick="setLoss(0.25)">25% Extreme Loss</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Double-Trace DSP Oscilloscope -->
+          <div class="terminal-window" style="margin: 0; display: flex; flex-direction: column;">
+            <div class="term-bar">
+              <span class="term-title">DOUBLE-TRACE DSP OSCILLOSCOPE</span>
+              <span class="sim-badge" style="margin-left: auto; font-family: var(--p-mono); font-size: 8px; color: var(--t-ancient); border: 1px solid var(--border);">ADPCM VS PCM</span>
+            </div>
+            <div class="sim-body" style="padding: 15px; display: flex; flex-direction: column; gap: 15px; justify-content: space-between;">
+              <div>
+                <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); margin-bottom: 8px; text-transform: uppercase;">Waveform comparison (Top: Raw Ingest / Bottom: Decoded output)</div>
+                <canvas id="cv-audio" height="200" style="display:block; width:100%; background:#05070a; border: 1px solid var(--border);"></canvas>
+              </div>
+              
+              <div style="font-family: var(--p-mono); font-size: 8px; color: var(--t-muted); line-height: 1.5; padding-top: 10px; border-top: 1px dashed var(--border);">
+                <span style="color: var(--t-ancient); font-weight: bold;">ADPCM Status:</span> IMA Step-Size Adaptation active. Compression saving: <span style="color: #10b981; font-weight: bold;">75.0%</span>. Jitter Queue: <span id="queue-txt" style="color: #10b981;">STABLE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-paper-alt); border: 1px solid var(--border); padding: 15px; font-family: var(--p-mono); font-size: 11px; color: var(--t-body); display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+          <span><strong style="color: var(--t-ancient);">Loss Rate:</strong> <span id="loss-pct">0%</span></span>
+          <span><strong style="color: var(--t-ancient);">Sequence:</strong> <span id="seq-num">0</span></span>
+          <span><strong style="color: var(--t-ancient);">Audio Quality:</strong> <span id="qual-badge" style="color: #10b981; font-weight: bold;">CLEAR</span></span>
+          <span><strong style="color: var(--t-ancient);">Network Jitter:</strong> <span id="jitter-ms">2ms</span></span>
+        </div>
+      </section>
+
+      <!-- SECTION 5: PROTOCOL ANALYSIS -->
+      <section>
+        <h3 class="section-headline"><span>V.</span> Mesh Protocol Optimization Study</h3>
+        <p>
+          Standard TCP/IP sockets demand continuous handshake agreements ($SYN \rightarrow SYN-ACK \rightarrow ACK$). In highly mobile walkie-talkie meshes, where devices move past obstacles, drop-outs are common. 
+          Enforcing TCP retries causes severe latency cascades: a single dropped voice packet stops the entire queue, raising latency past $500\text{ms}$.
+        </p>
+
+        <p>
+          VoxLink resolves this by using **connectionless UDP broadcasts**. Packets are thrown to the network's broadcast domain. If a packet is lost, the receiver does not wait. Instead, the Jitter Buffer triggers a **Packet Loss Concealment (PLC)** routine, repeating the last successfully received block with a $3\text{dB}$ attenuation factor, keeping speech flowing smoothly:
+        </p>
+
+        <div class="cmp-table-container">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Protocol Setup</th>
+                <th>Underlying Standard</th>
+                <th>Router Requirement</th>
+                <th>Packet Drop Response</th>
+                <th>End-to-End Latency Bounds</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: rgba(2, 132, 199, 0.05);">
+                <td><strong>VoxLink Broadcast (Local Mesh)</strong></td>
+                <td>Raw UDP Broadcast</td>
+                <td>None (Serverless Direct)</td>
+                <td><strong>Immediate PLC Concealment</strong></td>
+                <td><strong>&lt; 50 ms (Stable)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Standard WebRTC Audio Node</strong></td>
+                <td>TCP/UDP with ICE STUN</td>
+                <td>Required (Central Router)</td>
+                <td>Queue pause on loss</td>
+                <td>120 ms — 250 ms</td>
+              </tr>
+              <tr>
+                <td><strong>Voice-over-IP (VoIP/SIP Core)</strong></td>
+                <td>TCP / RTSP Stack</td>
+                <td>Required (Global Domain)</td>
+                <td>Retransmit cycle trigger</td>
+                <td>150 ms — 400 ms</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CITATION AND FOOTNOTES -->
+      <section class="footnotes-section">
+        <div class="footnote-item" id="fn-1">
+          <strong>[1] Digital Signal Processing:</strong> Oppenheim, A. V., &amp; Schafer, R. W. (2010). <em>Discrete-Time Signal Processing</em>. Prentice Hall. Principles of voice sampling and quantization theory.
+        </div>
+        <div class="footnote-item" id="fn-2">
+          <strong>[2] IMA ADPCM Specifications:</strong> Interactive Multimedia Association. (1992). <em>Recommended Practices for Enhancing Digital Audio Compatibility</em>. Detail on step-size adaptation indices.
+        </div>
+        <div class="footnote-item" id="fn-3">
+          <strong>[3] Real-time Wireless Mesh Networking:</strong> Kurose, J. F., &amp; Ross, K. W. (2017). <em>Computer Networking: A Top-Down Approach</em>. Pearson. Low-latency UDP transport and jitter mitigation strategies.
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Side metadata block -->
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Hardware Specifications
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="spec-table">
+            <div class="spec-row"><span class="spec-k">Main MCU SoC</span><span class="spec-v">ESP8266 (32-Bit Xtensa LX106 @ 80MHz)</span></div>
+            <div class="spec-row"><span class="spec-k">Audio Input</span><span class="spec-v">INMP441 I2S MEMS Microphone</span></div>
+            <div class="spec-row"><span class="spec-k">Audio Output</span><span class="spec-v">MAX98357A I2S Class-D Amplifier</span></div>
+            <div class="spec-row"><span class="spec-k">Network Protocol</span><span class="spec-v">Serverless Connectionless UDP Mesh</span></div>
+            <div class="spec-row"><span class="spec-k">Audio Format</span><span class="spec-v">8kHz / 16-bit PCM compressed via IMA ADPCM</span></div>
+            <div class="spec-row"><span class="spec-k">Bitrate Savings</span><span class="spec-v">75.0% Reduction (128kbps → 32kbps)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="academic-paper p-4">
+          <h5 class="font-weight-bold mb-3" style="font-family: var(--p-sans); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: var(--t-title);">
+            Technology Stack &amp; Concepts
+          </h5>
+          <hr style="border-top: 1px dashed var(--border-hi); margin-top: 0; margin-bottom: 1.2rem;">
+          <div class="d-flex flex-wrap">
+            <span class="tech-pill">Xtensa I2S DMA</span>
+            <span class="tech-pill">IMA ADPCM 4:1</span>
+            <span class="tech-pill">Quantization Step Adaptation</span>
+            <span class="tech-pill">UDP Broadcast Sockets</span>
+            <span class="tech-pill">Jitter Ring Buffers</span>
+            <span class="tech-pill">Packet Loss Concealment (PLC)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="background: var(--bg-paper); border-top: 1px solid var(--border); padding: 3rem; text-align: center; color: var(--t-muted); font-size: 0.88rem;">
+    <div class="container">
+      <p>© 2026 Islam Emad · Registered Portfolio &amp; Technical Showcases</p>
+      <p class="mt-2" style="font-size: 0.8rem; font-family: var(--p-mono);">COMPILED WITH ARDUINO-FREE REGISTERS &amp; REAL-TIME EMBEDDED BEST PRACTICES</p>
+    </div>
+  </footer>
+
+  <script src="../js/vendor.js" defer></script>
+  <script src="../js/custom.js" defer></script>
+  
+  <script>
+    // Referrer Guardrail router
+    (function() {
+      const ref = document.referrer;
+      let dest = "../index.html"; // Default fallback
+      let label = "Return to Portfolio";
+
+      if (ref.includes("blog.html")) {
+        dest = "../blog.html";
+        label = "Return to Blog";
+      } else if (ref.includes("index.html")) {
+        dest = "../index.html#blog"; // Anchor jump directly to project section
+        label = "Return to Portfolio";
+      }
+
+      // Automatically update all back navigation nodes
+      document.querySelectorAll('.n-back, .back-nav').forEach(el => {
+        el.setAttribute('href', dest);
+        if (el.classList.contains('n-back')) {
+          el.innerHTML = `← ${label}`;
+        } else {
+          el.innerHTML = `<i class="fa-solid fa-arrow-left"></i> ${label}`;
+        }
+      });
+    })();
+
+    // Local theme switching
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('ie-t', t);
+    }
+    function toggleLocalTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    (() => setTheme(localStorage.getItem('ie-t') || 'dark'))();
+
+    // Scroll helper for footnotes
+    function scrollToFootnote(id) {
+      const el = document.getElementById(`fn-${id}`);
+      if(el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.backgroundColor = 'var(--bg-paper-alt)';
+        setTimeout(() => {
+          el.style.backgroundColor = 'transparent';
+        }, 1500);
+      }
+    }
+
+    // Dynamic wave simulation canvas background
+    (function(){
+      const c = document.getElementById('sigCanvas'), x = c.getContext('2d');
+      let W, H, lines = [], id;
+      
+      function resize() {
+        W = c.width = c.offsetWidth;
+        H = c.height = c.offsetHeight;
+        build();
+      }
+      
+      function build() {
+        lines = [];
+        for(let i = 0; i < 5; i++) {
+          lines.push({
+            y: H * (.15 + i * .18),
+            freq: .001 + Math.random() * .003,
+            amp: 10 + Math.random() * 20,
+            speed: .2 + Math.random() * .5,
+            phase: Math.random() * Math.PI * 2,
+            hue: i % 2 === 0 ? 195 : 45, /* Sky Blue / Gold Slate tints */
+            alpha: .12 + Math.random() * .1,
+            type: Math.random() > .5 ? 'sine' : 'square'
+          });
+        }
+      }
+      
+      let t = 0;
+      function draw() {
+        x.clearRect(0, 0, W, H);
+        t += .008;
+        lines.forEach(l => {
+          x.beginPath();
+          const n = Math.floor(W / 2);
+          let f = true;
+          for(let i = 0; i <= n; i++) {
+            const px = (i / n) * W;
+            const yv = l.type === 'sine' 
+              ? l.y + Math.sin(px * l.freq + t * l.speed + l.phase) * l.amp 
+              : l.y + (Math.sin(px * l.freq + t * l.speed + l.phase) > 0 ? 1 : -1) * l.amp * .4;
+            if(f) {
+              x.moveTo(px, yv);
+              f = false;
+            } else {
+              x.lineTo(px, yv);
+            }
+          }
+          x.strokeStyle = `hsla(${l.hue},65%,48%,${l.alpha})`;
+          x.lineWidth = 0.8;
+          x.stroke();
+        });
+        id = requestAnimationFrame(draw);
+      }
+      
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(id);
+        resize();
+        draw();
+      });
+      resize();
+      draw();
+    })();
+
+    // ══ HIGH-END INTERACTIVE MESH SIMULATOR ══
+    const netCv = document.getElementById('cv-net');
+    const audCv = document.getElementById('cv-audio');
+    const netCtx = netCv.getContext('2d');
+    const audCtx = audCv.getContext('2d');
+
+    let netRunning = true, netId = null, lossRate = 0, seq = 0, netT = 0;
+    const packets = [];
+
+    function setLoss(v) {
+      lossRate = v;
+      document.getElementById('loss-pct').textContent = Math.round(v * 100) + '%';
+      
+      const badge = document.getElementById('qual-badge');
+      if (v < 0.05) {
+        badge.textContent = 'CLEAR';
+        badge.style.color = '#10b981';
+      } else if (v < 0.15) {
+        badge.textContent = 'DEGRADED';
+        badge.style.color = '#fbbf24';
+      } else {
+        badge.textContent = 'POOR (PLC ON)';
+        badge.style.color = '#ef4444';
+      }
+    }
+
+    function spawnPacket() {
+      if (Math.random() > lossRate) {
+        packets.push({ x: 0, progress: 0, seq: seq++, lost: false, jitter: Math.random() * 8, color: 'rgba(56,189,248,1)' });
+      } else {
+        packets.push({ x: 0, progress: 0, seq: seq++, lost: true, jitter: Math.random() * 8, color: 'rgba(248,113,113,.7)' });
+      }
+      document.getElementById('seq-num').textContent = seq;
+      document.getElementById('jitter-ms').textContent = Math.round(Math.random() * 8 + 2) + 'ms';
+    }
+
+    function drawNet() {
+      const W = netCv.offsetWidth || 460, H = 240;
+      netCv.width = W; netCv.height = H;
+      netCtx.fillStyle = '#05070a'; netCtx.fillRect(0, 0, W, H);
+
+      // Grid backing
+      netCtx.strokeStyle = 'rgba(255,255,255,.015)'; netCtx.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 30) {
+        netCtx.beginPath(); netCtx.moveTo(x, 0); netCtx.lineTo(x, H); netCtx.stroke();
+      }
+
+      // Nodes
+      const nA = { x: 50, y: H / 2 };
+      const nB = { x: W - 50, y: H / 2 };
+
+      // Channel line
+      netCtx.beginPath(); netCtx.moveTo(nA.x, nA.y); netCtx.lineTo(nB.x, nB.y);
+      netCtx.strokeStyle = 'rgba(56,189,248,.05)'; netCtx.lineWidth = 14; netCtx.stroke();
+
+      // Node A (TX)
+      netCtx.beginPath(); netCtx.arc(nA.x, nA.y, 22, 0, Math.PI * 2);
+      netCtx.fillStyle = 'rgba(56,189,248,.1)'; netCtx.fill();
+      netCtx.strokeStyle = 'rgba(56,189,248,.6)'; netCtx.lineWidth = 1.5; netCtx.stroke();
+      netCtx.font = '8px JetBrains Mono'; netCtx.fillStyle = 'rgba(56,189,248,.9)'; netCtx.textAlign = 'center';
+      netCtx.fillText('NODE A (TX)', nA.x, nA.y + 3);
+
+      // Node B (RX)
+      netCtx.beginPath(); netCtx.arc(nB.x, nB.y, 22, 0, Math.PI * 2);
+      netCtx.fillStyle = 'rgba(16,185,129,.1)'; netCtx.fill();
+      netCtx.strokeStyle = 'rgba(16,185,129,.6)'; netCtx.lineWidth = 1.5; netCtx.stroke();
+      netCtx.font = '8px JetBrains Mono'; netCtx.fillStyle = 'rgba(16,185,129,.9)'; netCtx.textAlign = 'center';
+      netCtx.fillText('NODE B (RX)', nB.x, nB.y + 3);
+
+      // Draw Packets moving
+      const channelLen = nB.x - nA.x;
+      packets.forEach(p => {
+        const px = nA.x + p.progress * channelLen;
+        const py = nA.y + Math.sin(p.progress * Math.PI) * p.jitter * 1.5;
+        
+        netCtx.beginPath();
+        netCtx.arc(px, py, p.lost ? 4 : 6, 0, Math.PI * 2);
+        netCtx.fillStyle = p.color; netCtx.fill();
+
+        if (!p.lost) {
+          netCtx.font = '7px JetBrains Mono'; netCtx.fillStyle = 'rgba(56,189,248,.6)';
+          netCtx.fillText('#' + p.seq, px, py - 10);
+        } else {
+          netCtx.font = '8px JetBrains Mono'; netCtx.fillStyle = '#f87171';
+          netCtx.fillText('DROP', px, py - 10);
+        }
+      });
+
+      // Update stable queue state
+      const queueTxt = document.getElementById('queue-txt');
+      if (lossRate > 0.15) {
+        queueTxt.textContent = 'PLC ENGAGED';
+        queueTxt.style.color = 'var(--t-ancient)';
+      } else {
+        queueTxt.textContent = 'STABLE';
+        queueTxt.style.color = '#10b981';
+      }
+    }
+
+    function drawAudio() {
+      const W = audCv.offsetWidth || 460, H = 200;
+      audCv.width = W; audCv.height = H;
+      audCtx.fillStyle = '#05070a'; audCtx.fillRect(0, 0, W, H);
+
+      const splitY = H / 2;
+
+      // Draw divider line
+      audCtx.beginPath(); audCtx.moveTo(0, splitY); audCtx.lineTo(W, splitY);
+      audCtx.strokeStyle = 'rgba(255,255,255,0.06)'; audCtx.lineWidth = 1; audCtx.stroke();
+
+      // Top Half: Raw Ingest Wave (PCM)
+      audCtx.beginPath();
+      audCtx.strokeStyle = 'rgba(255,255,255,0.2)'; audCtx.lineWidth = 1;
+      audCtx.moveTo(0, splitY / 2);
+      
+      const waveFreq = 0.04;
+      for (let i = 0; i < W; i++) {
+        const amp = Math.sin(i * waveFreq - netT * 2) * (splitY * 0.35) + Math.cos(i * 0.08 - netT * 3) * (splitY * 0.15);
+        audCtx.lineTo(i, splitY / 2 + amp);
+      }
+      audCtx.stroke();
+      audCtx.font = '8px JetBrains Mono'; audCtx.fillStyle = 'rgba(255,255,255,0.4)';
+      audCtx.fillText('RAW 16-BIT PCM INGEST (128kbps)', 10, 15);
+
+      // Bottom Half: Decoded ADPCM with Quantization Jitter & Drops
+      audCtx.beginPath();
+      audCtx.strokeStyle = 'var(--signal-trace)'; audCtx.lineWidth = 1.5;
+      audCtx.moveTo(0, splitY * 1.5);
+
+      const stepSize = 4; // Simulated ADPCM quantization steps
+      for (let i = 0; i < W; i++) {
+        // Quantize absolute sine values
+        const rawAmp = Math.sin(i * waveFreq - netT * 2) * (splitY * 0.35) + Math.cos(i * 0.08 - netT * 3) * (splitY * 0.15);
+        let quantAmp = Math.round(rawAmp / stepSize) * stepSize;
+
+        // Simulate PLC repeating frame dampening during packet drops
+        if (lossRate > 0.1 && i > W * 0.7 && i < W * 0.82) {
+          quantAmp = Math.sin(W * 0.7 * waveFreq - netT * 2) * (splitY * 0.15); // Dampened/held value representing PLC step
+        }
+
+        audCtx.lineTo(i, splitY * 1.5 + quantAmp);
+      }
+      audCtx.stroke();
+      audCtx.font = '8px JetBrains Mono'; audCtx.fillStyle = 'var(--signal-trace)';
+      audCtx.fillText('DECODED ADPCM OUTPUT (32kbps) · 4:1 DATA SAVINGS', 10, splitY + 15);
+    }
+
+    let frameInterval = 0;
+    function netStep() {
+      netT += 0.03;
+      frameInterval++;
+
+      if (frameInterval % 10 === 0) {
+        spawnPacket();
+      }
+
+      // Progress packet flow
+      packets.forEach(p => {
+        p.progress = Math.min(1, p.progress + 0.015);
+      });
+
+      // Clear completed packets from domain
+      packets.splice(0, packets.filter(p => p.progress >= 1).length);
+
+      drawNet();
+      drawAudio();
+      
+      netId = requestAnimationFrame(netStep);
+    }
+
+    function toggleNet(btn) {
+      netRunning = !netRunning;
+      btn.textContent = netRunning ? '▶ Sweep Active' : '⏸ Paused';
+      btn.classList.toggle('on', netRunning);
+      if (netRunning) netStep();
+      else cancelAnimationFrame(netId);
+    }
+
+    // Start Simulation on Ingest
+    netStep();
+  </script>
+</body>
+</html>
